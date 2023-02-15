@@ -278,8 +278,8 @@ const InventoryDetailPage = ({ item }) => {
                                             <Field name="floor" type="text" class="form-input" />
                                         </Grid>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="totalarea">Total Area</label>
-                                            <Field name="totalarea" type="text" class="form-input" />
+                                            <label htmlFor="totalArea">Total Area</label>
+                                            <Field name="totalArea" type="text" class="form-input" />
                                         </Grid>
                                         {!showNew && (
                                             <>
