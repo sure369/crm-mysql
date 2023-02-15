@@ -114,7 +114,6 @@ const AccountDetailPage = ({ item }) => {
             values.createdDate = dateSeconds;
             if(values.InventoryId===''){
                 delete values.InventoryId;
-                delete values.billingCities;
             }
         }
         else if(!showNew){
@@ -122,7 +121,6 @@ const AccountDetailPage = ({ item }) => {
             values.createdDate = createDateSec;
             if(values.InventoryId===''){
                 delete values.InventoryId;
-                delete values.billingCities;
             }
         }
         
