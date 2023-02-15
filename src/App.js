@@ -83,8 +83,8 @@ function App() {
               <Route path="/accounts" element={<ResponsiveAccounts />} />
               <Route path="/contacts" element={<ResponsiveContacts />} />
               <Route path="/opportunities" element={<ResponsiveOpportunities />} />
-              <Route path="/leads" element={<ResponsiveLeads />} />
-              <Route path="/inventories" element={<ResponsiveInventories/>} />
+              <Route path="/deals" element={<ResponsiveLeads />} />
+              <Route path="/enquiries" element={<ResponsiveInventories/>} />
               <Route path="/task" element={<ResponsiveTasks />} />
               <Route path="/users" element={<ResponsiveUsers />} />
               <Route path="/oppInventory" element={<OppInventoryJunction />} />

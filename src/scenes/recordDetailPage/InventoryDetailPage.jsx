@@ -114,10 +114,12 @@ const InventoryDetailPage = ({ item }) => {
         if (showNew) {
             values.modifiedDate = dateSeconds;
             values.createdDate = dateSeconds;
+            delete values.propertyCities;
         }
         else if (!showNew) {
             values.modifiedDate = dateSeconds;
             values.createdDate = createDateSec;
+            delete values.propertyCities;
         }
 
         console.log('after change form submission value', values);

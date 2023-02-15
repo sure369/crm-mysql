@@ -146,15 +146,15 @@ const Sidebar = () => {
               Data
             </Typography> */}
              <Item
-              title="Leads"
-              to="/leads"
+              title="Enquiries"
+              to="/enquiries"
               icon={<AssistantPhotoIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="Opportunities"
-              to="/opportunities"
+              title="Deals"
+              to="/deals"
               icon={<DiamondIcon />}
               selected={selected}
               setSelected={setSelected}

@@ -186,8 +186,8 @@ const Leads = () => {
 
       <Box m="20px">
         <Header
-          title="Leads"
-          subtitle="List of Leads"
+          title="Enquiry"
+          subtitle="List of Enquiries"
         />
         <Box
           m="40px 0 0 0"
