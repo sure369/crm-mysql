@@ -1,0 +1,53 @@
+
+.form-input, select {
+    width: 100%;
+    height: 50%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+
+  
+.form-customSelect {
+  width: 100%;
+  height: 50%;
+  margin: 8px 0;
+  display: inline-block;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: white;
+}
+  .form-child {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+  .action-buttons{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+ 
+  }
+
+  .btn-test{
+    display: flex;
+    align-items: end;
+    justify-content: flex-end;
+    /* justifyContent="space-between" */
+    color: none;
+    margin:10px
+
+  }
+  .text-danger{
+    color: red;
+  }

@@ -1,0 +1,424 @@
+import React, { useEffect, useState, useRef } from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import { useLocation, useNavigate } from 'react-router-dom';
+import {
+  Card, CardContent, Box, Button, Typography, Modal
+  , IconButton, Grid, Accordion, AccordionSummary, AccordionDetails, Pagination, Menu, MenuItem
+} from "@mui/material";
+import axios from 'axios'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ModalAccTask from "../tasks/ModalAccTask";
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Notification from '../toast/Notification';
+import { DataGrid, GridToolbar,
+  gridPageCountSelector,gridPageSelector,
+  useGridApiContext,useGridSelector} from "@mui/x-data-grid";
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import ModalConAccount from "../contacts/ModalConAccount";
+
+const ModalStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 600,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+};
+
+const AccountRelatedItems = ({ item }) => {
+
+  const taskDeleteURL = `${process.env.REACT_APP_SERVER_URL}/deleteTask?code=`;
+  const urlgetTaskbyAccountId = `${process.env.REACT_APP_SERVER_URL}/getTaskbyAccountId?searchId=`;
+  const urlgetContactbyAccountId=`${process.env.REACT_APP_SERVER_URL}/getContactsbyAccountId?searchId=`;
+  const contactDeleteURL=`${process.env.REACT_APP_SERVER_URL}/deleteContact?code=`;
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  const [accountRecordId, setAccountRecordId] = useState()
+  const [relatedTask, setRelatedTask] = useState([]);
+  const [relatedContact, setRelatedContact] = useState([]);
+  const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
+ 
+  const [taskModalOpen, setTaskModalOpen] = useState(false);
+  const [taskItemsPerPage, setTaskItemsPerPage] = useState(2);
+  const [taskPerPage, setTaskPerPage] = useState(1);
+  const [taskNoOfPages, setTaskNoOfPages] = useState(0);
+
+  const [contactModalOpen, setContactModalOpen] = useState(false);
+  const [contactItemsPerPage, setContactItemsPerPage] = useState(2);
+  const [contactPerPage, setContactPerPage] = useState(1);
+  const [contactNoOfPages, setContactNoOfPages] = useState(0);
+
+  useEffect(() => {
+    console.log('inside useEffect', location.state.record.item);
+    setAccountRecordId(location.state.record.item._id)
+    getTasksbyAccountId(location.state.record.item._id)
+    getContactsbyAccountId(location.state.record.item._id)
+  }, [])
+
+
+  const getTasksbyAccountId = (accId) => {
+  
+    console.log('inside getTasks record Id', accId);
+
+    axios.post(urlgetTaskbyAccountId + accId)
+      .then((res) => {
+        console.log('response task fetch', res);
+        if (res.data.length > 0) {
+          setRelatedTask(res.data);
+          setTaskNoOfPages(Math.ceil(res.data.length / taskItemsPerPage));
+          setTaskPerPage(1)
+        }
+        else {
+          setRelatedTask([]);
+        }
+      })
+      .catch((error) => {
+        console.log('error task fetch', error)
+      })
+  }
+
+  const getContactsbyAccountId=(accId)=>{
+    console.log('inside getTasks record Id', accId);
+
+    axios.post(urlgetContactbyAccountId + accId)
+      .then((res) => {
+        console.log('response task fetch', res);
+        if (res.data.length > 0) {
+          setRelatedContact(res.data);
+          setContactNoOfPages(Math.ceil(res.data.length / contactItemsPerPage));
+          setContactPerPage(1)
+        }
+        else {
+          setRelatedContact([]);
+        }
+      })
+      .catch((error) => {
+        console.log('error task fetch', error)
+      })
+  }
+
+  const handletaskModalOpen = () => {
+    setTaskModalOpen(true);
+  }
+  const handleTaskModalClose = () => {
+    setTaskModalOpen(false);
+  }
+  const handleContactModalOpen = () => {
+    setContactModalOpen(true);
+  }
+  const handleConatctModalClose = () => {
+    setContactModalOpen(false);
+  }
+
+  const handleContactCardEdit = (e,row) => {
+    console.log('selected record', row);
+    const item = row;
+    navigate("/contactDetailPage", { state: { record: { item } } })
+  };
+
+  const handleContactCardDelete = (e,row) => {
+
+    console.log('req delete rec', row);
+    axios.post(contactDeleteURL+ row._id)
+      .then((res) => {
+        console.log('api delete response', res);
+        getContactsbyAccountId(accountRecordId)
+        setNotify({
+          isOpen: true,
+          message: res.data,
+          type: 'success'
+      })
+      setMenuOpen(false)
+      setTimeout(
+        window.location.reload()
+      )
+      })
+      .catch((error) => {
+        console.log('api delete error', error);
+        setNotify({
+          isOpen: true,
+          message: error.message,
+          type: 'error'
+      })
+      })
+  };
+ 
+  const handleTaskCardEdit = (row) => {
+    console.log('selected record', row);
+    const item = row;
+    navigate("/taskDetailPage", { state: { record: { item } } })
+  };
+
+  const handleTaskCardDelete = (e,row) => {
+e.stopPropagation();
+    console.log('req delete rec', row);
+    axios.post(taskDeleteURL+ row._id)
+      .then((res) => {
+        console.log('api delete response', res);
+        getTasksbyAccountId(accountRecordId)
+        setNotify({
+          isOpen: true,
+          message: res.data,
+          type: 'success'
+      })
+      setMenuOpen(false)
+      setTimeout(
+        window.location.reload()
+      )
+      })
+      .catch((error) => {
+        console.log('api delete error', error);
+        setNotify({
+          isOpen: true,
+          message: error.message,
+          type: 'error'
+      })
+      })
+  };
+
+  const handleChangeTaskPage = (event, value) => {
+    setTaskPerPage(value);
+  };
+  const handleChangeContactPage = (event, value) => {
+    setContactPerPage(value);
+  };
+
+  // menu dropdown strart //menu pass rec
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [menuSelectRec, setMenuSelectRec] = useState()
+  const [menuOpen, setMenuOpen] = useState();
+
+  const handleTaskMoreMenuClick = (item, event) => {
+    setMenuSelectRec(item)
+    setAnchorEl(event.currentTarget);
+    setMenuOpen(true)
+
+  };
+  const handleMoreMenuClose = () => {
+    setAnchorEl(null);
+    setMenuOpen(false)
+  };
+  // menu dropdown end
+
+   // DATA GRID TABLE PAGINATION
+ function CustomPagination() {
+  const apiRef = useGridApiContext();
+  const page = useGridSelector(apiRef, gridPageSelector);
+  const pageCount = useGridSelector(apiRef, gridPageCountSelector);
+
+  return (
+    <Pagination
+      color="primary"
+      count={pageCount}
+      page={page + 1}
+      onChange={(event, value) => apiRef.current.setPage(value - 1)}
+    />
+  );
+}
+
+const columns = [
+  {
+    field: "fullName", headerName: "Name",
+    headerAlign: 'center', align: 'center', flex: 1, 
+  },
+  {
+    field: "email", headerName: "Email",
+    headerAlign: 'center', align: 'center', flex: 1,
+  },
+  {
+    field: "phone", headerName: "Phone",
+    headerAlign: 'center', align: 'center', flex: 1,
+  },
+  {
+    field: 'actions', headerName: 'Actions',
+    headerAlign: 'center', align: 'center', flex: 1, width: 400,
+    renderCell: (params) => {
+      return (
+        <>
+          <IconButton style={{ padding: '20px' }}>
+            <EditIcon onClick={(e) => handleContactCardEdit(e, params.row)} />
+          </IconButton>
+          <IconButton style={{ padding: '20px' }}>
+            <DeleteIcon onClick={(e) => handleContactCardDelete(e, params.row)} />
+          </IconButton>
+        </>
+      );
+    }
+  }
+ 
+];
+
+  return (
+    <>
+     
+     <Notification notify={notify} setNotify={setNotify} />
+
+      <div style={{ textAlign: "center", marginBottom: "10px" }}>
+
+        <h3> Related Items</h3>
+
+      </div>
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1a-content"
+          id="panel1a-header"
+        >
+          <Typography variant="h4">Related Task ({relatedTask.length})</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>
+            <div style={{ textAlign: "end", marginBottom: "5px" }}>
+              <Button variant="contained" color="info" onClick={() => handletaskModalOpen()} >New Task</Button>
+            </div>
+            <Card dense compoent="span" >
+
+              {
+
+                relatedTask.length > 0 ?
+                  relatedTask
+                    .slice((taskPerPage - 1) * taskItemsPerPage, taskPerPage * taskItemsPerPage)
+                    .map((item) => {
+
+                      let   starDateConvert = new Date(item.StartDate).getUTCFullYear()
+                      + '-' +  ('0'+ (new Date(item.StartDate).getUTCMonth() + 1)).slice(-2) 
+                      + '-' + ('0'+ ( new Date(item.StartDate).getUTCDate())).slice(-2)  ||''
+                    
+
+
+                      return (
+                        <div >
+                          <CardContent sx={{ bgcolor: "aliceblue", m: "15px" }}>
+                            <div
+                              key={item._id}
+                            >
+                              <Grid container spacing={2}>
+                                <Grid item xs={10} md={10}>
+                                  <div>Subject : {item.subject} </div>
+                                  <div>Date&Time :{starDateConvert}</div>
+                                  <div>Description : {item.description} </div>
+                                </Grid>
+                                <Grid item xs={2} md={2}>
+
+                                  <IconButton>
+                                    <MoreVertIcon onClick={(event) => handleTaskMoreMenuClick(item, event)} />
+                                    <Menu
+                                      anchorEl={anchorEl}
+                                      open={menuOpen}
+                                      onClose={handleMoreMenuClose}
+                                      anchorOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'left',
+                                      }}
+                                      transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'left',
+                                      }}
+                                    >
+                                      <MenuItem onClick={() => handleTaskCardEdit(menuSelectRec)}>Edit</MenuItem>
+                                      <MenuItem onClick={() => handleTaskCardDelete(menuSelectRec)}>Delete</MenuItem>
+                                    </Menu>
+                                  </IconButton>
+
+                                </Grid>
+                              </Grid>
+                            </div>
+                          </CardContent>
+                        </div>
+
+                      );
+                    })
+                  : ""
+              }
+
+            </Card>
+            {
+              relatedTask.length > 0 &&
+              <Box display="flex" alignItems="center" justifyContent="center">
+                <Pagination
+                  count={taskNoOfPages}
+                  page={taskPerPage}
+                  onChange={handleChangeTaskPage}
+                  defaultPage={1}
+                  color="primary"
+                  size="medium"
+                  showFirstButton
+                  showLastButton
+                />
+              </Box>
+            }
+
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+     
+{/* Contact table */}
+<Accordion >
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel2a-content"
+          id="panel2a-header"
+        >
+          <Typography variant="h4">Conatct Table({relatedContact.length}) </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+       
+        <div style={{ textAlign: "end", marginBottom: "5px" }}>
+              <Button variant="contained" color="info" onClick={() => handleContactModalOpen()} >Add Contact</Button>
+            </div>
+        <Box sx={{ height: 315, width: '100%' }}>
+
+          <DataGrid
+                      rows={relatedContact}
+                      columns={columns}
+                      getRowId={(row) => row._id}
+                      pageSize={4}
+                      rowsPerPageOptions={[4]}
+                      //  onCellClick={handleOnCellClick}
+                      components={{ Pagination:CustomPagination}}
+                     
+                      disableColumnMenu
+                      autoHeight={true}
+                    />
+ 
+    </Box>
+
+        </AccordionDetails>
+      </Accordion>
+
+      <Modal
+        open={taskModalOpen}
+        onClose={handleTaskModalClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={ModalStyle}>
+          <ModalAccTask handleModal={handleTaskModalClose} />
+        </Box>
+      </Modal>
+
+  {/* Contact Modal*/}
+
+  <Modal
+        open={contactModalOpen}
+        onClose={handleConatctModalClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={ModalStyle}>
+          <ModalConAccount  handleModal={handleConatctModalClose} />
+        </Box>
+      </Modal>
+
+    </>
+  )
+
+}
+export default AccountRelatedItems
+
