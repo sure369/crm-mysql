@@ -53,9 +53,9 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
         relatedTo: '',
         assignedTo: '',
         StartDate: '',
-        StartTime: '',
+        // StartTime: '',
         EndDate: '',
-        EndTime: '',
+        // EndTime: '',
         description: '',
         attachments: null,
         object: '',
@@ -73,8 +73,8 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
         subject: singleTask?.subject ?? "",
         relatedto: singleTask?.relatedto ?? "",
         assignedTo: singleTask?.assignedTo ?? "",
-        StartTime: singleTask?.StartTime ?? "",       
-        EndTime: singleTask?.EndTime ?? "",
+        // StartTime: singleTask?.StartTime ?? "",       
+        // EndTime: singleTask?.EndTime ?? "",
         description: singleTask?.description ?? "",
         attachments: singleTask?.attachments ?? "",
         object: singleTask?.object ?? "",
@@ -221,9 +221,9 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
 
         console.log('inside call event',initialValues.object)
 
-        let url1 = e === 'Account' ? fetchAccountUrl : e === 'Lead' ? fetchLeadUrl : e === 'Opportunity' ? fetchOpportunityUrl : null
-        setObjectUrl(url1)
-        FetchObjectsbyName('', url1);
+        let objurl1 = e === 'Account' ? fetchAccountUrl : e === 'Lead' ? fetchLeadUrl : e === 'Opportunity' ? fetchOpportunityUrl : null
+        setObjectUrl(objurl1)
+        FetchObjectsbyName('', objurl1);
         if (objectUrl == null) {
             console.log('objectUrl', objectUrl);
             setRelatedRecNames([])
@@ -305,8 +305,9 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
                                             testprop="testing" 
                                             onChange = {(e) => {
                                                 console.log('customSelect value', e.target.value)
-                                                callEvent(e.target.value)
+                                                
                                                 setFieldValue('object', e.target.value)
+                                                callEvent(e.target.value)
                                             }}
                                         >
                                                                                         
