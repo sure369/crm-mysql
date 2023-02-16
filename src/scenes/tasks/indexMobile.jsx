@@ -162,15 +162,15 @@ const TaskMobile = () => {
                 + '-' + ('0'+ ( new Date(item.StartDate).getUTCDate())).slice(-2)  ||''
                 
                 let related ;
-                if(item.object==='Account' && item.Accountdetails.length>0){
-                    related = item.Accountdetails[0].accountName
-                }
-                else  if(item.object==='Lead' && item.Leaddetails.length>0){
-                    related = item.Leaddetails[0].fullName
-                }
-                else  if(item.object==='Opportunity' && item.Opportunitydetails.length>0){
-                    related = item.Opportunitydetails[0].opportunityName
-                }                
+                // if(item.object==='Account' && item.Accountdetails.length>0){
+                //     related = item.Accountdetails[0].accountName
+                // }
+                // else  if(item.object==='Lead' && item.Leaddetails.length>0){
+                //     related = item.Leaddetails[0].fullName
+                // }
+                // else  if(item.object==='Opportunity' && item.Opportunitydetails.length>0){
+                //     related = item.Opportunitydetails[0].opportunityName
+                // }                
 
                 return (
                   <div>
