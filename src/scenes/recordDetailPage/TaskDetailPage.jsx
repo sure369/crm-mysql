@@ -13,16 +13,21 @@ import { LocalizationProvider   } from '@mui/x-date-pickers/LocalizationProvider
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 
-const UpsertUrl = `${process.env.REACT_APP_SERVER_URL}/UpsertTask`;
+const UpdateUrl = `${process.env.REACT_APP_SERVER_URL}/UpdateTask`;
+const InsertUrl = `${process.env.REACT_APP_SERVER_URL}/InsertTask`;
+
+
+
 const fetchAccountUrl = `${process.env.REACT_APP_SERVER_URL}/accountsname`;
 const fetchLeadUrl = `${process.env.REACT_APP_SERVER_URL}/LeadsbyName`;
 const fetchOpportunityUrl = `${process.env.REACT_APP_SERVER_URL}/opportunitiesbyName`;
 
 const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
 
+    const [url,setUrl]=useState();
     const [singleTask, setSingleTask] = useState();
     const [showNew, setshowNew] = useState()
-    const [url, setUrl] = useState();
+    const [objectUrl, setObjectUrl] = useState();
     const navigate = useNavigate();
     const fileRef = useRef();
     const location = useLocation();
@@ -40,7 +45,7 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
         if(location.state.record.item){
             callEvent(location.state.record.item.object)
         }
-        
+        (!location.state.record.item ? setUrl(InsertUrl) : setUrl(UpdateUrl))
     }, [])
 
     const initialValues = {
@@ -188,7 +193,7 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
         }
         console.log('after change form submission value', values);
 
-            await axios.post(UpsertUrl, values)
+            await axios.post(url, values)
                 .then((res) => {
                     console.log('task form Submission  response', res);
                     setNotify({
@@ -217,20 +222,20 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
         console.log('inside call event',initialValues.object)
 
         let url1 = e === 'Account' ? fetchAccountUrl : e === 'Lead' ? fetchLeadUrl : e === 'Opportunity' ? fetchOpportunityUrl : null
-        setUrl(url1)
+        setObjectUrl(url1)
         FetchObjectsbyName('', url1);
-        if (url == null) {
-            console.log('url', url);
+        if (objectUrl == null) {
+            console.log('objectUrl', objectUrl);
             setRelatedRecNames([])
         }
     }
 
-    const FetchObjectsbyName = (newInputValue, url) => {
+    const FetchObjectsbyName = (newInputValue, objectUrl) => {
 
-        console.log('passed url', url)
+        console.log('passed url', objectUrl)
         console.log('new Input  value', newInputValue)
 
-        axios.post(`${url}?searchKey=${newInputValue}`)
+        axios.post(`${objectUrl}?searchKey=${newInputValue}`)
             .then((res) => {
                 console.log('res Fetch Objects byName', res.data)
                 if (typeof (res.data) === "object") {
