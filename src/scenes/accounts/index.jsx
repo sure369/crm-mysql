@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, useTheme, IconButton, Pagination,Tooltip } from "@mui/material";
+import {
+  Box, Button, useTheme, IconButton,
+  Pagination, Tooltip, Grid,Modal
+} from "@mui/material";
 import {
   DataGrid, GridToolbar,
   gridPageCountSelector, gridPageSelector,
@@ -13,6 +16,19 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Notification from '../toast/Notification';
 import ConfirmDialog from '../toast/ConfirmDialog';
+import ModalFileUpload from '../dataLoder/ModalFileUpload';
+
+const ModalStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 600,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+};
+
 
 const Accounts = () => {
 
@@ -32,6 +48,9 @@ const Accounts = () => {
   const [showDelete, setShowDelete] = useState(false)
   const [selectedRecordIds, setSelectedRecordIds] = useState()
   const [selectedRecordDatas, setSelectedRecordDatas] = useState()
+
+  
+  const[importModalOpen,setImportModalOpen]= useState(false)
 
   useEffect(() => {
     fetchRecords();
@@ -119,6 +138,15 @@ const Accounts = () => {
     })
 
   };
+
+  const handleImportModalOpen = () => {
+
+    setImportModalOpen(true);
+  }
+  const handleImportModalClose = () => {
+
+    setImportModalOpen(false);
+  }
 
   function CustomPagination() {
     const apiRef = useGridApiContext();
@@ -244,18 +272,33 @@ const Accounts = () => {
             },
           }}
         >
-           <div className='btn-test'>
-          {
-              showDelete ? 
-              <>
-              <Tooltip title="Delete Selected">
-                  <IconButton> <DeleteIcon sx={{ color: '#FF3333' }} onClick={(e) => onHandleDelete(e,selectedRecordIds)} /> </IconButton>
-              </Tooltip>
-              </>
-              :
-              <Button variant="contained" color="info" onClick={handleAddRecord}>
-                New
-              </Button>
+          <div className='btn-test'>
+            {
+              showDelete ?
+                <>
+                  <Tooltip title="Delete Selected">
+                    <IconButton> <DeleteIcon sx={{ color: '#FF3333' }} onClick={(e) => onHandleDelete(e, selectedRecordIds)} /> </IconButton>
+                  </Tooltip>
+                </>
+                :
+                <Box display="flex" justifyContent="space-between">
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      <Button
+                        variant="contained" color="secondary" onClick={handleImportModalOpen}
+                        sx={{ color: 'white' }}
+                      >
+                        Import
+                      </Button>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Button variant="contained" color="info" onClick={handleAddRecord}>
+                        New
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </Box>
+
             }
           </div>
 
@@ -274,7 +317,7 @@ const Accounts = () => {
               params.indexRelativeToCurrentPage % 2 === 0 ? 'C-MuiDataGrid-row-even' : 'C-MuiDataGrid-row-odd'
             }
             checkboxSelection
-            disableSelectionOnClick 
+            disableSelectionOnClick
             onSelectionModelChange={(ids) => {
               var size = Object.keys(ids).length;
               size > 0 ? setShowDelete(true) : setShowDelete(false)
@@ -289,6 +332,19 @@ const Accounts = () => {
           />
         </Box>
       </Box>
+
+      
+      <Modal
+        open={importModalOpen}
+        onClose={handleImportModalClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={ModalStyle}>
+          <ModalFileUpload handleModal={handleImportModalClose} />
+        </Box>
+      </Modal>
+
     </>
   )
 }

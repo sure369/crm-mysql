@@ -7,12 +7,11 @@ import {
 } from "@mui/material";
 import axios from 'axios'
 import "../formik/FormStyles.css"
-import PreviewDataload from "./PreviewDataload";
+import PreviewUpsert from "./PreviewUpsert";
 
-const UpsertOppUrl=`${process.env.REACT_APP_SERVER_URL}/dataloaderOpportunity`;
 const generatePreview =`${process.env.REACT_APP_SERVER_URL}/generatePreview`;
 
-const ModalOppDataload = ({ item, handleModal }) => {
+const ModalFileUpload = ({ item, handleModal }) => {
 
     const[uplodedData,setUplodedData]=useState([])
     const[uplodedFile,setUploadedFile]=useState()
@@ -70,18 +69,6 @@ const ModalOppDataload = ({ item, handleModal }) => {
      const formSubmission = async (values, { resetForm }) => {
         console.log('inside form Submission', values);
       
-        let formData = new FormData();
-        formData.append('object',values.object);
-
-        console.log('modified formData',formData);
-        // await axios.post(UpsertOppUrl, formData)
-    
-        //     .then((res) => {
-        //         console.log('task form Submission  response', res);             
-        //     })
-        //     .catch((error) => {
-        //         console.log('task form Submission  error', error);
-        //     })
       }
       
     return (
@@ -93,7 +80,7 @@ const ModalOppDataload = ({ item, handleModal }) => {
         {uplodedData.length>0 ? 
         
         <>
-        <PreviewDataload  data={uplodedData} file={uplodedFile}/>
+        <PreviewUpsert  data={uplodedData} file={uplodedFile} ModalClose={handleModal}/>
         </> :
      
            
@@ -137,22 +124,8 @@ const ModalOppDataload = ({ item, handleModal }) => {
                                          <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="file" />
                                             </div>
-                                     
                                     </Grid>
-                                    
-                                 
                                 </Grid>
-                                {/* <div className='action-buttons'>
-                                    <DialogActions sx={{ justifyContent: "space-between" }}>
-
-                                   
-                                                <Button type='success' variant="contained" color="secondary" disabled={isSubmitting}>Save</Button>
-                                                 
-                                                <Button type="reset" variant="contained" onClick={(e) => handleModal(false)}>Cancel</Button>                         
-                                        
-
-                                    </DialogActions>
-                                </div> */}
                             </Form>
                         </>
                     )
@@ -169,4 +142,4 @@ const ModalOppDataload = ({ item, handleModal }) => {
      
     
 }
-export default ModalOppDataload
+export default ModalFileUpload

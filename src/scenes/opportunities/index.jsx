@@ -15,7 +15,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Notification from '../toast/Notification';
 import ConfirmDialog from '../toast/ConfirmDialog';
-import ModalOppDataload from '../dataLoder/ModalOppDataload';
+import ModalFileUpload from '../dataLoder/ModalFileUpload';
 import { OppIndexFilterPicklist } from '../../data/pickLists';
 
 const ModalStyle = {
@@ -447,7 +447,7 @@ const Opportunities = () => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={ModalStyle}>
-          <ModalOppDataload handleModal={handleImportModalClose} />
+          <ModalFileUpload handleModal={handleImportModalClose} />
         </Box>
       </Modal>
 

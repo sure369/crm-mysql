@@ -305,7 +305,6 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
                                             testprop="testing" 
                                             onChange = {(e) => {
                                                 console.log('customSelect value', e.target.value)
-                                                
                                                 setFieldValue('object', e.target.value)
                                                 callEvent(e.target.value)
                                             }}
