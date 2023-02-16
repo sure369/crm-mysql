@@ -7,6 +7,7 @@ import axios from 'axios'
 import "../formik/FormStyles.css"
 import Notification from '../toast/Notification';
 import CustomizedRichTextField from "../formik/CustomizedRichTextField";
+import { convert } from "html-to-text";
 
 const urlSendEmailbulk = `${process.env.REACT_APP_SERVER_URL}/bulkemail`
 
@@ -19,6 +20,11 @@ const EmailModalPage = ({ data, handleModal, bulkMail }) => {
     // notification
     const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
 
+    const HTMLbodyOptions = {
+        wordwrap: 130,
+        // ...
+      };
+      
     useEffect(() => {
         console.log('data', data);
         console.log('bulkMail', bulkMail);
@@ -28,7 +34,7 @@ const EmailModalPage = ({ data, handleModal, bulkMail }) => {
 
     const initialValues = {
         subject: '',
-        htmlBody: '',
+        content: '',
         recordsData: '',
         attachments: ''
     }
@@ -47,10 +53,14 @@ const EmailModalPage = ({ data, handleModal, bulkMail }) => {
         console.log('values',values);
         console.log('element',element)
 
-        var p= values.htmlBody
-        var parser = new DOMParser();
-var htmlDoc = parser.parseFromString(p, 'text/html');
-console.log('html body',htmlDoc.body.getElementsByTagName("P")[0].innerText);
+
+        const convertText = convert(values.htmlBody, HTMLbodyOptions);
+        console.log('convertText',convertText)
+
+//         var p= values.htmlBody
+//         var parser = new DOMParser();
+// var htmlDoc = parser.parseFromString(p, 'text/html');
+// console.log('html body',htmlDoc.body.getElementsByTagName("P")[0].innerText);
 
 
 
@@ -58,8 +68,8 @@ console.log('html body',htmlDoc.body.getElementsByTagName("P")[0].innerText);
 
         let formData = new FormData();
         formData.append('subject', values.subject);
-        formData.append('htmlBody', mergeBody);
-        formData.append('emailId',element.email)
+        formData.append('content', mergeBody);
+        formData.append('toEmailId',element.email)
         // formData.append('recordsData', JSON.stringify(element));
         formData.append('file', values.attachments);
 
