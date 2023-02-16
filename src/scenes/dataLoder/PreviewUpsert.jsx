@@ -20,13 +20,13 @@ function PreviewUpsert({  data ,file,ModalClose}) {
     const headers = Object.keys(data[0]);
 
     useEffect(()=>{
-      if(window.location.href.includes('opportunities')){
+      if(window.location.href.includes('deals')){
         setUpsertUrl(UpsertOppUrl)
       }
       else if(window.location.href.includes('accounts')){
         setUpsertUrl(UpsertAccountUrl)
       }
-      else if(window.location.href.includes('leads')){
+      else if(window.location.href.includes('enquiries')){
         setUpsertUrl(UpsertLeadUrl)
       }
     })
