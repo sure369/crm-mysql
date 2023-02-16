@@ -170,8 +170,7 @@ const TaskMobile = () => {
                 }
                 else  if(item.object==='Opportunity' && item.Opportunitydetails.length>0){
                     related = item.Opportunitydetails[0].opportunityName
-                }
-                
+                }                
 
                 return (
                   <div>
