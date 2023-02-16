@@ -100,6 +100,7 @@ const Opportunities = () => {
 //     //  m = date.getMonth();
 //     // var firstDay = new Date(y, m, 1);
 //     // var lastDay = new Date(y, m + 1, 0);  
+  
 //   }
 
   const handleAddRecord = () => {
@@ -216,28 +217,28 @@ const Opportunities = () => {
       field: "opportunityName", headerName: "Opportunity Name",
       headerAlign: 'center', align: 'center', flex: 1,
     },
-    // {
-    //   field: "propertyName", headerName: "Inventory Name",
-    //   headerAlign: 'center', align: 'center', flex: 1,
-    //   renderCell: (params) => {
+    {
+      field: "propertyName", headerName: "Inventory Name",
+      headerAlign: 'center', align: 'center', flex: 1,
+      renderCell: (params) => {
 
-    //     if (params.row.Inventorydetails.length > 0) {
+        if (params.row.Inventorydetails.length > 0) {
 
-    //       return <div className="rowitem">
-    //         {params.row.Inventorydetails[0].propertyName}
-    //       </div>;
-    //     }
-    //     else {
-    //       return <div className="rowitem">
-    //         {null}
-    //       </div>
-    //     }
+          return <div className="rowitem">
+            {params.row.Inventorydetails[0].propertyName}
+          </div>;
+        }
+        else {
+          return <div className="rowitem">
+            {null}
+          </div>
+        }
 
-    //     // return <div className="rowitem">
-    //     //   {params.row.Propertydetails[0].propertyName}
-    //     // </div>;
-    //   },
-    // },
+        // return <div className="rowitem">
+        //   {params.row.Propertydetails[0].propertyName}
+        // </div>;
+      },
+    },
     {
       field: "type", headerName: "Type",
       headerAlign: 'center', align: 'center', flex: 1,
@@ -299,10 +300,10 @@ const Opportunities = () => {
         fontWeight="bold"
         sx={{ m: "0 0 5px 0" }}
       >
-        Deal
+        Opportunities
       </Typography>
       <Typography variant="h5" color={colors.greenAccent[400]} >
-       List Of {filterOpportunity} Deals
+       List Of {filterOpportunity} Opportunities
       </Typography>
 
         <Box
