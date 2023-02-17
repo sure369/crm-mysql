@@ -99,12 +99,11 @@ const LeadRelatedItems = ({ item }) => {
   }
 
   const handleTaskModalOpen = () => {
-
     setTaskModalOpen(true);
   }
   const handleTaskModalClose = () => {
-
     setTaskModalOpen(false);
+    getTasksbyLeadId(leadRecordId)
   }
 
   const handleOpportunityModalOpen =() =>{
@@ -112,11 +111,10 @@ const LeadRelatedItems = ({ item }) => {
   }
   const handleOpportunityModalClose = () => {
     setOpportunityModalOpen(false);
+    getOpportunitybyLeadId(leadRecordId)
   }
 
   const handleTaskCardEdit = (row) => {
-
-    console.log('handleTaskCardEdit')
     console.log('selected edit record', row);
     const item = row;
     navigate("/taskDetailPage", { state: { record: { item } } })
@@ -130,7 +128,7 @@ const LeadRelatedItems = ({ item }) => {
       .then((res) => {
         console.log('api delete response', res);
         console.log('inside delete response leadRecordId', leadRecordId)
-        getTasksbyLeadId(leadRecordId)
+      
         setNotify({
           isOpen: true,
           message: res.data,
@@ -138,9 +136,9 @@ const LeadRelatedItems = ({ item }) => {
         })
         setMenuOpen(false)
         setTimeout(
-          window.location.reload()
-        )
-      })
+          getTasksbyLeadId(leadRecordId)
+        )}
+      )
       .catch((error) => {
         console.log('api delete error', error);
         setNotify({
@@ -148,7 +146,6 @@ const LeadRelatedItems = ({ item }) => {
           message: error.message,
           type: 'error'
         })
-
       })
   };
 
@@ -167,13 +164,16 @@ const LeadRelatedItems = ({ item }) => {
     .then((res) => {
       console.log('api delete response', res);
       console.log('inside delete response leadRecordId', leadRecordId)
-      getOpportunitybyLeadId(leadRecordId)
+     
       setNotify({
         isOpen: true,
         message: res.data,
         type: 'success'
       })
       setOppMenuOpen(false)
+      setTimeout(()=>{
+        getOpportunitybyLeadId(leadRecordId)
+      })
     })
     .catch((error) => {
       console.log('api delete error', error);

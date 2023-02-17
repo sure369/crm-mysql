@@ -2,18 +2,19 @@ import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { Grid, Button, Forminput, DialogActions, TextField, Autocomplete } from "@mui/material";
+import { Grid, Button, Forminput, DialogActions, MenuItem } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom"
 import axios from 'axios'
 import "../formik/FormStyles.css"
 import Notification from '../toast/Notification';
 import {IndustryPickList, AccRatingPickList,AccTypePickList,AccCitiesPickList, AccCountryPickList} from '../../data/pickLists'
+import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 
 
 const url = `${process.env.REACT_APP_SERVER_URL}/UpsertAccount`;
 
 
-const ModalInventoryAccount = ({ item }) => {
+const ModalInventoryAccount = ({ item,handleModal }) => {
 
     const [inventoryParentRecord, setInventoryParentRecord] = useState();
     const location = useLocation();
@@ -82,7 +83,6 @@ const ModalInventoryAccount = ({ item }) => {
         let dateSeconds = new Date().getTime();
         let createDateSec = new Date(values.createdDate).getTime()
 
-    
             values.modifiedDate = dateSeconds;
             values.createdDate = dateSeconds;
             values.InventoryId=inventoryParentRecord._id;
@@ -103,8 +103,8 @@ const ModalInventoryAccount = ({ item }) => {
       
               })
             setTimeout(() => {
-                //  navigate(-1);
-            }, 2000)
+                handleModal();
+            }, 1000)
         })
         .catch((error) => {
             console.log('upsert record  error', error);
@@ -113,14 +113,12 @@ const ModalInventoryAccount = ({ item }) => {
                 message:error.message,
                 type:'error'
               })
+              setTimeout(() => {
+                handleModal();
+            }, 1000)
         })
-
-        
     }
 
-    const handleFormClose =()=>{
-        navigate(-1)
-    }
     return (
 
         <Grid item xs={12} style={{ margin: "20px" }}>
@@ -153,7 +151,7 @@ const ModalInventoryAccount = ({ item }) => {
                                 <Form>
                                     <Grid container spacing={2}>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="accountName">Name  <span className="text-danger">*</span></label>
+                                            <label htmlFor="accountName">Account Name  <span className="text-danger">*</span></label>
                                             <Field name="accountName" type="text" class="form-input" />
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="accountName" />
@@ -179,62 +177,37 @@ const ModalInventoryAccount = ({ item }) => {
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="rating"> Rating<span className="text-danger">*</span></label>
-                                            {/* <Select
-                                                name="rating"
-                                                modalCloseButton={<ModalCloseButton />}
-                                                options={AccRatingPickList}
-                                                caretIcon={<CaretIcon />}
-                                                onChange={newValue => {
-                                                setFieldValue('rating',newValue.value)
-                                                }}
-                                            /> */}
-                                            <Field name="rating" as="select" class="form-input">
-                                             {/* <option value=''><em>None</em></option> */}
-                                               {
-                                                AccRatingPickList.map((i)=>{
-                                                    return <option value={i.value}>{i.text}</option>
-                                                })
-                                               } 
-                                            </Field>
+                                            <Field name="rating" component={CustomizedSelectForFormik}  className="form-customSelect">	
+                                               {	
+                                                AccRatingPickList.map((i)=>{	
+                                                    return <MenuItem value={i.value}>{i.text}</MenuItem>	
+                                                })	
+                                               }	
+                                            </Field>	
                                             <div style={{ color: 'red' }} >
                                                 <ErrorMessage name="rating" />
                                             </div>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="type">Type</label>
-                                            <Field name="type" as="select" class="form-input">
-                                            <option value=''><em>None</em></option>
+                                            <Field name="type" component={CustomizedSelectForFormik}>
                                               {
                                                 AccTypePickList.map((i)=>{
-                                                    return <option value={i.value}>{i.text}</option>
+                                                    return <MenuItem value={i.value}>{i.text}</MenuItem>	
                                                 })
-                                              }
+                                              }                                               
                                             </Field>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="industry">Industry</label>
-                                            {/* <Select
-                                                name="industry"
-                                                modalCloseButton={<ModalCloseButton />}
-                                                options={IndustryPickList}
-                                                caretIcon={<CaretIcon />}
-                                                onChange={newValue => {
-                                                setFieldValue('industry',newValue.value)
-                                                }}
-                                            /> */}
-                                            <Field name="industry" as="select" class="form-input">
-                                            <option value=''><em>None</em></option>
-                                              {
-                                                IndustryPickList.map((i)=>{
-                                                    return <option value={i.value}>{i.label}</option>
-                                                })
-                                              } 
-                                            </Field>
-                                        </Grid>
-
-                                        <Grid item xs={6} md={6}>
-                                            <label htmlFor="billingAddress">Billing Address </label>
-                                            <Field name="billingAddress" type="text" class="form-input" />
+                                            <Field name="industry"  component={CustomizedSelectForFormik}>
+                                          
+                                          {
+                                            IndustryPickList.map((i)=>{
+                                                return <MenuItem value={i.value}>{i.text}</MenuItem>	
+                                            })
+                                          }  
+                                        </Field>
                                         </Grid>
 
                                         <Grid item xs={6} md={6}>
@@ -243,23 +216,23 @@ const ModalInventoryAccount = ({ item }) => {
                                                 className="form-input"
                                                 id="billingCountry"
                                                 name="billingCountry"
-                                                as="select"
+                                                component={CustomizedSelectForFormik}
                                                 value={values.billingCountry}
                                                 onChange={async (event) => {
                                                     const value = event.target.value;
                                                     const _billingCities = await getCities(value);
-                                                    console.log(_billingCities);
+                                                    console.log('billingCities',_billingCities);
                                                     setFieldValue("billingCountry", value);
                                                     setFieldValue("billingCity", "");
                                                     setFieldValue("billingCities", _billingCities);
                                                 }}
                                             >
-                                            <option value=''><em>None</em></option>
+                                               
                                               {
                                                 AccCountryPickList.map((i)=>{
-                                                    return <option value={i.value}>{i.label}</option>
+                                                    return <MenuItem value={i.value}>{i.text}</MenuItem>
                                                 })
-                                              } 
+                                              }  
                                             </Field>
                                         </Grid>
                                         
@@ -270,19 +243,22 @@ const ModalInventoryAccount = ({ item }) => {
                                                 value={values.billingCity}
                                                 id="billingCity"
                                                 name="billingCity"
-                                                as="select"
-                                                onChange={handleChange}
+                                                component={CustomizedSelectForFormik}
+                                                // onChange={handleChange}
                                             >
-                                                <option value="None">--Select billingCity--</option>
+                                               
                                                 {values.billingCities &&
-                                                    values.billingCities.map((r) => (
-                                                        <option key={r.value} value={r.vlue}>
-                                                            {r.label}
-                                                        </option>
-                                                    ))}
+                                                    values.billingCities.map((r) => (                                                      
+                                                         <MenuItem key={r.value} value={r.value}>{r.text}</MenuItem>
+                                                    )
+                                                        
+                                                    )}
                                             </Field>
                                         </Grid>
-
+                                        <Grid item xs={6} md={6}>
+                                            <label htmlFor="billingAddress">Billing Address </label>
+                                            <Field name="billingAddress" type="text" class="form-input" />
+                                        </Grid>
                                         
                                     </Grid>
 
@@ -291,7 +267,7 @@ const ModalInventoryAccount = ({ item }) => {
 
                                             <Button type='success' variant="contained" color="secondary" disabled={isSubmitting}>Save</Button>
 
-                                            <Button type="reset" variant="contained" onClick={handleFormClose}  >Cancel</Button>
+                                            <Button type="reset" variant="contained" onClick={handleModal}  >Cancel</Button>
                                         </DialogActions>
                                     </div>
                                 </Form>

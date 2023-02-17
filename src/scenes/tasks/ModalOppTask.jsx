@@ -4,12 +4,17 @@ import * as Yup from "yup";
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
     Grid, Button, FormControl, Stack, Alert, DialogActions,
-    Autocomplete, TextField
+    Autocomplete, TextField,MenuItem
 } from "@mui/material";
 import axios from 'axios'
 import "../formik/FormStyles.css"
 import Notification from '../toast/Notification';
 import { TaskSubjectPicklist } from "../../data/pickLists";
+import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
+import { LocalizationProvider   } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+
 
 const UpsertUrl = `${process.env.REACT_APP_SERVER_URL}/UpsertTask`;
 
@@ -30,13 +35,10 @@ const ModalOppTask = ({ item, handleModal }) => {
 
     const initialValues = {
         subject: '',
-        nameofContact: '',
         realatedTo: '',
         assignedTo: '',
         StartDate: '',
-        StartTime: '',
         EndDate: '',
-        EndTime: '',
         description: '',
         attachments: null,
         object: '',
@@ -96,7 +98,7 @@ const ModalOppTask = ({ item, handleModal }) => {
                     type:'success'
                   })
                 setTimeout(() => {
-                      window.location.reload();
+                    handleModal()
                 }, 1000)
             })
             .catch((error) => {
@@ -137,46 +139,55 @@ const ModalOppTask = ({ item, handleModal }) => {
                              <Notification notify={notify} setNotify={setNotify}/> 
                             <Form>
                                 <Grid container spacing={2}>
-                                    <Grid item xs={6} md={4}>
+                                    <Grid item xs={6} md={6}>
                                         <label htmlFor="subject">Subject  <span className="text-danger">*</span></label>
-                                        <Field name="subject" as="select" class="form-input">
-                                        <option value=''><em>None</em></option>
-                                              {
-                                                TaskSubjectPicklist.map((i)=>{
-                                                    return <option value={i.value}>{i.label}</option>
-                                                })
-                                              } 
-                                        </Field>
-
+                                        <Field name="subject" component={CustomizedSelectForFormik}  className="form-customSelect">
+                                                    {
+                                                        TaskSubjectPicklist.map((i)=>{
+                                                            return <MenuItem value={i.value}>{i.text}</MenuItem>	
+                                                        })
+                                                    }
+                                                </Field>
                                         <div style={{ color: 'red' }}>
                                             <ErrorMessage name="subject" />
                                         </div>
                                     </Grid>
-                                    <Grid item xs={6} md={4}>
+                                    <Grid item xs={6} md={6}>
                                         <label htmlFor="assignedTo">AssignedTo  </label>
                                         <Field name="assignedTo" type="text" class="form-input" />
+                                    </Grid> <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <Grid item xs={6} md={6}>
+                                    <label htmlFor="StartDate">Start Date </label> <br/>
+                                    <DateTimePicker 
+                                     name="StartDate"
+                                        value={values.StartDate}
+                                        onChange={(e)=>{
+                                            setFieldValue('StartDate',e)
+                                        }}
+                                         renderInput={(params) => <TextField  {...params} className='form-input' error={false} />}
+                                     />
+
                                     </Grid>
-                                    <Grid item xs={6} md={4}>
-                                        <label htmlFor="StartDate">StartDate   </label>
-                                        <Field name="StartDate" type="date" class="form-input" />
+                                  
+                                    <Grid item xs={6} md={6}>
+                                        <label htmlFor="EndDate">EndDate   </label> <br/>
+                                        
+                                        <DateTimePicker
+                                                renderInput={(params) => <TextField {...params} className='form-input' error={false}/>}
+                                                value={values.EndDate}
+                                                onChange={(e) => {                                                  
+                                                    setFieldValue('EndDate',e)                                            
+                                                }}
+                                                />
+
                                     </Grid>
-                                    <Grid item xs={6} md={4}>
-                                        <label htmlFor="StartTime">StartTime   </label>
-                                        <Field name="StartTime" type="time" class="form-input" />
-                                    </Grid>
-                                    <Grid item xs={6} md={4}>
-                                        <label htmlFor="EndDate">EndDate   </label>
-                                        <Field name="EndDate" type="date" class="form-input" />
-                                    </Grid>
-                                    <Grid item xs={6} md={4}>
-                                        <label htmlFor="EndTime">EndTime   </label>
-                                        <Field name="EndTime" type="time" class="form-input" />
-                                    </Grid>
+                                  
+                                    </LocalizationProvider>
                                     <Grid item xs={12} md={12}>
 
                                         <label htmlFor="attachments">Attachments</label>
 
-                                        <Field name="attacgments" type="file"
+                                        <Field name="attachments" type="file"
                                             className="form-input"
                                             onChange={(event) => {
                                                 setFieldValue("attachments", (event.currentTarget.files[0]));

@@ -55,7 +55,7 @@ const AccountRelatedItems = ({ item }) => {
   const [contactNoOfPages, setContactNoOfPages] = useState(0);
 
   useEffect(() => {
-    console.log('inside useEffect', location.state.record.item);
+    console.log('inside  acc related useEffect', location.state.record.item);
     setAccountRecordId(location.state.record.item._id)
     getTasksbyAccountId(location.state.record.item._id)
     getContactsbyAccountId(location.state.record.item._id)
@@ -68,7 +68,7 @@ const AccountRelatedItems = ({ item }) => {
 
     axios.post(urlgetTaskbyAccountId + accId)
       .then((res) => {
-        console.log('response task fetch', res);
+        console.log('response getTasks fetch', res);
         if (res.data.length > 0) {
           setRelatedTask(res.data);
           setTaskNoOfPages(Math.ceil(res.data.length / taskItemsPerPage));
@@ -84,11 +84,11 @@ const AccountRelatedItems = ({ item }) => {
   }
 
   const getContactsbyAccountId=(accId)=>{
-    console.log('inside getTasks record Id', accId);
+    console.log('inside getContacts record Id', accId);
 
     axios.post(urlgetContactbyAccountId + accId)
       .then((res) => {
-        console.log('response task fetch', res);
+        console.log('response getContacts fetch', res);
         if (res.data.length > 0) {
           setRelatedContact(res.data);
           setContactNoOfPages(Math.ceil(res.data.length / contactItemsPerPage));
@@ -108,12 +108,14 @@ const AccountRelatedItems = ({ item }) => {
   }
   const handleTaskModalClose = () => {
     setTaskModalOpen(false);
+    getTasksbyAccountId(accountRecordId)
   }
   const handleContactModalOpen = () => {
     setContactModalOpen(true);
   }
   const handleConatctModalClose = () => {
     setContactModalOpen(false);
+    getContactsbyAccountId(accountRecordId)
   }
 
   const handleContactCardEdit = (e,row) => {
@@ -136,7 +138,7 @@ const AccountRelatedItems = ({ item }) => {
       })
       setMenuOpen(false)
       setTimeout(
-        window.location.reload()
+        getContactsbyAccountId(accountRecordId)
       )
       })
       .catch((error) => {
@@ -155,13 +157,13 @@ const AccountRelatedItems = ({ item }) => {
     navigate("/taskDetailPage", { state: { record: { item } } })
   };
 
-  const handleTaskCardDelete = (e,row) => {
-e.stopPropagation();
+  const handleTaskCardDelete = (row) => {
+
     console.log('req delete rec', row);
     axios.post(taskDeleteURL+ row._id)
       .then((res) => {
         console.log('api delete response', res);
-        getTasksbyAccountId(accountRecordId)
+       
         setNotify({
           isOpen: true,
           message: res.data,
@@ -169,7 +171,7 @@ e.stopPropagation();
       })
       setMenuOpen(false)
       setTimeout(
-        window.location.reload()
+        getTasksbyAccountId(accountRecordId)
       )
       })
       .catch((error) => {
@@ -179,14 +181,14 @@ e.stopPropagation();
           message: error.message,
           type: 'error'
       })
+      setTimeout(
+        getTasksbyAccountId(accountRecordId)
+      )
       })
   };
 
   const handleChangeTaskPage = (event, value) => {
     setTaskPerPage(value);
-  };
-  const handleChangeContactPage = (event, value) => {
-    setContactPerPage(value);
   };
 
   // menu dropdown strart //menu pass rec
@@ -285,11 +287,13 @@ const columns = [
                   relatedTask
                     .slice((taskPerPage - 1) * taskItemsPerPage, taskPerPage * taskItemsPerPage)
                     .map((item) => {
+                      let   starDateConvert 
+                      if(item.StartDate){
 
-                      let   starDateConvert = new Date(item.StartDate).getUTCFullYear()
+                        starDateConvert = new Date(item.StartDate).getUTCFullYear()
                       + '-' +  ('0'+ (new Date(item.StartDate).getUTCMonth() + 1)).slice(-2) 
                       + '-' + ('0'+ ( new Date(item.StartDate).getUTCDate())).slice(-2)  ||''
-                    
+                      }
 
 
                       return (

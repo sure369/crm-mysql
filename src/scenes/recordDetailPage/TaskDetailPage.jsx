@@ -12,22 +12,18 @@ import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 import { LocalizationProvider   } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import CustomizedSelectDisableForFormik from "../formik/CustomizedSelectDisableForFormik";
 
-const UpdateUrl = `${process.env.REACT_APP_SERVER_URL}/UpdateTask`;
-const InsertUrl = `${process.env.REACT_APP_SERVER_URL}/InsertTask`;
-
-
-
+const UpsertUrl = `${process.env.REACT_APP_SERVER_URL}/UpsertTask`;
 const fetchAccountUrl = `${process.env.REACT_APP_SERVER_URL}/accountsname`;
 const fetchLeadUrl = `${process.env.REACT_APP_SERVER_URL}/LeadsbyName`;
 const fetchOpportunityUrl = `${process.env.REACT_APP_SERVER_URL}/opportunitiesbyName`;
 
 const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
 
-    const [url,setUrl]=useState();
     const [singleTask, setSingleTask] = useState();
     const [showNew, setshowNew] = useState()
-    const [objectUrl, setObjectUrl] = useState();
+    const [url, setUrl] = useState();
     const navigate = useNavigate();
     const fileRef = useRef();
     const location = useLocation();
@@ -36,16 +32,21 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
     const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
     const [file, setFile] = useState()
     const[showModal1,setShowModal1]=useState(showModel)
+    
+    const[autocompleteReadOnly,setAutoCompleteReadOnly]=useState(false)
 
     useEffect(() => {
         console.log('passed record', location.state.record.item);
         setSingleTask(location.state.record.item)
         console.log('true', !location.state.record.item);
         setshowNew(!location.state.record.item)
+     
         if(location.state.record.item){
+            console.log('inside condition')
             callEvent(location.state.record.item.object)
+            setAutoCompleteReadOnly(true)
         }
-        (!location.state.record.item ? setUrl(InsertUrl) : setUrl(UpdateUrl))
+        
     }, [])
 
     const initialValues = {
@@ -53,9 +54,7 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
         relatedTo: '',
         assignedTo: '',
         StartDate: '',
-        // StartTime: '',
         EndDate: '',
-        // EndTime: '',
         description: '',
         attachments: null,
         object: '',
@@ -73,8 +72,6 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
         subject: singleTask?.subject ?? "",
         relatedto: singleTask?.relatedto ?? "",
         assignedTo: singleTask?.assignedTo ?? "",
-        // StartTime: singleTask?.StartTime ?? "",       
-        // EndTime: singleTask?.EndTime ?? "",
         description: singleTask?.description ?? "",
         attachments: singleTask?.attachments ?? "",
         object: singleTask?.object ?? "",
@@ -180,8 +177,11 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
                     delete values.OpportunityId
                 }  
             }else if (values.object==='Lead') {
+                console.log('inside')
                 delete values.OpportunityId; 
                 delete values.AccountId; 
+                delete values.opportunityDetails
+                delete values.accountDetails
                 if(!values.LeadId){
                     delete values.LeadId
                 }
@@ -193,7 +193,7 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
         }
         console.log('after change form submission value', values);
 
-            await axios.post(url, values)
+            await axios.post(UpsertUrl, values)
                 .then((res) => {
                     console.log('task form Submission  response', res);
                     setNotify({
@@ -221,21 +221,21 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
 
         console.log('inside call event',initialValues.object)
 
-        let objurl1 = e === 'Account' ? fetchAccountUrl : e === 'Lead' ? fetchLeadUrl : e === 'Opportunity' ? fetchOpportunityUrl : null
-        setObjectUrl(objurl1)
-        FetchObjectsbyName('', objurl1);
-        if (objectUrl == null) {
-            console.log('objectUrl', objectUrl);
+        let url1 = e === 'Account' ? fetchAccountUrl : e === 'Lead' ? fetchLeadUrl : e === 'Opportunity' ? fetchOpportunityUrl : null
+        setUrl(url1)
+        FetchObjectsbyName('', url1);
+        if (url == null) {
+            console.log('url', url);
             setRelatedRecNames([])
         }
     }
 
-    const FetchObjectsbyName = (newInputValue, objectUrl) => {
+    const FetchObjectsbyName = (newInputValue, url) => {
 
-        console.log('passed url', objectUrl)
+        console.log('passed url', url)
         console.log('new Input  value', newInputValue)
 
-        axios.post(`${objectUrl}?searchKey=${newInputValue}`)
+        axios.post(`${url}?searchKey=${newInputValue}`)
             .then((res) => {
                 console.log('res Fetch Objects byName', res.data)
                 if (typeof (res.data) === "object") {
@@ -301,15 +301,14 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
                                         <label htmlFor="object">object  </label>
                                         <Field 
                                             name="object"
-                                            component={CustomizedSelectForFormik} 
+                                            component={autocompleteReadOnly ? CustomizedSelectDisableForFormik :CustomizedSelectForFormik } 
                                             testprop="testing" 
                                             onChange = {(e) => {
                                                 console.log('customSelect value', e.target.value)
-                                                setFieldValue('object', e.target.value)
                                                 callEvent(e.target.value)
-                                            }}
-                                        >
-                                                                                        
+                                                setFieldValue('object', e.target.value)
+                                            }}                                       
+                                        >                                        
                                               {
                                                 TaskObjectPicklist.map((i)=>{
                                                     return <MenuItem value={i.value}>{i.text}</MenuItem>
@@ -319,56 +318,64 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
                                     </Grid>
                                     <Grid item xs={6} md={6}>
                                         <label htmlFor="relatedto"> Realated To  </label>
-                                        <Autocomplete
-                                            name="relatedto"
-                                            options={relatedRecNames}
-                                            value={values.accountDetails ||values.opportunityDetails ||values.leadDetails  }
+                                      
+                                             <Autocomplete
 
-                                            getOptionLabel={option => option.leadName || option.accountName || option.opportunityName || ''}
+                                                name="relatedto"
+                                                readOnly={autocompleteReadOnly}
+                                                options={relatedRecNames}
+                                                value={values.accountDetails ||values.opportunityDetails ||values.leadDetails  }
 
-                                            isOptionEqualToValue={(option, value) =>
-                                                option.id === value
-                                            }
-                                            onChange={(e, value) => {
+                                                getOptionLabel={option => option.leadName || option.accountName || option.opportunityName || ''}
 
-                                                console.log('inside onchange values', value);
-                                                if(!value){                                
-                                                    console.log('!value',value);
-                                                    if (values.object === 'Account') {
-                                                        setFieldValue('AccountId', '')
-                                                        setFieldValue('accountDetails','')
-                                                    } else if (values.object === 'Opportunity') {
-                                                        setFieldValue('OpportunityId', '')
-                                                        setFieldValue('opportunityDetails','')
-                                                    } else if (values.object === 'Lead') {
-                                                        setFieldValue('LeadId', '')
-                                                        setFieldValue('leadDetails','')
-                                                    }
-
-                                                  }else{
-                                                    console.log('value',value);
-                                                    if (values.object === 'Account') {
-                                                        setFieldValue('AccountId', value.id)
-                                                        setFieldValue('accountDetails',value)
-                                                    } else if (values.object === 'Opportunity') {
-                                                        setFieldValue('OpportunityId', value.id)
-                                                        setFieldValue('opportunityDetails',value)
-                                                    } else if (values.object === 'Lead') {
-                                                        setFieldValue('LeadId', value.id)
-                                                        setFieldValue('leadDetails',value)
-                                                    }
-                                                  }
-                                            }}
-
-                                            onInputChange={(event, newInputValue) => {
-                                                if (newInputValue.length >= 3) {
-                                                    FetchObjectsbyName(newInputValue, url)
+                                                isOptionEqualToValue={(option, value) =>
+                                                    option.id === value
                                                 }
-                                            }}
-                                            renderInput={params => (
-                                                <Field component={TextField} {...params} name="realatedTo" />
-                                            )}
-                                        />
+                                                onChange={(e, value) => {
+
+                                                    console.log('inside onchange values', value);
+                                                    if(!value){                                
+                                                        console.log('!value',value);
+                                                        if (values.object === 'Account') {
+                                                            setFieldValue('AccountId', '')
+                                                            setFieldValue('accountDetails','')
+                                                        } else if (values.object === 'Opportunity') {
+                                                            setFieldValue('OpportunityId', '')
+                                                            setFieldValue('opportunityDetails','')
+                                                        } else if (values.object === 'Lead') {
+                                                            setFieldValue('LeadId', '')
+                                                            setFieldValue('leadDetails','')
+                                                        }
+
+                                                    }else{
+                                                        console.log('value',value);
+                                                        if (values.object === 'Account') {
+                                                            setFieldValue('AccountId', value.id)
+                                                            setFieldValue('accountDetails',value)
+                                                        } else if (values.object === 'Opportunity') {
+                                                            setFieldValue('OpportunityId', value.id)
+                                                            setFieldValue('opportunityDetails',value)
+                                                        } else if (values.object === 'Lead') {
+                                                            setFieldValue('LeadId', value.id)
+                                                            setFieldValue('leadDetails',value)
+                                                        }
+                                                    }
+                                                }}
+
+                                                onInputChange={(event, newInputValue) => {
+                                                    if (newInputValue.length >= 3) {
+                                                        FetchObjectsbyName(newInputValue, url)
+                                                    }
+                                                    else  if (newInputValue.length ==0) {
+                                                        FetchObjectsbyName(newInputValue, url)
+                                                    }
+                                                }}
+                                                renderInput={params => (
+                                                    <Field component={TextField} {...params} name="realatedTo" />
+                                                )}
+                                                />
+                                                                                        
+                                                                                        
                                     </Grid>
 
                                     <Grid item xs={6} md={6}>
@@ -376,8 +383,6 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
                                         <Field name="assignedTo" type="text" class="form-input" />
                                     </Grid>
                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        
-                                      
                                     <Grid item xs={6} md={6}>
                                     <label htmlFor="StartDate">Start Date </label> <br/>
                                     <DateTimePicker 
@@ -386,7 +391,7 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
                                         onChange={(e)=>{
                                             setFieldValue('StartDate',e)
                                         }}
-                                         renderInput={(params) => <TextField  {...params} className='form-input'  />}
+                                         renderInput={(params) => <TextField  {...params} className='form-input' error={false} />}
                                      />
 
                                     </Grid>
@@ -395,7 +400,7 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
                                         <label htmlFor="EndDate">EndDate   </label> <br/>
                                         
                                         <DateTimePicker
-                                                renderInput={(params) => <TextField {...params} className='form-input' />}
+                                                renderInput={(params) => <TextField {...params} className='form-input' error={false}/>}
                                                 value={values.EndDate}
                                                 onChange={(e) => {                                                  
                                                     setFieldValue('EndDate',e)                                            

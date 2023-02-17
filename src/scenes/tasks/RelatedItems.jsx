@@ -136,20 +136,6 @@ const TaskRelatedItems = ({ item }) => {
         </AccordionDetails>
       </Accordion>
      
-      <Accordion >
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel2a-content"
-          id="panel2a-header"
-        >
-          <Typography variant="h4">Related Records</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            Need to work
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
 
 
       <Modal

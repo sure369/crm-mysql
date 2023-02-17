@@ -2,24 +2,30 @@ import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { Grid, Button, Forminput, DialogActions, TextField, Autocomplete } from "@mui/material";
+import { Grid, Button, Forminput, DialogActions,
+    MenuItem, TextField, Autocomplete } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom"
 import axios from 'axios'
 import "../formik/FormStyles.css"
 import Notification from '../toast/Notification';
 import { LeadSourcePickList, OppStagePicklist, OppTypePicklist } from '../../data/pickLists';
+import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+
 
 const url = `${process.env.REACT_APP_SERVER_URL}/UpsertOpportunity`;
 const fetchInventoriesbyName = `${process.env.REACT_APP_SERVER_URL}/InventoryName`;
 
 
-const ModalLeadOpportunity = ({ item }) => {
+const ModalLeadOpportunity = ({ item, handleModal }) => {
 
     const [leadParentRecord, setLeadParentRecord] = useState();
 
     const location = useLocation();
-    const navigate = useNavigate();  
-    const[notify,setNotify]=useState({isOpen:false,message:'',type:''})
+    const navigate = useNavigate();
+    const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
     const [inventoriesRecord, setInventoriesRecord] = useState([]);
 
     useEffect(() => {
@@ -42,7 +48,7 @@ const ModalLeadOpportunity = ({ item }) => {
         createdbyId: '',
         createdDate: '',
         modifiedDate: '',
-        inventoryDetails:'',
+        inventoryDetails: '',
     }
 
     const validationSchema = Yup.object({
@@ -67,11 +73,11 @@ const ModalLeadOpportunity = ({ item }) => {
         values.LeadId = leadParentRecord._id;
         values.modifiedDate = dateSeconds;
         values.createdDate = dateSeconds;
-        values.leadDetails={
-            leadName:leadParentRecord.fullName,
-            id:leadParentRecord._id
+        values.leadDetails = {
+            leadName: leadParentRecord.fullName,
+            id: leadParentRecord._id
         }
-        
+
         if (values.closeDate) {
             values.closeDate = closeDateSec;
         }
@@ -79,7 +85,7 @@ const ModalLeadOpportunity = ({ item }) => {
             console.log('InventoryId empty')
             delete values.InventoryId;
         }
-       
+
 
         console.log('after change form submission value', values);
 
@@ -87,21 +93,24 @@ const ModalLeadOpportunity = ({ item }) => {
             .then((res) => {
                 console.log('post response', res);
                 setNotify({
-                    isOpen:true,
-                    message:res.data,
-                    type:'success'
-                  })
+                    isOpen: true,
+                    message: res.data,
+                    type: 'success'
+                })
                 setTimeout(() => {
-                       window.location.reload();
+                    handleModal()
                 }, 1000)
             })
             .catch((error) => {
                 console.log('error', error);
                 setNotify({
-                    isOpen:true,
-                    message:error.message,
-                    type:'error'          
-                  })
+                    isOpen: true,
+                    message: error.message,
+                    type: 'error'
+                })
+                setTimeout(() => {
+                    handleModal()
+                }, 1000)
             })
     }
 
@@ -117,11 +126,6 @@ const ModalLeadOpportunity = ({ item }) => {
                 console.log('error fetchInventoriesbyName', error);
             })
     }
-
-    const handleFormClose = () => {
-        navigate(-1)
-    }
-
     return (
 
         <Grid item xs={12} style={{ margin: "20px" }}>
@@ -148,8 +152,8 @@ const ModalLeadOpportunity = ({ item }) => {
 
                         return (
                             <>
-                                
-  <Notification notify={notify} setNotify={setNotify}/>
+
+                                <Notification notify={notify} setNotify={setNotify} />
                                 <Form>
                                     <Grid container spacing={2}>
                                         <Grid item xs={6} md={6}>
@@ -159,7 +163,6 @@ const ModalLeadOpportunity = ({ item }) => {
                                                 <ErrorMessage name="opportunityName" />
                                             </div>
                                         </Grid>
-
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="InventoryId">Inventory Name </label>
                                             <Autocomplete
@@ -174,19 +177,22 @@ const ModalLeadOpportunity = ({ item }) => {
 
 
                                                 onChange={(e, value) => {
-                                                    if(!value){                                
-                                                        console.log('!value',value);
-                                                        setFieldValue("InventoryId",'')
-                                                        setFieldValue("inventoryDetails",'')
-                                                      }else{
-                                                        console.log('value',value);
-                                                        setFieldValue("InventoryId",value.id)
-                                                        setFieldValue("inventoryDetails",value)
-                                                      }
+                                                    if (!value) {
+                                                        console.log('!value', value);
+                                                        setFieldValue("InventoryId", '')
+                                                        setFieldValue("inventoryDetails", '')
+                                                    } else {
+                                                        console.log('value', value);
+                                                        setFieldValue("InventoryId", value.id)
+                                                        setFieldValue("inventoryDetails", value)
+                                                    }
                                                 }}
                                                 onInputChange={(event, newInputValue) => {
                                                     console.log('newInputValue', newInputValue);
                                                     if (newInputValue.length >= 3) {
+                                                        FetchInventoriesbyName(newInputValue);
+                                                    }
+                                                    else if (newInputValue.length == 0) {
                                                         FetchInventoriesbyName(newInputValue);
                                                     }
                                                 }}
@@ -194,50 +200,49 @@ const ModalLeadOpportunity = ({ item }) => {
                                                     <Field component={TextField} {...params} name="InventoryId" />
                                                 )}
                                             />
-
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="stage">Opportunity Stage</label>
-                                            <Field name="stage" as="select" class="form-input">
-                                            <option value=''><em>None</em></option>
+                                            <Field name="stage" component={CustomizedSelectForFormik} className="form-customSelect">
                                                 {
-                                                    OppStagePicklist.map((i)=>{
-                                                        return  <option value={i.value}>{i.label}</option>
+                                                    OppStagePicklist.map((i) => {
+                                                        return <MenuItem value={i.value}>{i.text}</MenuItem>
                                                     })
                                                 }
                                             </Field>
                                         </Grid>
-
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="type">Type</label>
-                                            <Field name="type" as="select" class="form-input">
-                                            <option value=''><em>None</em></option>
+                                            <Field name="type" component={CustomizedSelectForFormik} className="form-customSelect">
                                                 {
-                                                    OppTypePicklist.map((i)=>{
-                                                        return  <option value={i.value}>{i.label}</option>
+                                                    OppTypePicklist.map((i) => {
+                                                        return <MenuItem value={i.value}>{i.text}</MenuItem>
                                                     })
                                                 }
                                             </Field>
                                         </Grid>
-
-
-
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="leadSource"> Lead Source</label>
-                                            <Field name="leadSource" as="select" class="form-input">
-                                            <option value=''><em>None</em></option>
+                                            <Field name="leadSource" component={CustomizedSelectForFormik} className="form-customSelect">
                                                 {
-                                                    LeadSourcePickList.map((i)=>{
-                                                        return  <option value={i.value}>{i.label}</option>
+                                                    LeadSourcePickList.map((i) => {
+                                                        return <MenuItem value={i.value}>{i.text}</MenuItem>
                                                     })
                                                 }
                                             </Field>
                                         </Grid>
-
-
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="closeDate">Close Date</label>
-                                            <Field name="closeDate" type="date" class="form-input" />
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DatePicker
+                                                    name="closeDate"
+                                                    value={values.closeDate}
+                                                    onChange={(e) => {
+                                                        setFieldValue('closeDate', e)
+                                                    }}
+                                                    renderInput={(params) => <TextField  {...params} className='form-input' error={false} />}
+                                                />
+                                            </LocalizationProvider>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="amount">Amount<span className="text-danger">*</span></label>
@@ -250,14 +255,13 @@ const ModalLeadOpportunity = ({ item }) => {
                                             <label htmlFor="description">Description</label>
                                             <Field as="textarea" name="description" class="form-input" />
                                         </Grid>
-
                                     </Grid>
                                     <div className='action-buttons'>
                                         <DialogActions sx={{ justifyContent: "space-between" }}>
 
                                             <Button type='success' variant="contained" color="secondary" disabled={isSubmitting}>Save</Button>
 
-                                            <Button type="reset" variant="contained" onClick={handleFormClose}  >Cancel</Button>
+                                            <Button type="reset" variant="contained" onClick={handleModal}  >Cancel</Button>
                                         </DialogActions>
                                     </div>
                                 </Form>

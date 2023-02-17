@@ -4,12 +4,17 @@ import * as Yup from "yup";
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
     Grid, Button, FormControl, Stack, Alert, DialogActions,
-    Autocomplete, TextField
+    Autocomplete, TextField ,MenuItem
 } from "@mui/material";
 import axios from 'axios'
 import "../formik/FormStyles.css"
 import Notification from '../toast/Notification';
 import { LeadSourcePickList, NameSalutionPickList} from '../../data/pickLists'
+import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+
 
 const UpsertUrl = `${process.env.REACT_APP_SERVER_URL}/UpsertContact`;
 
@@ -97,7 +102,7 @@ const ModalConAccount = ({ item, handleModal }) => {
                     type:'success'
                   })
                 setTimeout(() => {
-                     window.location.reload();
+                    handleModal()
                 }, 1000)
             })
             .catch((error) => {
@@ -140,11 +145,10 @@ const ModalConAccount = ({ item, handleModal }) => {
                                         <Grid container spacing={2}>
                                             <Grid item xs={6} md={2}>
                                                 <label htmlFor="salutation">Salutation  </label>
-                                                <Field name="salutation" as="select" class="form-input">
-                                                <option value=''><em>None</em></option>
+                                                <Field name="salutation" component={CustomizedSelectForFormik} className="form-customSelect">
                                                     {
-                                                        NameSalutionPickList.map((i)=>{
-                                                          return  <option value={i.value}>{i.label}</option>
+                                                        NameSalutionPickList.map((i) => {
+                                                            return <MenuItem value={i.value}>{i.text}</MenuItem>
                                                         })
                                                     }
                                                 </Field>
@@ -172,12 +176,20 @@ const ModalConAccount = ({ item, handleModal }) => {
                                                 </div>
                                             </Grid>
                                             <Grid item xs={6} md={6}>
-                                                <label htmlFor="dob">Date of Birth</label>
-                                                <Field name="dob" type="date" class="form-input" />
-                                            </Grid>
-                                            <Grid item xs={6} md={6}>
-                                                <label htmlFor="department">Department</label>
-                                                <Field name="department" type="text" class="form-input" />
+                                                {/* <label htmlFor="dob">Date of Birth</label>
+                                                <Field name="dob" type="date" class="form-input" /> */}
+                                                <label htmlFor="dob">Date of Birth</label><br />
+                                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                    <DatePicker
+                                                        name="dob"
+                                                        value={values.dob}
+                                                        onChange={(e) => {
+                                                            setFieldValue('dob', e)
+                                                        }}
+                                                        renderInput={(params) => <TextField  {...params} className='form-input' error={false} />}
+                                                    />
+
+                                                </LocalizationProvider>
                                             </Grid>
                                             <Grid item xs={6} md={6}>
                                                 <label htmlFor="email">Email <span className="text-danger">*</span></label>
@@ -188,19 +200,13 @@ const ModalConAccount = ({ item, handleModal }) => {
                                             </Grid>
                                             <Grid item xs={6} md={6}>
                                                 <label htmlFor="leadSource"> lead Source</label>
-                                                <Field name="leadSource" as="select" class="form-input">
-                                                <option value=''><em>None</em></option>
+                                                <Field name="leadSource" component={CustomizedSelectForFormik} className="form-customSelect">
                                                     {
-                                                        LeadSourcePickList.map((i)=>{
-                                                          return  <option value={i.value}>{i.label}</option>
+                                                        LeadSourcePickList.map((i) => {
+                                                            return <MenuItem value={i.value}>{i.text}</MenuItem>
                                                         })
                                                     }
                                                 </Field>
-                                            </Grid>
-
-                                            <Grid Grid item xs={6} md={6}>
-                                                <label htmlFor="fullAddress">fullAddress</label>
-                                                <Field as="textarea" name="fullAddress" class="form-input" />
                                             </Grid>
 
                                             <Grid Grid item xs={6} md={12}>
