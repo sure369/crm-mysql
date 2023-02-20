@@ -93,6 +93,8 @@ const OpportunityDetailPage = ({ item }) => {
             values.LeadName=values.leadDetails.leadName
             values.LeadId=values.leadDetails.id;
             values.InventoryId=values.inventoryDetails._id
+            // delete values.leadDetails;
+            // delete values.inventoryDetails
         if (showNew) {
             values.modifiedDate = dateSeconds;
             values.createdDate = dateSeconds;
@@ -120,6 +122,9 @@ const OpportunityDetailPage = ({ item }) => {
             values.LeadName=values.leadDetails.leadName
             values.LeadId=values.leadDetails.id;
             values.InventoryId=values.inventoryDetails._id
+            // delete values.leadDetails;
+            // delete values.inventoryDetails
+
             if (values.closeDate) {
                 values.closeDate = closeDateSec;
             }
