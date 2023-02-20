@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import axios from 'axios'
 import "../formik/FormStyles.css"
-import ToastNotification from "../toast/ToastNotification";
+import Notification from '../toast/Notification';
 import { LeadSourcePickList, NameSalutionPickList} from '../../data/pickLists'
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -140,14 +140,13 @@ const ModalConAccount = ({ item, handleModal }) => {
 
                     return (
                         <>
-                          <ToastNotification notify={notify} setNotify={setNotify}/>
+                          <Notification notify={notify} setNotify={setNotify}/>
                           <Form>
                                         <Grid container spacing={2}>
                                             <Grid item xs={6} md={2}>
                                                 <label htmlFor="salutation">Salutation  </label>
                                                 <Field name="salutation" component={CustomizedSelectForFormik} className="form-customSelect">
-                                                <MenuItem value=""><em>None</em></MenuItem>
-                                                 {
+                                                    {
                                                         NameSalutionPickList.map((i) => {
                                                             return <MenuItem value={i.value}>{i.text}</MenuItem>
                                                         })
@@ -202,7 +201,6 @@ const ModalConAccount = ({ item, handleModal }) => {
                                             <Grid item xs={6} md={6}>
                                                 <label htmlFor="leadSource"> lead Source</label>
                                                 <Field name="leadSource" component={CustomizedSelectForFormik} className="form-customSelect">
-                                                <MenuItem value=""><em>None</em></MenuItem>
                                                     {
                                                         LeadSourcePickList.map((i) => {
                                                             return <MenuItem value={i.value}>{i.text}</MenuItem>

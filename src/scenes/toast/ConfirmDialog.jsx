@@ -11,7 +11,7 @@ import {
     DialogContentText,
   } from '@mui/material';
 
-function DeleteConfirmDialog(props) {
+function ConfirmDialog(props) {
 
     const{confirmDialog,setConfirmDialog}=props;
 
@@ -44,4 +44,4 @@ function DeleteConfirmDialog(props) {
   )
 }
 
-export default DeleteConfirmDialog
+export default ConfirmDialog

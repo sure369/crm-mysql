@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Grid, Button, DialogActions } from "@mui/material";
 import axios from 'axios'
 import "../formik/FormStyles.css"
-import ToastNotification from '../toast/ToastNotification';
+import Notification from '../toast/Notification';
 
 const urlSendWhatsAppbulk = `${process.env.REACT_APP_SERVER_URL}/bulkewhatsapp`
 
@@ -145,7 +145,7 @@ const WhatAppModalPage = ({ data, handleModal, bulkMail }) => {
                     }}
                 </Formik>
             </Grid>
-            <ToastNotification notify={notify} setNotify={setNotify} />
+            <Notification notify={notify} setNotify={setNotify} />
         </>
     )
 }

@@ -11,8 +11,8 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import ToastNotification from '../toast/ToastNotification';
-import DeleteConfirmDialog from '../toast/DeleteConfirmDialog';
+import Notification from '../toast/Notification';
+import ConfirmDialog from '../toast/ConfirmDialog';
 
 const Users = () => {
 
@@ -185,8 +185,8 @@ const Users = () => {
   if (records.length >= 0) {
     return (
       <>
-        <ToastNotification notify={notify} setNotify={setNotify} />
-        <DeleteConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />
+        <Notification notify={notify} setNotify={setNotify} />
+        <ConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />
 
         <Box m="20px">
           <Header

@@ -6,7 +6,7 @@ import { Grid, Button, Forminput, DialogActions, MenuItem } from "@mui/material"
 import { useParams, useNavigate } from "react-router-dom"
 import axios from 'axios'
 import "../formik/FormStyles.css"
-import ToastNotification from '../toast/ToastNotification';
+import Notification from '../toast/Notification';
 import {IndustryPickList, AccRatingPickList,AccTypePickList,AccCitiesPickList, AccCountryPickList} from '../../data/pickLists'
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 
@@ -146,7 +146,7 @@ const ModalInventoryAccount = ({ item,handleModal }) => {
                         return (
                             <>
                                 
-                                <ToastNotification notify={notify} setNotify={setNotify}/>
+                                <Notification notify={notify} setNotify={setNotify}/>
 
                                 <Form>
                                     <Grid container spacing={2}>
@@ -178,7 +178,6 @@ const ModalInventoryAccount = ({ item,handleModal }) => {
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="rating"> Rating<span className="text-danger">*</span></label>
                                             <Field name="rating" component={CustomizedSelectForFormik}  className="form-customSelect">	
-                                            <MenuItem value=""><em>None</em></MenuItem>
                                                {	
                                                 AccRatingPickList.map((i)=>{	
                                                     return <MenuItem value={i.value}>{i.text}</MenuItem>	

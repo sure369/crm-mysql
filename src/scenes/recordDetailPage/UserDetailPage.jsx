@@ -2,14 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import {
-    Grid, Button, Forminput, DialogActions, MenuItem,
-    TextField, Autocomplete, Select,
-} from "@mui/material";
+import { Grid, Button, Forminput, DialogActions, MenuItem ,
+    TextField,Autocomplete, Select,} from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom"
 import axios from 'axios'
 import "../formik/FormStyles.css"
-import ToastNotification from '../toast/ToastNotification';
+import Notification from '../toast/Notification';
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 import { UserAccessPicklist, UserRolePicklist } from '../../data/pickLists';
 
@@ -24,13 +22,13 @@ const UserDetailPage = ({ item }) => {
     const [showNew, setshowNew] = useState()
     const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
 
-    const [usersRecord, setUsersRecord] = useState([])
+    const[usersRecord,setUsersRecord]=useState([])
 
     useEffect(() => {
         console.log('passed record', location.state.record.item);
         setsingleUser(location.state.record.item);
         setshowNew(!location.state.record.item)
-        FetchUsersbyName('')
+             FetchUsersbyName('')
     }, [])
 
     const initialValues = {
@@ -178,7 +176,8 @@ const UserDetailPage = ({ item }) => {
 
                         return (
                             <>
-                                <ToastNotification notify={notify} setNotify={setNotify} />
+                            <Notification notify={notify} setNotify={setNotify} />
+
                                 <Form>
                                     <Grid container spacing={2}>
 
@@ -217,14 +216,13 @@ const UserDetailPage = ({ item }) => {
                                                 <ErrorMessage name="username" />
                                             </div>
                                         </Grid>
-
+     
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="role">Role <span className="text-danger">*</span> </label>
                                             <Field name="role" component={CustomizedSelectForFormik}>
-                                                <MenuItem value=""><em>None</em></MenuItem>
                                                 {
-                                                    UserRolePicklist.map((i) => {
-                                                        return <MenuItem value={i.value}>{i.text}</MenuItem>
+                                                    UserRolePicklist.map((i)=>{
+                                                        return <MenuItem value= {i.value}>{i.text}</MenuItem> 
                                                     })
                                                 }
                                             </Field>
@@ -234,13 +232,13 @@ const UserDetailPage = ({ item }) => {
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="access">Access <span className="text-danger">*</span> </label>
-                                            <Field name="access" component={CustomizedSelectForFormik}>
-                                                <MenuItem value=""><em>None</em></MenuItem>
-                                                {
-                                                    UserAccessPicklist.map((i) => {
-                                                        return <MenuItem value={i.value}>{i.text}</MenuItem>
-                                                    })
-                                                }
+                                            <Field name="access"  component={CustomizedSelectForFormik}>
+                                            
+                                              {
+                                                UserAccessPicklist.map((i)=>{
+                                                    return <MenuItem value={i.value}>{i.text}</MenuItem>
+                                                })
+                                              }  
                                             </Field>
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="access" />
@@ -266,12 +264,10 @@ const UserDetailPage = ({ item }) => {
                                                         setFieldValue("userDetails", value)
                                                     }
                                                 }}
+
                                                 onInputChange={(event, newInputValue) => {
                                                     console.log('newInputValue', newInputValue);
                                                     if (newInputValue.length >= 3) {
-                                                        FetchUsersbyName(newInputValue);
-                                                    }
-                                                    else if (newInputValue.length == 0) {
                                                         FetchUsersbyName(newInputValue);
                                                     }
                                                 }}
@@ -279,14 +275,17 @@ const UserDetailPage = ({ item }) => {
                                                     <Field component={TextField} {...params} name="createdbyId" />
                                                 )}
                                             />
-                                        </Grid>
-                                        <Grid item xs={6} md={6}>
+                                            </Grid>
+                                            <Grid item xs={6} md={6}>
                                             <label htmlFor="phone">phone<span className="text-danger">*</span> </label>
                                             <Field name="phone" type="text" class="form-input" />
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="phone" />
                                             </div>
                                         </Grid>
+                                      
+                                       
+
                                         {!showNew && (
                                             <>
                                                 <Grid item xs={6} md={6}>
@@ -303,6 +302,8 @@ const UserDetailPage = ({ item }) => {
                                     </Grid>
                                     <div className='action-buttons'>
                                         <DialogActions sx={{ justifyContent: "space-between" }}>
+
+
                                             {
                                                 showNew ?
                                                     <Button type='success' variant="contained" color="secondary" disabled={isSubmitting}>Save</Button>
@@ -321,6 +322,7 @@ const UserDetailPage = ({ item }) => {
             </div>
         </Grid>
     )
+
 }
 export default UserDetailPage;
 

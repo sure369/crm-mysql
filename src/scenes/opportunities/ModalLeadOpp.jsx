@@ -2,14 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import {
-    Grid, Button, Forminput, DialogActions,
-    MenuItem, TextField, Autocomplete
-} from "@mui/material";
+import { Grid, Button, Forminput, DialogActions,
+    MenuItem, TextField, Autocomplete } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom"
 import axios from 'axios'
 import "../formik/FormStyles.css"
-import ToastNotification from '../toast/ToastNotification';
+import Notification from '../toast/Notification';
 import { LeadSourcePickList, OppStagePicklist, OppTypePicklist } from '../../data/pickLists';
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -154,7 +152,8 @@ const ModalLeadOpportunity = ({ item, handleModal }) => {
 
                         return (
                             <>
-                                <ToastNotification notify={notify} setNotify={setNotify} />
+
+                                <Notification notify={notify} setNotify={setNotify} />
                                 <Form>
                                     <Grid container spacing={2}>
                                         <Grid item xs={6} md={6}>
@@ -170,10 +169,13 @@ const ModalLeadOpportunity = ({ item, handleModal }) => {
                                                 name="InventoryId"
                                                 options={inventoriesRecord}
                                                 value={values.inventoryDetails}
+
                                                 getOptionLabel={option => option.propertyName || ''}
                                                 //  isOptionEqualToValue = {(option,value)=>
                                                 //           option.propertyName === value
                                                 //   }
+
+
                                                 onChange={(e, value) => {
                                                     if (!value) {
                                                         console.log('!value', value);
@@ -202,7 +204,6 @@ const ModalLeadOpportunity = ({ item, handleModal }) => {
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="stage">Opportunity Stage</label>
                                             <Field name="stage" component={CustomizedSelectForFormik} className="form-customSelect">
-                                                <MenuItem value=""><em>None</em></MenuItem>
                                                 {
                                                     OppStagePicklist.map((i) => {
                                                         return <MenuItem value={i.value}>{i.text}</MenuItem>
@@ -213,7 +214,6 @@ const ModalLeadOpportunity = ({ item, handleModal }) => {
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="type">Type</label>
                                             <Field name="type" component={CustomizedSelectForFormik} className="form-customSelect">
-                                                <MenuItem value=""><em>None</em></MenuItem>
                                                 {
                                                     OppTypePicklist.map((i) => {
                                                         return <MenuItem value={i.value}>{i.text}</MenuItem>
@@ -224,7 +224,6 @@ const ModalLeadOpportunity = ({ item, handleModal }) => {
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="leadSource"> Lead Source</label>
                                             <Field name="leadSource" component={CustomizedSelectForFormik} className="form-customSelect">
-                                                <MenuItem value=""><em>None</em></MenuItem>
                                                 {
                                                     LeadSourcePickList.map((i) => {
                                                         return <MenuItem value={i.value}>{i.text}</MenuItem>
@@ -273,5 +272,6 @@ const ModalLeadOpportunity = ({ item, handleModal }) => {
             </div>
         </Grid>
     )
+
 }
 export default ModalLeadOpportunity;

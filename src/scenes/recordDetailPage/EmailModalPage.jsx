@@ -5,10 +5,9 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Grid, Button, DialogActions, } from "@mui/material";
 import axios from 'axios'
 import "../formik/FormStyles.css"
-import ToastNotification from "../toast/ToastNotification";
+import Notification from '../toast/Notification';
 import CustomizedRichTextField from "../formik/CustomizedRichTextField";
 import { convert } from "html-to-text";
-
 
 const urlSendEmailbulk = `${process.env.REACT_APP_SERVER_URL}/bulkemail`
 
@@ -17,6 +16,7 @@ const EmailModalPage = ({ data, handleModal, bulkMail }) => {
     const [parentRecord, setParentRecord] = useState([]);
     const navigate = useNavigate();
     const location = useLocation();
+
     // notification
     const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
 
@@ -24,6 +24,7 @@ const EmailModalPage = ({ data, handleModal, bulkMail }) => {
         wordwrap: 130,
         // ...
       };
+      
     useEffect(() => {
         console.log('data', data);
         console.log('bulkMail', bulkMail);
@@ -33,7 +34,7 @@ const EmailModalPage = ({ data, handleModal, bulkMail }) => {
 
     const initialValues = {
         subject: '',
-        htmlBody: '',
+        content: '',
         recordsData: '',
         attachments: ''
     }
@@ -55,6 +56,7 @@ const EmailModalPage = ({ data, handleModal, bulkMail }) => {
 
         const convertText = convert(values.htmlBody, HTMLbodyOptions);
         console.log('convertText',convertText)
+
 //         var p= values.htmlBody
 //         var parser = new DOMParser();
 // var htmlDoc = parser.parseFromString(p, 'text/html');
@@ -62,7 +64,7 @@ const EmailModalPage = ({ data, handleModal, bulkMail }) => {
 
 
 
-        let mergeBody = `Hai ${element.fullName},`+ '\n'+"\n"+ convertText
+        let mergeBody = `Hai ${element.fullName},`+ '\n'+"\n"+ values.htmlBody
 
         let formData = new FormData();
         formData.append('subject', values.subject);
@@ -175,7 +177,7 @@ const EmailModalPage = ({ data, handleModal, bulkMail }) => {
                 </Formik>
             </Grid>
 
-            <ToastNotification notify={notify} setNotify={setNotify} />
+            <Notification notify={notify} setNotify={setNotify} />
         </>
     )
 }

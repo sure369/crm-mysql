@@ -6,9 +6,10 @@ import { Grid, Button, DialogActions, Box, TextField, Autocomplete,MenuItem, Sel
 import { useParams, useNavigate } from "react-router-dom"
 import axios from 'axios'
 import "../formik/FormStyles.css"
+import Notification from '../toast/Notification';
 import {IndustryPickList, AccRatingPickList,AccTypePickList,AccCitiesPickList, AccCountryPickList} from '../../data/pickLists'
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
-import ToastNotification from '../toast/ToastNotification';
+
 
 const url = `${process.env.REACT_APP_SERVER_URL}/UpsertAccount`;
 const fetchInventoriesbyName = `${process.env.REACT_APP_SERVER_URL}/InventoryName`;
@@ -197,12 +198,12 @@ const AccountDetailPage = ({ item }) => {
                         return (
                             <>
                                 
-                                <ToastNotification notify={notify} setNotify={setNotify}/>
+                                <Notification notify={notify} setNotify={setNotify}/>
 
                                 <Form>
                                     <Grid container spacing={2}>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="accountName">Account Name  <span className="text-danger">*</span></label>
+                                            <label htmlFor="accountName">Name  <span className="text-danger">*</span></label>
                                             <Field name="accountName" type="text" class="form-input" />
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="accountName" />
@@ -240,9 +241,6 @@ const AccountDetailPage = ({ item }) => {
                                                     if (newInputValue.length >= 3) {
                                                         FetchInventoriesbyName(newInputValue);
                                                     }
-                                                    else if (newInputValue.length == 0) {
-                                                        FetchInventoriesbyName(newInputValue);
-                                                    }
                                                 }}
                                                 renderInput={params => (
                                                     <Field component={TextField} {...params} name="InventoryId" />
@@ -269,7 +267,6 @@ const AccountDetailPage = ({ item }) => {
                                             <label htmlFor="rating"> Rating<span className="text-danger">*</span></label>
                                            
                                             <Field name="rating" component={CustomizedSelectForFormik}  className="form-customSelect">	
-                                            <MenuItem value=""><em>None</em></MenuItem>
                                                {	
                                                 AccRatingPickList.map((i)=>{	
                                                     return <MenuItem value={i.value}>{i.text}</MenuItem>	
@@ -285,7 +282,6 @@ const AccountDetailPage = ({ item }) => {
 
                                             <label htmlFor="type">Type</label>
                                             <Field name="type" component={CustomizedSelectForFormik}>
-                                            <MenuItem value=""><em>None</em></MenuItem>
                                               {
                                                 AccTypePickList.map((i)=>{
                                                     return <MenuItem value={i.value}>{i.text}</MenuItem>	
@@ -296,7 +292,7 @@ const AccountDetailPage = ({ item }) => {
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="industry">Industry</label>
                                             <Field name="industry"  component={CustomizedSelectForFormik}>
-                                            <MenuItem value=""><em>None</em></MenuItem>
+                                          
                                               {
                                                 IndustryPickList.map((i)=>{
                                                     return <MenuItem value={i.value}>{i.text}</MenuItem>	
@@ -322,7 +318,7 @@ const AccountDetailPage = ({ item }) => {
                                                     setFieldValue("billingCities", _billingCities);
                                                 }}
                                             >
-                                                <MenuItem value=""><em>None</em></MenuItem>
+                                               
                                               {
                                                 AccCountryPickList.map((i)=>{
                                                     return <MenuItem value={i.value}>{i.text}</MenuItem>
@@ -341,7 +337,7 @@ const AccountDetailPage = ({ item }) => {
                                                 component={CustomizedSelectForFormik}
                                                 // onChange={handleChange}
                                             >
-                                                <MenuItem value=""><em>None</em></MenuItem>
+                                               
                                                 {values.billingCities &&
                                                     values.billingCities.map((r) => (                                                      
                                                          <MenuItem key={r.value} value={r.value}>{r.text}</MenuItem>

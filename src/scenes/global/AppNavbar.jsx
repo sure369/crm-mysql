@@ -16,7 +16,7 @@ const pages = [
   { title: 'Users', toNav: '/users' },
   { title: 'Data Loder', toNav: '/dataLoder' },
   { title: 'File Upload', toNav: '/file' },
-  // { title: 'Junction Object', toNav: '/oppInventory' },
+  { title: 'Junction Object', toNav: '/oppInventory' },
 ];
 
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -44,8 +44,8 @@ function AppNavbar() {
   return (
     
     // 5C5CFF
-    // fixed //sticky //static
-    <AppBar position="sticky" sx={{backgroundColor:'#5C5CFF' }} >
+    // fixed
+    <AppBar position="static" sx={{backgroundColor:'#5C5CFF' }} >
       <Container maxWidth="xl">
         <Toolbar disableGutters >
           {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}

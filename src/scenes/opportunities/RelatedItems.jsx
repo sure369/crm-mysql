@@ -17,8 +17,8 @@ import ModalOppInventory from "../OppInventory/ModalOppInventory";
 import { DataGrid, GridToolbar,
   gridPageCountSelector,gridPageSelector,
   useGridApiContext,useGridSelector} from "@mui/x-data-grid";
-import ToastNotification from "../toast/ToastNotification";
-import DeleteConfirmDialog from "../toast/DeleteConfirmDialog";
+import Notification from '../toast/Notification';
+
 const style = {
   position: 'absolute',
   top: '50%',
@@ -40,7 +40,6 @@ const OpportunityRelatedItems = ({ item }) => {
 
   const [opportunityRecordId, setOpportunityRecordId] = useState()
   const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
-  const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, title: '', subTitle: '' })
 
   const [taskModalOpen, setTaskModalOpen] = useState(false);
   const [taskItemsPerPage, setTaskItemsPerPage] = useState(2);
@@ -88,19 +87,7 @@ const OpportunityRelatedItems = ({ item }) => {
    navigate("/taskDetailPage", { state: { record: { item } } })
   };
 
-  const handleReqTaskCardDelete = (e,row) => {
-    e.stopPropagation();
-    console.log('inside handleTaskCardDelete fn')
-        setConfirmDialog({
-          isOpen:true,
-          title:`Are you sure to delete this Record ?`,
-          subTitle:"You can't undo this Operation",
-          onConfirm:()=>{onConfirmTaskCardDelete(row)}
-        })
-      }
-
-      const onConfirmTaskCardDelete=(row)=>{
-
+  const handleTaskCardDelete = (row) => {
     console.log('req delete rec', row);
     console.log('req delete rec id', row._id);
 
@@ -126,10 +113,6 @@ const OpportunityRelatedItems = ({ item }) => {
           message: error.message,
           type: 'error'
         })
-      })
-      setConfirmDialog({
-        ...confirmDialog,
-        isOpen:false
       })
   };
 
@@ -161,8 +144,7 @@ const OpportunityRelatedItems = ({ item }) => {
   return (
     <>
     
-    <ToastNotification notify={notify} setNotify={setNotify} />
-    <DeleteConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog}  moreModalClose={handleTaskMoreMenuClose}/>
+    <Notification notify={notify} setNotify={setNotify} />
 
 
       <div style={{ textAlign: "center", marginBottom: "10px" }}>
@@ -230,7 +212,7 @@ const OpportunityRelatedItems = ({ item }) => {
                                       }}
                                     >
                                       <MenuItem onClick={() => handleTaskCardEdit(menuSelectRec)}>Edit</MenuItem>
-                                      <MenuItem onClick={(e) => handleReqTaskCardDelete(e,menuSelectRec)}>Delete</MenuItem>
+                                      <MenuItem onClick={() => handleTaskCardDelete(menuSelectRec)}>Delete</MenuItem>
                                     </Menu>
                                   </IconButton>
                                 </Grid>
@@ -269,7 +251,6 @@ const OpportunityRelatedItems = ({ item }) => {
         onClose={handleTaskModalClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
-        sx={{ backdropFilter: "blur(2px)" }}
       >
         <Box sx={style}>
           <ModalOppTask handleModal={handleTaskModalClose} />
@@ -421,7 +402,7 @@ export default OpportunityRelatedItems
 //    navigate("/taskDetailPage", { state: { record: { item } } })
 //   };
 
-//   const handleReqTaskCardDelete = (row) => {
+//   const handleTaskCardDelete = (row) => {
 
 //     console.log('req delete rec', row);
 //     console.log('req delete rec id', row._id);
@@ -694,7 +675,7 @@ export default OpportunityRelatedItems
 //                                       }}
 //                                     >
 //                                       <MenuItem onClick={() => handleTaskCardEdit(menuSelectRec)}>Edit</MenuItem>
-//                                       <MenuItem onClick={() => handleReqTaskCardDelete(menuSelectRec)}>Delete</MenuItem>
+//                                       <MenuItem onClick={() => handleTaskCardDelete(menuSelectRec)}>Delete</MenuItem>
 //                                     </Menu>
 //                                   </IconButton>
 //                                 </Grid>
