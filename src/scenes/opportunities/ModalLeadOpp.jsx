@@ -132,7 +132,7 @@ const ModalLeadOpportunity = ({ item, handleModal }) => {
 
         <Grid item xs={12} style={{ margin: "20px" }}>
             <div style={{ textAlign: "center", marginBottom: "10px" }}>
-                <h3>New Opportunity</h3>
+                <h3>New Deals</h3>
             </div>
             <div>
                 <Formik

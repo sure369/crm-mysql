@@ -300,10 +300,10 @@ const Opportunities = () => {
         fontWeight="bold"
         sx={{ m: "0 0 5px 0" }}
       >
-        Opportunities
+        Deals
       </Typography>
       <Typography variant="h5" color={colors.greenAccent[400]} >
-       List Of {filterOpportunity} Opportunities
+       List Of {filterOpportunity} Deals
       </Typography>
 
         <Box

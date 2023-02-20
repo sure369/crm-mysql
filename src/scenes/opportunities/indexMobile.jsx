@@ -149,8 +149,8 @@ const OpportunitiesMobile = () => {
 
       <Box m="20px">
         <Header
-          title="Opportunities"
-          subtitle="List of Opportunity"
+          title="Deals"
+          subtitle="List of Deals"
         />
 
         <div className='btn-test'>

@@ -158,7 +158,7 @@ const LeadDetailPage = ({ item }) => {
         <Grid item xs={12} style={{ margin: "20px" }}>
             <div style={{ textAlign: "center", marginBottom: "10px" }}>
                 {
-                    showNew ? <h3>New Lead</h3> : <h3>Lead Detail Page </h3>
+                    showNew ? <h3>New Enquiry</h3> : <h3>Enquiry Detail Page </h3>
                 }
             </div>
             <div>

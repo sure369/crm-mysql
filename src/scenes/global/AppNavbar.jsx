@@ -2,16 +2,15 @@ import  React,{useState} from 'react';
 import {AppBar,Box,Toolbar,Typography,IconButton,Menu,Container,Avatar,
   Tooltip,MenuItem,Button} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import AdbIcon from '@mui/icons-material/Adb';
 import { Link, NavLink } from "react-router-dom"
 import mainLogo  from '../assets/user image.png';
 
 const pages = [
   { title: 'Inventories', toNav: '/inventories' },
-  { title: 'Leads', toNav: '/leads' },
+  { title: 'Enquiry', toNav: '/enquiries' },
   { title: 'Accounts', toNav: '/accounts' },
   { title: 'Contacts', toNav: '/contacts' },
-  { title: 'Opportunities', toNav: '/opportunities' },
+  { title: 'Deals', toNav: '/deals' },
   { title: 'Task', toNav: '/task' },
   { title: 'Users', toNav: '/users' },
   { title: 'Data Loder', toNav: '/dataLoder' },

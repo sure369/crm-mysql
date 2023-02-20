@@ -192,7 +192,7 @@ const OpportunityDetailPage = ({ item }) => {
         <Grid item xs={12} style={{ margin: "20px" }}>
             <div style={{ textAlign: "center", marginBottom: "10px" }}>
                 {
-                    showNew ? <h3>New Opportunity</h3> : <h3>Opportunity Detail Page </h3>
+                    showNew ? <h3>New Deals</h3> : <h3>Deals Detail Page </h3>
                 }
             </div>
             <div>
