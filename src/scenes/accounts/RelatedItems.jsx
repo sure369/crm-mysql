@@ -1,6 +1,4 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Card, CardContent, Box, Button, Typography, Modal
@@ -10,13 +8,14 @@ import axios from 'axios'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ModalAccTask from "../tasks/ModalAccTask";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import Notification from '../toast/Notification';
+import ToastNotification from "../toast/ToastNotification";
 import { DataGrid, GridToolbar,
   gridPageCountSelector,gridPageSelector,
   useGridApiContext,useGridSelector} from "@mui/x-data-grid";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import ModalConAccount from "../contacts/ModalConAccount";
+import DeleteConfirmDialog from "../toast/DeleteConfirmDialog";
 
 const ModalStyle = {
   position: 'absolute',
@@ -43,7 +42,8 @@ const AccountRelatedItems = ({ item }) => {
   const [relatedTask, setRelatedTask] = useState([]);
   const [relatedContact, setRelatedContact] = useState([]);
   const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
- 
+  const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, title: '', subTitle: '' })
+
   const [taskModalOpen, setTaskModalOpen] = useState(false);
   const [taskItemsPerPage, setTaskItemsPerPage] = useState(2);
   const [taskPerPage, setTaskPerPage] = useState(1);
@@ -124,8 +124,19 @@ const AccountRelatedItems = ({ item }) => {
     navigate("/contactDetailPage", { state: { record: { item } } })
   };
 
-  const handleContactCardDelete = (e,row) => {
+  const handleReqContactCardDelete = (e,row) => {
 
+    e.stopPropagation();
+    console.log('inside handleReqContactCardDelete fn')
+        setConfirmDialog({
+          isOpen:true,
+          title:`Are you sure to delete this Record ?`,
+          subTitle:"You can't undo this Operation",
+          onConfirm:()=>{onConfirmContactCardDelete(row)}
+        })
+      }
+
+    const  onConfirmContactCardDelete =(row)=>{
     console.log('req delete rec', row);
     axios.post(contactDeleteURL+ row._id)
       .then((res) => {
@@ -149,6 +160,10 @@ const AccountRelatedItems = ({ item }) => {
           type: 'error'
       })
       })
+      setConfirmDialog({
+        ...confirmDialog,
+        isOpen:false
+      })
   };
  
   const handleTaskCardEdit = (row) => {
@@ -157,8 +172,17 @@ const AccountRelatedItems = ({ item }) => {
     navigate("/taskDetailPage", { state: { record: { item } } })
   };
 
-  const handleTaskCardDelete = (row) => {
-
+  const handleReqTaskCardDelete = (e,row) => {
+    e.stopPropagation();
+console.log('inside handleTaskCardDelete fn')
+    setConfirmDialog({
+      isOpen:true,
+      title:`Are you sure to delete this Record ?`,
+      subTitle:"You can't undo this Operation",
+      onConfirm:()=>{onConfirmTaskCardDelete(row)}
+    })
+  }
+  const onConfirmTaskCardDelete=(row)=>{
     console.log('req delete rec', row);
     axios.post(taskDeleteURL+ row._id)
       .then((res) => {
@@ -170,9 +194,6 @@ const AccountRelatedItems = ({ item }) => {
           type: 'success'
       })
       setMenuOpen(false)
-      setTimeout(
-        getTasksbyAccountId(accountRecordId)
-      )
       })
       .catch((error) => {
         console.log('api delete error', error);
@@ -184,6 +205,10 @@ const AccountRelatedItems = ({ item }) => {
       setTimeout(
         getTasksbyAccountId(accountRecordId)
       )
+      })
+      setConfirmDialog({
+        ...confirmDialog,
+        isOpen:false
       })
   };
 
@@ -247,7 +272,7 @@ const columns = [
             <EditIcon onClick={(e) => handleContactCardEdit(e, params.row)} />
           </IconButton>
           <IconButton style={{ padding: '20px' }}>
-            <DeleteIcon onClick={(e) => handleContactCardDelete(e, params.row)} />
+            <DeleteIcon onClick={(e) => handleReqContactCardDelete(e, params.row)} />
           </IconButton>
         </>
       );
@@ -259,7 +284,9 @@ const columns = [
   return (
     <>
      
-     <Notification notify={notify} setNotify={setNotify} />
+     <ToastNotification notify={notify} setNotify={setNotify} />
+     <DeleteConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog}  moreModalClose={handleMoreMenuClose}/>
+
 
       <div style={{ textAlign: "center", marginBottom: "10px" }}>
 
@@ -326,10 +353,9 @@ const columns = [
                                       }}
                                     >
                                       <MenuItem onClick={() => handleTaskCardEdit(menuSelectRec)}>Edit</MenuItem>
-                                      <MenuItem onClick={() => handleTaskCardDelete(menuSelectRec)}>Delete</MenuItem>
+                                      <MenuItem onClick={(e) => handleReqTaskCardDelete(e,menuSelectRec)}>Delete</MenuItem>
                                     </Menu>
                                   </IconButton>
-
                                 </Grid>
                               </Grid>
                             </div>
@@ -376,22 +402,26 @@ const columns = [
         <div style={{ textAlign: "end", marginBottom: "5px" }}>
               <Button variant="contained" color="info" onClick={() => handleContactModalOpen()} >Add Contact</Button>
             </div>
-        <Box sx={{ height: 315, width: '100%' }}>
+            {
+              relatedContact.length>0 && 
+              <Box sx={{ height: 315, width: '100%' }}>
 
-          <DataGrid
-                      rows={relatedContact}
-                      columns={columns}
-                      getRowId={(row) => row._id}
-                      pageSize={4}
-                      rowsPerPageOptions={[4]}
-                      //  onCellClick={handleOnCellClick}
-                      components={{ Pagination:CustomPagination}}
-                     
-                      disableColumnMenu
-                      autoHeight={true}
-                    />
- 
-    </Box>
+              <DataGrid
+                          rows={relatedContact}
+                          columns={columns}
+                          getRowId={(row) => row._id}
+                          pageSize={4}
+                          rowsPerPageOptions={[4]}
+                          //  onCellClick={handleOnCellClick}
+                          components={{ Pagination:CustomPagination}}
+                         
+                          disableColumnMenu
+                          autoHeight={true}
+                        />
+     
+        </Box>
+            }
+      
 
         </AccordionDetails>
       </Accordion>
@@ -401,6 +431,7 @@ const columns = [
         onClose={handleTaskModalClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
+        sx={{ backdropFilter: "blur(2px)" }}
       >
         <Box sx={ModalStyle}>
           <ModalAccTask handleModal={handleTaskModalClose} />
@@ -414,6 +445,7 @@ const columns = [
         onClose={handleConatctModalClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
+        sx={{ backdropFilter: "blur(2px)" }}
       >
         <Box sx={ModalStyle}>
           <ModalConAccount  handleModal={handleConatctModalClose} />

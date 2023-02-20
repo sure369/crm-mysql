@@ -6,7 +6,7 @@ import { Grid, Button, DialogActions,MenuItem } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom"
 import axios from 'axios'
 import "../formik/FormStyles.css"
-import Notification from '../toast/Notification';
+import ToastNotification from '../toast/ToastNotification';
 import { InvCitiesPickList,InvCountryPickList, InvStatusPicklist, InvTypePicklist } from '../../data/pickLists';
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 
@@ -114,12 +114,10 @@ const InventoryDetailPage = ({ item }) => {
         if (showNew) {
             values.modifiedDate = dateSeconds;
             values.createdDate = dateSeconds;
-            delete values.propertyCities;
         }
         else if (!showNew) {
             values.modifiedDate = dateSeconds;
             values.createdDate = createDateSec;
-            delete values.propertyCities;
         }
 
         console.log('after change form submission value', values);
@@ -177,7 +175,7 @@ const InventoryDetailPage = ({ item }) => {
 
                         return (
                             <>
-                                <Notification notify={notify} setNotify={setNotify} />
+                                <ToastNotification notify={notify} setNotify={setNotify} />
                                 <Form>
                                     <Grid container spacing={2}>
                                         <Grid item xs={6} md={6}>
@@ -201,7 +199,8 @@ const InventoryDetailPage = ({ item }) => {
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="type">Type <span className="text-danger">*</span> </label>
                                             <Field name="type" component={CustomizedSelectForFormik}>
-                                               {
+                                            <MenuItem value=""><em>None</em></MenuItem>
+                                             {
                                                 InvTypePicklist.map((i)=>{
                                                     return <MenuItem value={i.value}>{i.text}</MenuItem>	
                                                 })
@@ -214,7 +213,7 @@ const InventoryDetailPage = ({ item }) => {
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="status">Status <span className="text-danger">*</span> </label>
                                             <Field name="status" component={CustomizedSelectForFormik}>
-                                            
+                                            <MenuItem value=""><em>None</em></MenuItem>
                                                {
                                                 InvStatusPicklist.map((i)=>{
                                                     return <MenuItem value={i.value}>{i.text}</MenuItem>	
@@ -246,6 +245,7 @@ const InventoryDetailPage = ({ item }) => {
                                                     setFieldValue("propertyCities", _cities);
                                                 }}
                                             >
+                                                 <MenuItem value=""><em>None</em></MenuItem>
                                               {
                                                 InvCountryPickList.map((i)=>{
                                                     return <MenuItem value={i.value}>{i.text}</MenuItem>
@@ -263,6 +263,7 @@ const InventoryDetailPage = ({ item }) => {
                                                 component={CustomizedSelectForFormik}
                                                 onChange={handleChange}
                                             >
+                                                 <MenuItem value=""><em>None</em></MenuItem>
                                                  {values.propertyCities &&
                                                     values.propertyCities.map((r) => (
                                                       

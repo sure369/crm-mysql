@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { Grid, Button, TextField, Forminput, Autocomplete, DialogActions,MenuItem } from "@mui/material";
+import { Grid, Button, TextField, Forminput, Autocomplete, DialogActions, MenuItem } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom"
 import axios from 'axios'
 import "../formik/FormStyles.css"
-import Notification from '../toast/Notification';
-import { NameSalutionPickList ,LeadSourcePickList ,IndustryPickList, LeadStatusPicklist } from '../../data/pickLists';
+import ToastNotification from '../toast/ToastNotification';
+import { NameSalutionPickList, LeadSourcePickList, IndustryPickList, LeadStatusPicklist } from '../../data/pickLists';
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 
 
@@ -181,20 +181,20 @@ const LeadDetailPage = ({ item }) => {
 
                         return (
                             <>
-                                <Notification notify={notify} setNotify={setNotify} />
-
+                                <ToastNotification notify={notify} setNotify={setNotify} />
                                 <Form>
                                     <Grid container spacing={2}>
-                                        
+
                                         <Grid item xs={6} md={2}>
                                             <label htmlFor="salutation">Salutation  </label>
-                                            <Field name="salutation" component={CustomizedSelectForFormik}  className="form-customSelect">
-                                                    {
-                                                        NameSalutionPickList.map((i)=>{
-                                                            return <MenuItem value={i.value}>{i.text}</MenuItem>	
-                                                        })
-                                                    }
-                                                </Field>
+                                            <Field name="salutation" component={CustomizedSelectForFormik} className="form-customSelect">
+                                                <MenuItem value=""><em>None</em></MenuItem>
+                                                {
+                                                    NameSalutionPickList.map((i) => {
+                                                        return <MenuItem value={i.value}>{i.text}</MenuItem>
+                                                    })
+                                                }
+                                            </Field>
                                         </Grid>
                                         <Grid item xs={6} md={4}>
                                             <label htmlFor="firstName" >First Name</label>
@@ -236,33 +236,35 @@ const LeadDetailPage = ({ item }) => {
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="leadSource"> Lead Source</label>
-                                            <Field name="leadSource" component={CustomizedSelectForFormik}  className="form-customSelect">
-                                                    {
-                                                        LeadSourcePickList.map((i)=>{
-                                                            return <MenuItem value={i.value}>{i.text}</MenuItem>	
-                                                        })
-                                                    }
-                                                </Field>
+                                            <Field name="leadSource" component={CustomizedSelectForFormik} className="form-customSelect">
+                                                <MenuItem value=""><em>None</em></MenuItem>
+                                                {
+                                                    LeadSourcePickList.map((i) => {
+                                                        return <MenuItem value={i.value}>{i.text}</MenuItem>
+                                                    })
+                                                }
+                                            </Field>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="industry">Industry</label>
-                                            <Field name="industry"  component={CustomizedSelectForFormik}  className="form-customSelect">
-                                            
-                                              {
-                                                IndustryPickList.map((i)=>{
-                                                    return <MenuItem value={i.value}>{i.text}</MenuItem>	
-                                                })
-                                              } 
+                                            <Field name="industry" component={CustomizedSelectForFormik} className="form-customSelect">
+                                                <MenuItem value=""><em>None</em></MenuItem>
+                                                {
+                                                    IndustryPickList.map((i) => {
+                                                        return <MenuItem value={i.value}>{i.text}</MenuItem>
+                                                    })
+                                                }
                                             </Field>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="leadStatus"> Lead Status <span className="text-danger">*</span> </label>
-                                            <Field name="leadStatus" component={CustomizedSelectForFormik}  className="form-customSelect">
-                                              {
-                                                LeadStatusPicklist.map((i)=>{
-                                                    return <MenuItem value={i.value}>{i.text}</MenuItem>	   
-                                                })
-                                              } 
+                                            <Field name="leadStatus" component={CustomizedSelectForFormik} className="form-customSelect">
+                                                <MenuItem value=""><em>None</em></MenuItem>
+                                                {
+                                                    LeadStatusPicklist.map((i) => {
+                                                        return <MenuItem value={i.value}>{i.text}</MenuItem>
+                                                    })
+                                                }
                                             </Field>
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="leadStatus" />
@@ -289,10 +291,12 @@ const LeadDetailPage = ({ item }) => {
                                                         setFieldValue("userDetails", value)
                                                     }
                                                 }}
-
                                                 onInputChange={(event, newInputValue) => {
                                                     console.log('newInputValue', newInputValue);
                                                     if (newInputValue.length >= 3) {
+                                                        FetchUsersbyName(newInputValue);
+                                                    }
+                                                    else if (newInputValue.length == 0) {
                                                         FetchUsersbyName(newInputValue);
                                                     }
                                                 }}
@@ -321,7 +325,6 @@ const LeadDetailPage = ({ item }) => {
                                                 showNew ?
                                                     <Button type='success' variant="contained" color="secondary" disabled={isSubmitting}>Save</Button>
                                                     :
-
                                                     <Button type='success' variant="contained" color="secondary" disabled={isSubmitting}>Update</Button>
                                             }
                                             <Button type="reset" variant="contained" onClick={handleFormClose}  >Cancel</Button>

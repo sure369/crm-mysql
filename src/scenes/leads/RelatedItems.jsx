@@ -11,7 +11,8 @@ import axios from 'axios'
 import ModalLeadTask from "../tasks/ModalLeadTask";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ModalLeadOpportunity from "../opportunities/ModalLeadOpp";
-import Notification from '../toast/Notification';
+import ToastNotification from '../toast/ToastNotification';
+import DeleteConfirmDialog from "../toast/DeleteConfirmDialog";
 
 const style = {
   position: 'absolute',
@@ -37,6 +38,7 @@ const LeadRelatedItems = ({ item }) => {
 
   const [leadRecordId, setLeadRecordId] = useState()
   const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
+  const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, title: '', subTitle: '' })
 
   const [taskModalOpen, setTaskModalOpen] = useState(false);
   const [taskItemsPerPage, setTaskItemsPerPage] = useState(2);
@@ -120,8 +122,18 @@ const LeadRelatedItems = ({ item }) => {
     navigate("/taskDetailPage", { state: { record: { item } } })
   };
 
-  const handleTaskCardDelete = (row) => {
+  const handleReqTaskCardDelete = (e,row) => {
+    e.stopPropagation();
+    console.log('inside handleTaskCardDelete fn')
+        setConfirmDialog({
+          isOpen:true,
+          title:`Are you sure to delete this Record ?`,
+          subTitle:"You can't undo this Operation",
+          onConfirm:()=>{onConfirmTaskCardDelete(row)}
+        })
+      }
 
+      const onConfirmTaskCardDelete=(row)=>{
     console.log('req delete rec', row);
 
     axios.post(taskDeleteURL + row._id)
@@ -147,6 +159,10 @@ const LeadRelatedItems = ({ item }) => {
           type: 'error'
         })
       })
+      setConfirmDialog({
+        ...confirmDialog,
+        isOpen:false
+      })
   };
 
   const handleOpportunityCardEdit = (row) => {
@@ -157,7 +173,19 @@ const LeadRelatedItems = ({ item }) => {
    navigate("/opportunityDetailPage", { state: { record: { item } } })
   };
 
-  const handleOpportunityCardDelete =(row) =>{
+  const handleReqOpportunityCardDelete =(e,row) =>{
+
+    e.stopPropagation();
+    console.log('inside handleTaskCardDelete fn')
+        setConfirmDialog({
+          isOpen:true,
+          title:`Are you sure to delete this Record ?`,
+          subTitle:"You can't undo this Operation",
+          onConfirm:()=>{onConfirmOpportunityCardDelete(row)}
+        })
+      }
+
+  const  onConfirmOpportunityCardDelete=(row)=>{
 
     console.log('req opp delete rec',row)
     axios.post(opportunityDeleteURL + row._id)
@@ -182,7 +210,10 @@ const LeadRelatedItems = ({ item }) => {
         message: error.message,
         type: 'error'
       })
-
+    })
+    setConfirmDialog({
+      ...confirmDialog,
+      isOpen:false
     })
 
   }
@@ -237,7 +268,8 @@ const LeadRelatedItems = ({ item }) => {
     // menu dropdown end
   return (
     <>
-    <Notification notify={notify} setNotify={setNotify} />
+    <ToastNotification notify={notify} setNotify={setNotify} />
+    <DeleteConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog}  moreModalClose={handleMoreMenuClose}/>
 
       <div style={{ textAlign: "center", marginBottom: "10px" }}>
 
@@ -302,7 +334,7 @@ const LeadRelatedItems = ({ item }) => {
                                       }}
                                     >
                                       <MenuItem onClick={() => handleTaskCardEdit(menuSelectRec)}>Edit</MenuItem>
-                                      <MenuItem onClick={() => handleTaskCardDelete(menuSelectRec)}>Delete</MenuItem>
+                                      <MenuItem onClick={(e) => handleReqTaskCardDelete(e,menuSelectRec)}>Delete</MenuItem>
                                     </Menu>
                                   </IconButton>
                                 </Grid>
@@ -389,7 +421,7 @@ const LeadRelatedItems = ({ item }) => {
                                       }}
                                     >
                                       <MenuItem onClick={() => handleOpportunityCardEdit(oppMenuSelectRec)}>Edit</MenuItem>
-                                      <MenuItem onClick={() => handleOpportunityCardDelete(oppMenuSelectRec)}>Delete</MenuItem>
+                                      <MenuItem onClick={(e) => handleReqOpportunityCardDelete(e,oppMenuSelectRec)}>Delete</MenuItem>
                                     </Menu>
                                   </IconButton>
                                 </Grid>
@@ -429,6 +461,7 @@ const LeadRelatedItems = ({ item }) => {
         onClose={handleTaskModalClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
+        sx={{ backdropFilter: "blur(2px)" }}
       >
         <Box sx={style}>
           <ModalLeadTask handleModal={handleTaskModalClose} />
@@ -440,6 +473,7 @@ const LeadRelatedItems = ({ item }) => {
         onClose={handleOpportunityModalClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
+        sx={{ backdropFilter: "blur(2px)" }}
       >
         <Box sx={style}>
           <ModalLeadOpportunity handleModal={handleOpportunityModalClose} />

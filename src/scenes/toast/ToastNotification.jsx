@@ -1,7 +1,7 @@
 import React from 'react'
 import { Snackbar,Alert } from '@mui/material'
 
-function Notification(props) {
+function ToastNotification(props) {
 
     const{notify,setNotify}=props
 
@@ -33,4 +33,4 @@ function Notification(props) {
   )
 }
 
-export default Notification
+export default ToastNotification

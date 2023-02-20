@@ -6,7 +6,7 @@ import {    Grid, Button, DialogActions,Autocomplete, TextField ,MenuItem} from 
 import axios from 'axios'
 import "../formik/FormStyles.css"
 import PreviewFile from "../formik/PreviewFile";
-import Notification from '../toast/Notification';
+import ToastNotification from "../toast/ToastNotification";
 import { TaskObjectPicklist, TaskSubjectPicklist } from "../../data/pickLists";
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 import { LocalizationProvider   } from '@mui/x-date-pickers/LocalizationProvider';
@@ -66,8 +66,6 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
         modifiedDate: '',
     }
 
-
-
     const savedValues = {
         subject: singleTask?.subject ?? "",
         relatedto: singleTask?.relatedto ?? "",
@@ -94,9 +92,7 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
         accountDetails:singleTask?.accountDetails ??"",
         leadDetails:singleTask?.leadDetails ??"",
         opportunityDetails:singleTask?.opportunityDetails ??"",
-
     }
-
 
     const validationSchema = Yup.object({
         subject: Yup
@@ -261,7 +257,6 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
 
             <Formik
                 enableReinitialize={true}
-                // initialValues={initialValues}
                 initialValues={showNew ? initialValues : savedValues}
                 validationSchema={validationSchema}
                 onSubmit={(values, { resetForm }) => formSubmission(values, { resetForm })}
@@ -279,14 +274,14 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
 
                     return (
                         <>
-                            <Notification notify={notify} setNotify={setNotify} />
-
+                            <ToastNotification notify={notify} setNotify={setNotify} />
                             <Form>
                                 <Grid container spacing={2}>
                                     <Grid item xs={6} md={6}>
                                         <label htmlFor="subject">Subject  <span className="text-danger">*</span></label>
                                         <Field name="subject" component={CustomizedSelectForFormik}  className="form-customSelect">
-                                                    {
+                                        <MenuItem value=""><em>None</em></MenuItem>
+                                         {
                                                         TaskSubjectPicklist.map((i)=>{
                                                             return <MenuItem value={i.value}>{i.text}</MenuItem>	
                                                         })
@@ -295,8 +290,7 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
                                         <div style={{ color: 'red' }}>
                                             <ErrorMessage name="subject" />
                                         </div>
-                                    </Grid>                            
-                                    
+                                    </Grid>                           
                                     <Grid item xs={6} md={6}>
                                         <label htmlFor="object">object  </label>
                                         <Field 
@@ -308,7 +302,8 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
                                                 callEvent(e.target.value)
                                                 setFieldValue('object', e.target.value)
                                             }}                                       
-                                        >                                        
+                                        >    
+                                         <MenuItem value=""><em>None</em></MenuItem>                                    
                                               {
                                                 TaskObjectPicklist.map((i)=>{
                                                     return <MenuItem value={i.value}>{i.text}</MenuItem>
@@ -317,22 +312,17 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
                                         </Field>
                                     </Grid>
                                     <Grid item xs={6} md={6}>
-                                        <label htmlFor="relatedto"> Realated To  </label>
-                                      
+                                        <label htmlFor="relatedto"> Realated To  </label> 
                                              <Autocomplete
-
                                                 name="relatedto"
                                                 readOnly={autocompleteReadOnly}
                                                 options={relatedRecNames}
                                                 value={values.accountDetails ||values.opportunityDetails ||values.leadDetails  }
-
                                                 getOptionLabel={option => option.leadName || option.accountName || option.opportunityName || ''}
-
                                                 isOptionEqualToValue={(option, value) =>
                                                     option.id === value
                                                 }
                                                 onChange={(e, value) => {
-
                                                     console.log('inside onchange values', value);
                                                     if(!value){                                
                                                         console.log('!value',value);
@@ -346,8 +336,8 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
                                                             setFieldValue('LeadId', '')
                                                             setFieldValue('leadDetails','')
                                                         }
-
-                                                    }else{
+                                                    }
+                                                    else{
                                                         console.log('value',value);
                                                         if (values.object === 'Account') {
                                                             setFieldValue('AccountId', value.id)
@@ -361,7 +351,6 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
                                                         }
                                                     }
                                                 }}
-
                                                 onInputChange={(event, newInputValue) => {
                                                     if (newInputValue.length >= 3) {
                                                         FetchObjectsbyName(newInputValue, url)
@@ -373,11 +362,8 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
                                                 renderInput={params => (
                                                     <Field component={TextField} {...params} name="realatedTo" />
                                                 )}
-                                                />
-                                                                                        
-                                                                                        
+                                                />                                         
                                     </Grid>
-
                                     <Grid item xs={6} md={6}>
                                         <label htmlFor="assignedTo">assignedTo  </label>
                                         <Field name="assignedTo" type="text" class="form-input" />
@@ -393,12 +379,9 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
                                         }}
                                          renderInput={(params) => <TextField  {...params} className='form-input' error={false} />}
                                      />
-
                                     </Grid>
-                                  
                                     <Grid item xs={6} md={6}>
                                         <label htmlFor="EndDate">EndDate   </label> <br/>
-                                        
                                         <DateTimePicker
                                                 renderInput={(params) => <TextField {...params} className='form-input' error={false}/>}
                                                 value={values.EndDate}
@@ -406,9 +389,7 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
                                                     setFieldValue('EndDate',e)                                            
                                                 }}
                                                 />
-
                                     </Grid>
-                                  
                                     </LocalizationProvider>
                                     {/* <Grid item xs={12} md={12}>
 
@@ -457,7 +438,6 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
                                                 <label htmlFor="createdDate" >created Date</label>
                                                 <Field name='createdDate' type="text" class="form-input" disabled />
                                             </Grid>
-
                                             <Grid item xs={6} md={6}>
                                                 <label htmlFor="modifiedDate" >Modified Date</label>
                                                 <Field name='modifiedDate' type="text" class="form-input" disabled />
@@ -465,10 +445,8 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
                                         </>
                                     )}
                                 </Grid>
-
                                 <div className='action-buttons'>
                                     <DialogActions sx={{ justifyContent: "space-between" }}>
-
                                         {
                                             showNew ?
                                                 <Button type='success' variant="contained" color="secondary" disabled={isSubmitting}>Save</Button>
@@ -485,8 +463,6 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
                     )
                 }}
             </Formik>
-
-
         </Grid>
     )
 

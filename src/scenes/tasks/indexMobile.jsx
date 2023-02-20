@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, useTheme, IconButton, 
-    Card,CardContent,Pagination,Tooltip } from "@mui/material";
-
+import {
+  Box, Button, useTheme, Card, CardContent, IconButton,
+  Pagination, Tooltip, Grid, MenuItem, Menu
+} from "@mui/material";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import Notification from '../toast/Notification';
-import ConfirmDialog from '../toast/ConfirmDialog';
+import ToastNotification from '../toast/ToastNotification';
+import DeleteConfirmDialog from '../toast/DeleteConfirmDialog';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 const TaskMobile = () => {
 
@@ -29,12 +29,10 @@ const TaskMobile = () => {
   const [showDelete, setShowDelete] = useState(false)
   const [selectedRecordIds, setSelectedRecordIds] = useState()
   const [selectedRecordDatas, setSelectedRecordDatas] = useState()
-
      
   const [itemsPerPage, setItemsPerPage] = useState(3);
   const [page, setPage] = useState(1);
   const [noOfPages, setNoOfPages] = useState(0);
-
 
   useEffect(() => {
     fetchRecords();
@@ -69,13 +67,13 @@ const TaskMobile = () => {
     navigate("/taskDetailPage", { state: { record: {} } })
   };
 
-  const handleOnCellClick = (e, row) => {
+  const handleCardEdit = ( row) => {
     console.log('selected record', row);
     const item = row;
     navigate("/taskDetailPage", { state: { record: { item } } })
   };
 
-  const onHandleDelete = (e, row) => {
+  const handleCardDelete = (e, row) => {
      e.stopPropagation();
     console.log('req delete rec', row);
     setConfirmDialog({
@@ -105,12 +103,13 @@ const TaskMobile = () => {
     axios.post(urlDelete + row)
       .then((res) => {
         console.log('api delete response', res);
-        fetchRecords();
         setNotify({
           isOpen: true,
           message: res.data,
           type: 'success'
         })
+        setMenuOpen(false)
+        fetchRecords()
       })
       .catch((error) => {
         console.log('api delete error', error);
@@ -131,12 +130,27 @@ const TaskMobile = () => {
     setPage(value);
   };
 
+// menu dropdown strart //menu pass rec
+const [anchorEl, setAnchorEl] = useState(null);
+const [menuSelectRec, setMenuSelectRec] = useState()
+const [menuOpen, setMenuOpen] = useState();
 
+const handleTaskMoreMenuClick = (item, event) => {
+  setMenuSelectRec(item)
+  setAnchorEl(event.currentTarget);
+  setMenuOpen(true)
+
+};
+const handleMoreMenuClose = () => {
+  setAnchorEl(null);
+  setMenuOpen(false)
+};
+// menu dropdown end
 
   return (
     <>
-      <Notification notify={notify} setNotify={setNotify} />
-      <ConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />
+      <ToastNotification notify={notify} setNotify={setNotify} />
+      <DeleteConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} moreModalClose={handleMoreMenuClose} />
 
       <Box m="20px">
         <Header
@@ -148,7 +162,6 @@ const TaskMobile = () => {
             <Button variant="contained" color="info" onClick={handleAddRecord}>
                 New
             </Button>
-
         </div>
 
       <Card dense compoent="span" sx={{ bgcolor: "white" }}>
@@ -156,46 +169,73 @@ const TaskMobile = () => {
             records
               .slice((page - 1) * itemsPerPage, page * itemsPerPage)
               .map((item) => {
-
-                let   starDateConvert = new Date(item.StartDate).getUTCFullYear()
+                let   starDateConvert 
+                if(item.StartDate){
+                   starDateConvert = new Date(item.StartDate).getUTCFullYear()
                 + '-' +  ('0'+ (new Date(item.StartDate).getUTCMonth() + 1)).slice(-2) 
                 + '-' + ('0'+ ( new Date(item.StartDate).getUTCDate())).slice(-2)  ||''
-                
+                }
                 let related ;
-                // if(item.object==='Account' && item.Accountdetails.length>0){
-                //     related = item.Accountdetails[0].accountName
-                // }
-                // else  if(item.object==='Lead' && item.Leaddetails.length>0){
-                //     related = item.Leaddetails[0].fullName
-                // }
-                // else  if(item.object==='Opportunity' && item.Opportunitydetails.length>0){
-                //     related = item.Opportunitydetails[0].opportunityName
-                // }                
+                if(item.object==='Account' && item.Accountdetails.length>0){
+                    related = item.Accountdetails[0].accountName
+                }
+                else  if(item.object==='Lead' && item.Leaddetails.length>0){
+                    related = item.Leaddetails[0].fullName
+                }
+                else  if(item.object==='Opportunity' && item.Opportunitydetails.length>0){
+                    related = item.Opportunitydetails[0].opportunityName
+                }
+                
 
                 return (
                   <div>
                     <CardContent sx={{ bgcolor: "aliceblue", m: "20px" }}>
                       <div
                         key={item._id}
-                        button
-                        onClick={(e) => handleOnCellClick(e,item)}
                       >
-                        {/* //()=>setRecordDetailId(item.Id) */}
-                     
+                         <Grid container spacing={2}>
+                          <Grid item xs={10} md={10}>                     
                         <div>Subject : {item.subject} </div>
                         <div>Object :{item.object} </div>
                         <div>Related Rec: {related}</div>
                         <div>Date : {starDateConvert} </div>
-                        
+                        </Grid>
+                          <Grid item xs={2} md={2}>
+                            <IconButton>
+                              <MoreVertIcon onClick={(event) => handleTaskMoreMenuClick(item, event)} />
+                              <Menu
+                                anchorEl={anchorEl}
+                                open={menuOpen}
+                                onClose={handleMoreMenuClose}
+                                anchorOrigin={{
+                                  vertical: 'top',
+                                  horizontal: 'left',
+                                }}
+                                transformOrigin={{
+                                  vertical: 'top',
+                                  horizontal: 'left',
+                                }}
+                              >
+                                <MenuItem onClick={() => handleCardEdit(menuSelectRec)}>Edit</MenuItem>
+                                <MenuItem onClick={(e) => handleCardDelete(e, menuSelectRec)}>Delete</MenuItem>
+                              </Menu>
+                            </IconButton>
+                          </Grid>
+                        </Grid>
                       </div>
                     </CardContent>
                   </div>
                 );
               })
-            :"No Data"
+            :
+            <>
+            <CardContent sx={{ bgcolor: "aliceblue", m: "20px" }}>
+              <div>No Records Found</div>
+            </CardContent>
+          </>
             }
           </Card>
-
+          {records.length > 0 &&
           <Box 
            sx={{
                     margin: "auto",
@@ -215,7 +255,7 @@ const TaskMobile = () => {
               sx={{justifyContent:'center'}}
             />
           </Box>
-
+}
           </Box>
     </>
   )

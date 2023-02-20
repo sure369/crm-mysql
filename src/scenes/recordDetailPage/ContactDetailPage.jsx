@@ -10,7 +10,7 @@ import { useParams, useNavigate } from "react-router-dom"
 import axios from 'axios'
 import "../formik/FormStyles.css"
 import EmailModalPage from './EmailModalPage';
-import Notification from '../toast/Notification';
+import ToastNotification from '../toast/ToastNotification';
 import EmailIcon from '@mui/icons-material/Email';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import WhatAppModalPage from './WhatsAppModalPage';
@@ -251,13 +251,14 @@ const ContactDetailPage = ({ item }) => {
 
                             return (
                                 <>
-                                    <Notification notify={notify} setNotify={setNotify} />
+                                    <ToastNotification notify={notify} setNotify={setNotify} />
 
                                     <Form>
                                         <Grid container spacing={2}>
                                             <Grid item xs={6} md={2}>
                                                 <label htmlFor="salutation">Salutation  </label>
                                                 <Field name="salutation" component={CustomizedSelectForFormik} className="form-customSelect">
+                                                <MenuItem value=""><em>None</em></MenuItem>
                                                     {
                                                         NameSalutionPickList.map((i) => {
                                                             return <MenuItem value={i.value}>{i.text}</MenuItem>
@@ -308,8 +309,10 @@ const ContactDetailPage = ({ item }) => {
                                                     }}
                                                     onInputChange={(event, newInputValue) => {
                                                         console.log('newInputValue', newInputValue);
-
                                                         if (newInputValue.length >= 3) {
+                                                            FetchAccountsbyName(newInputValue);
+                                                        }
+                                                        else  if (newInputValue.length == 0) {
                                                             FetchAccountsbyName(newInputValue);
                                                         }
                                                     }}
@@ -337,7 +340,7 @@ const ContactDetailPage = ({ item }) => {
                                                         onChange={(e) => {
                                                             setFieldValue('dob', e)
                                                         }}
-                                                        renderInput={(params) => <TextField  {...params} className='form-input' />}
+                                                        renderInput={(params) => <TextField  {...params} className='form-input' error={false} />}
                                                     />
 
                                                 </LocalizationProvider>
@@ -356,7 +359,8 @@ const ContactDetailPage = ({ item }) => {
                                             <Grid item xs={6} md={6}>
                                                 <label htmlFor="leadSource"> lead Source</label>
                                                 <Field name="leadSource" component={CustomizedSelectForFormik} className="form-customSelect">
-                                                    {
+                                                <MenuItem value=""><em>None</em></MenuItem>
+                                                 {
                                                         LeadSourcePickList.map((i) => {
                                                             return <MenuItem value={i.value}>{i.text}</MenuItem>
                                                         })
