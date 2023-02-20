@@ -111,6 +111,9 @@ const AccountDetailPage = ({ item }) => {
         if(showNew){
             values.modifiedDate = dateSeconds;
             values.createdDate = dateSeconds;
+            values.InventoryName=values.inventoryDetails.propertyName;
+            values.InventoryId =values.inventoryDetails._id;
+
             if(values.InventoryId===''){
                 delete values.InventoryId;
             }
@@ -118,6 +121,9 @@ const AccountDetailPage = ({ item }) => {
         else if(!showNew){
             values.modifiedDate = dateSeconds;
             values.createdDate = createDateSec;
+            values.InventoryName=values.inventoryDetails.propertyName;
+            values.InventoryId =values.inventoryDetails._id;
+            
             if(values.InventoryId===''){
                 delete values.InventoryId;
             }

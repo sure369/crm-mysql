@@ -122,7 +122,8 @@ const ContactDetailPage = ({ item }) => {
             values.modifiedDate = dateSeconds;
             values.createdDate = dateSeconds;
             values.fullName = values.firstName + ' ' + values.lastName;
-
+            values.AccountName= values.accountDetails.accountName;
+            values.AccountId= values.accountDetails.id
 
             if (values.dob) {
                 values.dob = dobSec;

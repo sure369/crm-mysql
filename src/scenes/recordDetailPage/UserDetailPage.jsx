@@ -101,11 +101,15 @@ const UserDetailPage = ({ item }) => {
             values.modifiedDate = dateSeconds;
             values.createdDate = dateSeconds;
             values.fullName = values.firstName + ' ' + values.lastName;
+            values.UserName =values.userDetails.userName;
+            values.UserId= values.userDetails.id;
         }
         else if (!showNew) {
             values.modifiedDate = dateSeconds;
             values.createdDate = createDateSec;
             values.fullName = values.firstName + ' ' + values.lastName;
+            values.UserName =values.userDetails.userName;
+            values.UserId= values.userDetails.id;
         }
         console.log('after change form submission value', values);
 

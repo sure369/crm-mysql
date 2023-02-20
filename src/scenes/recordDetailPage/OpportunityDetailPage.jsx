@@ -92,7 +92,7 @@ const OpportunityDetailPage = ({ item }) => {
             values.InventoryName=values.inventoryDetails.propertyName;
             values.LeadName=values.leadDetails.leadName
             values.LeadId=values.leadDetails.id;
-            values.InventoryId=values.inventoryDetails._id
+            values.InventoryId=values.inventoryDetails.id
             // delete values.leadDetails;
             // delete values.inventoryDetails
         if (showNew) {
@@ -121,7 +121,7 @@ const OpportunityDetailPage = ({ item }) => {
             values.InventoryName=values.inventoryDetails.propertyName;
             values.LeadName=values.leadDetails.leadName
             values.LeadId=values.leadDetails.id;
-            values.InventoryId=values.inventoryDetails._id
+            values.InventoryId=values.inventoryDetails.id
             // delete values.leadDetails;
             // delete values.inventoryDetails
 
