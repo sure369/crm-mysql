@@ -134,16 +134,25 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
             if (values.object === 'Account') {               
                 delete values.OpportunityId; 
                 delete values.LeadId; 
+                values.AccountId= values.accountDetails.id;
+                values.AccountName= values.accountDetails.accountName;
             }else if (values.object === 'Opportunity') {                
                  delete values.AccountId; 
                  delete values.LeadId;    
+                 values.OpportunityId = values.opportunityDetails.id;
+                 values.OpportunityName = values.opportunityDetails.opportunityName
             }else if (values.object === 'Lead') {
                 delete values.OpportunityId; 
                 delete values.AccountId; 
+                values.LeadName = values.leadDetails.leadName
+                values.LeadId = values.leadDetails.id
             }else{
                 delete values.OpportunityId; 
                 delete values.AccountId; 
-                delete values.LeadId; 
+                delete values.LeadId;
+                delete values.AccountName;
+                delete values.LeadName;
+                delete values.OpportunityName; 
             }
         }
         else if (!showNew) {
@@ -163,28 +172,29 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
             if ( values.object === 'Account') {               
                 delete values.OpportunityId; 
                 delete values.LeadId;
-                if(!values.AccountId){
-                    delete values.AccountId
-                }
+                values.AccountId= values.accountDetails.id;
+                values.AccountName= values.accountDetails.accountName;
+               
             }else if ( values.object === 'Opportunity') {                
                  delete values.AccountId; 
                  delete values.LeadId;  
-                 if(!values.OpportunityId){
-                    delete values.OpportunityId
-                }  
+                 values.OpportunityId = values.opportunityDetails.id;
+                 values.OpportunityName = values.opportunityDetails.opportunityName 
             }else if (values.object==='Lead') {
                 console.log('inside')
                 delete values.OpportunityId; 
                 delete values.AccountId; 
                 delete values.opportunityDetails
                 delete values.accountDetails
-                if(!values.LeadId){
-                    delete values.LeadId
-                }
+                values.LeadName = values.leadDetails.leadName
+                values.LeadId = values.leadDetails.id
             }else{
                 delete values.OpportunityId; 
                 delete values.AccountId; 
                 delete values.LeadId; 
+                delete values.AccountName;
+                delete values.LeadName;
+                delete values.OpportunityName;
             }
         }
         console.log('after change form submission value', values);
