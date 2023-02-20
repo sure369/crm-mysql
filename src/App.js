@@ -61,6 +61,7 @@ import ResponsiveLeads from "./scenes/leads/ResponsiveScreen";
 import ResponsiveOpportunities from "./scenes/opportunities/ResponsiveScreen";
 import ResponsiveTasks from "./scenes/tasks/ResponsiveScreen";
 import ResponsiveUsers from "./scenes/users/ResponsiveScreen";
+import LoginIndex from "./scenes/login/LoginIndex";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -99,7 +100,7 @@ function App() {
 
               <Route path="/dataLoder" element={<DataLoadPage/>} />
               <Route path ='/file' element={<DropFileInput/>} />
-              <Route path ='/test' element={<PicklistField/>} />
+              <Route path ='/test' element={<LoginIndex/>} />
               <Route path ='/test1' element={<TestForm/>} />
               <Route path='/mobi' element={<AccountsMobile/>} />
               <Route path='/invmobi' element={<InventoriesMobile/>} />

@@ -158,7 +158,7 @@ export const OppTypePicklist=[
 ]
 
 export const TaskSubjectPicklist=[   
-    {text:'None',value:'None'}, 
+    // {text:'None',value:'None'}, 
     {text:'Call',value:'Call'}, 
     {text:'Email',value:'Email'}, 
     {text:'Meeting',value:'Meeting'}, 
@@ -189,7 +189,7 @@ export const UserAccessPicklist=[
 ]
 
 export const OppIndexFilterPicklist=[  
-    {text:'None',value:''},
+    // {text:'None',value:''},
     {text:'All Opportunity',value:'All'}, 
     {text:'Closing This Month',value:'Closing This Month'}, 
     {text:'Closing Next Month',value:'Closing Next Month'}, 

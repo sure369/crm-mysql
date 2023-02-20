@@ -39,8 +39,8 @@ const OpportunityDetailPage = ({ item }) => {
     }, [])
 
     const initialValues = {
-        LeadId: '',
-        InventoryId: '',
+         LeadId: '',
+         InventoryId: '',
         opportunityName: '',
         type: '',
         leadSource: '',
@@ -54,8 +54,8 @@ const OpportunityDetailPage = ({ item }) => {
     }
 
     const savedValues = {
-        LeadId: singleOpportunity?.LeadId ?? "",
-        InventoryId: singleOpportunity?.InventoryId ?? "",
+         LeadId: singleOpportunity?.LeadId ?? "",
+         InventoryId: singleOpportunity?.InventoryId ?? "",
         opportunityName: singleOpportunity?.opportunityName ?? "",
         type: singleOpportunity?.type ?? "",
         leadSource: singleOpportunity?.leadSource ?? "",
@@ -89,7 +89,10 @@ const OpportunityDetailPage = ({ item }) => {
         let dateSeconds = new Date().getTime();
         let createDateSec = new Date(values.createdDate).getTime()
         let closeDateSec = new Date(values.closeDate).getTime()
-
+            values.InventoryName=values.inventoryDetails.propertyName;
+            values.LeadName=values.leadDetails.leadName
+            values.LeadId=values.leadDetails.id;
+            values.InventoryId=values.inventoryDetails._id
         if (showNew) {
             values.modifiedDate = dateSeconds;
             values.createdDate = dateSeconds;
@@ -113,6 +116,10 @@ const OpportunityDetailPage = ({ item }) => {
         else if (!showNew) {
             values.modifiedDate = dateSeconds;
             values.createdDate = createDateSec
+            values.InventoryName=values.inventoryDetails.propertyName;
+            values.LeadName=values.leadDetails.leadName
+            values.LeadId=values.leadDetails.id;
+            values.InventoryId=values.inventoryDetails._id
             if (values.closeDate) {
                 values.closeDate = closeDateSec;
             }

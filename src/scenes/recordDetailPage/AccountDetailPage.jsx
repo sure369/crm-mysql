@@ -375,7 +375,7 @@ const AccountDetailPage = ({ item }) => {
                                         <DialogActions sx={{ justifyContent: "space-between" }}>
                                             {
                                                 showNew ?
-                                                    <Button type='success' variant="contained" color="secondary" disabled={isSubmitting}>Save</Button>
+                                                    <Button type='success' variant="contained" color="secondary" >Save</Button>
                                                 :
                                                     <Button type='success' variant="contained" color="secondary" disabled={isSubmitting}>Update</Button>
                                             }
