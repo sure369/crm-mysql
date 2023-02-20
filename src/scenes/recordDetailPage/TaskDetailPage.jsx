@@ -15,9 +15,6 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import CustomizedSelectDisableForFormik from "../formik/CustomizedSelectDisableFormik";
 
 const UpsertUrl = `${process.env.REACT_APP_SERVER_URL}/UpsertTask`;
-const UpdateUrl = `${process.env.REACT_APP_SERVER_URL}/UpdateTask`;
-const InsertUrl = `${process.env.REACT_APP_SERVER_URL}/InsertTask`;
-
 const fetchAccountUrl = `${process.env.REACT_APP_SERVER_URL}/accountsname`;
 const fetchLeadUrl = `${process.env.REACT_APP_SERVER_URL}/LeadsbyName`;
 const fetchOpportunityUrl = `${process.env.REACT_APP_SERVER_URL}/opportunitiesbyName`;
@@ -26,10 +23,7 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
 
     const [singleTask, setSingleTask] = useState();
     const [showNew, setshowNew] = useState()
-    const [objectUrl, setObjectUrl] = useState();
-    
-    const [url,setUrl]=useState();
-
+    const [url, setUrl] = useState();
     const navigate = useNavigate();
     const fileRef = useRef();
     const location = useLocation();
@@ -47,7 +41,6 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
         console.log('true', !location.state.record.item);
         setshowNew(!location.state.record.item)
      
-        (!location.state.record.item ? setUrl(InsertUrl) : setUrl(UpdateUrl))
         if(location.state.record.item){
             console.log('inside condition')
             callEvent(location.state.record.item.object)
@@ -196,7 +189,7 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
         }
         console.log('after change form submission value', values);
 
-            await axios.post(url, values)
+            await axios.post(UpsertUrl, values)
                 .then((res) => {
                     console.log('task form Submission  response', res);
                     setNotify({
@@ -224,21 +217,21 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
 
         console.log('inside call event',initialValues.object)
 
-        let objUrl1 = e === 'Account' ? fetchAccountUrl : e === 'Lead' ? fetchLeadUrl : e === 'Opportunity' ? fetchOpportunityUrl : null
-        setObjectUrl(objUrl1)
-        FetchObjectsbyName('', objUrl1);
-        if (objectUrl == null) {
-            console.log('objectUrl', objectUrl);
+        let url1 = e === 'Account' ? fetchAccountUrl : e === 'Lead' ? fetchLeadUrl : e === 'Opportunity' ? fetchOpportunityUrl : null
+        setUrl(url1)
+        FetchObjectsbyName('', url1);
+        if (url == null) {
+            console.log('url', url);
             setRelatedRecNames([])
         }
     }
 
-    const FetchObjectsbyName = (newInputValue, objectUrl) => {
+    const FetchObjectsbyName = (newInputValue, url) => {
 
-        console.log('passed url', objectUrl)
+        console.log('passed url', url)
         console.log('new Input  value', newInputValue)
 
-        axios.post(`${objectUrl}?searchKey=${newInputValue}`)
+        axios.post(`${url}?searchKey=${newInputValue}`)
             .then((res) => {
                 console.log('res Fetch Objects byName', res.data)
                 if (typeof (res.data) === "object") {
@@ -360,10 +353,10 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
                                                 }}
                                                 onInputChange={(event, newInputValue) => {
                                                     if (newInputValue.length >= 3) {
-                                                        FetchObjectsbyName(newInputValue, objectUrl)
+                                                        FetchObjectsbyName(newInputValue, url)
                                                     }
                                                     else  if (newInputValue.length ==0) {
-                                                        FetchObjectsbyName(newInputValue, objectUrl)
+                                                        FetchObjectsbyName(newInputValue, url)
                                                     }
                                                 }}
                                                 renderInput={params => (
@@ -476,208 +469,3 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
 }
 export default TaskDetailPage
 
-
-// const formSubmission = async (values, { resetForm }) => {
-//     console.log('inside form Submission', values);
-
-//     let dateSeconds = new Date().getTime();
-//     let createDateSec = new Date(values.createdDate).getTime()
-//     let StartDateSec = new Date(values.StartDate).getTime()
-//     let EndDateSec = new Date(values.EndDate).getTime()
-
-//     if (showNew) {
-
-//         console.log('dateSeconds',dateSeconds)
-//         values.modifiedDate = dateSeconds;
-//         values.createdDate = dateSeconds;
-
-//         if (values.StartDate && values.EndDate) {
-//             values.StartDate = StartDateSec
-//             values.EndDate = EndDateSec
-//         }else if (values.StartDate) {
-//             values.StartDate = StartDateSec
-//         }else if (values.EndDate) {
-//             values.EndDate = EndDateSec
-//         }
-//         if (values.AccountId != '') {               
-//             delete values.OpportunityId; 
-//             delete values.LeadId; 
-//         }else if (values.OpportunityId != '') {                
-//              delete values.AccountId; 
-//              delete values.LeadId;    
-//         }else if (values.LeadId != '') {
-//             delete values.OpportunityId; 
-//             delete values.AccountId; 
-//         }else{
-//             delete values.OpportunityId; 
-//             delete values.AccountId; 
-//             delete values.LeadId; 
-//         }
-      
-//         console.log("test" ,values);
-//         await axios.post(UpsertUrl, values)           
-
-//             .then((res) => {
-//                 console.log('task form Submission  response', res);
-//                 setNotify({
-//                     isOpen: true,
-//                     message: res.data,
-//                     type: 'success'
-//                 })
-//                 setTimeout(() => {
-//                     navigate(-1);
-//                 }, 2000)
-//             })
-//             .catch((error) => {
-//                 console.log('task form Submission  error', error);
-//                 setNotify({
-//                     isOpen: true,
-//                     message: error.message,
-//                     type: 'error'
-//                 })
-//             })
-
-//     }
-//     else if (!showNew) {
-//         values.modifiedDate = dateSeconds;
-//         values.createdDate = createDateSec
-
-//         if (values.StartDate && values.EndDate) {
-//             values.StartDate = StartDateSec
-//             values.EndDate = EndDateSec
-//         }
-//         else if (values.StartDate) {
-//             values.StartDate = StartDateSec
-//         }
-//         else if (values.EndDate) {
-//             values.EndDate = EndDateSec
-//         }
-//         if (values.AccountId != '') {               
-//             delete values.OpportunityId; 
-//             delete values.LeadId; 
-//         }else if (values.OpportunityId != '') {                
-//              delete values.AccountId; 
-//              delete values.LeadId;    
-//         }else if (values.LeadId != '') {
-//             delete values.OpportunityId; 
-//             delete values.AccountId; 
-//         }else{
-//             delete values.OpportunityId; 
-//             delete values.AccountId; 
-//             delete values.LeadId; 
-//         }
-
-//         await axios.post(UpsertUrl, values)
-
-//             .then((res) => {
-//                 console.log('task form Submission  response', res);
-//                 setNotify({
-//                     isOpen: true,
-//                     message: res.data,
-//                     type: 'success'
-//                 })
-//                 setTimeout(() => {
-//                     navigate(-1);
-//                 }, 2000)
-//             })
-//             .catch((error) => {
-//                 console.log('task form Submission  error', error);
-//                 setNotify({
-//                     isOpen: true,
-//                     message: error.message,
-//                     type: 'error'
-//                 })
-//             })
-//     }
-// }
-// ff
-
-// const formSubmission = async (values, { resetForm }) => {
-//     console.log('inside form Submission', values);
-
-//     let dateSeconds = new Date().getTime();
-//     let createDateSec = new Date(values.createdDate).getTime()
-//     let StartDateSec = new Date(values.StartDate).getTime()
-//     let EndDateSec = new Date(values.EndDate).getTime()
-
-//     if (showNew) {
-
-//         console.log('dateSeconds',dateSeconds)
-//         values.modifiedDate = dateSeconds;
-//         values.createdDate = dateSeconds;
-
-//         if (values.StartDate && values.EndDate) {
-//             values.StartDate = StartDateSec
-//             values.EndDate = EndDateSec
-//         }else if (values.StartDate) {
-//             values.StartDate = StartDateSec
-//         }else if (values.EndDate) {
-//             values.EndDate = EndDateSec
-//         }
-//         if (values.AccountId != '') {               
-//             delete values.OpportunityId; 
-//             delete values.LeadId; 
-//         }else if (values.OpportunityId != '') {                
-//              delete values.AccountId; 
-//              delete values.LeadId;    
-//         }else if (values.LeadId != '') {
-//             delete values.OpportunityId; 
-//             delete values.AccountId; 
-//         }else{
-//             delete values.OpportunityId; 
-//             delete values.AccountId; 
-//             delete values.LeadId; 
-//         }
-//     }
-//     else if (!showNew) {
-//         values.modifiedDate = dateSeconds;
-//         values.createdDate = createDateSec
-
-//         if (values.StartDate && values.EndDate) {
-//             values.StartDate = StartDateSec
-//             values.EndDate = EndDateSec
-//         }
-//         else if (values.StartDate) {
-//             values.StartDate = StartDateSec
-//         }
-//         else if (values.EndDate) {
-//             values.EndDate = EndDateSec
-//         }
-//         if (values.AccountId != '') {               
-//             delete values.OpportunityId; 
-//             delete values.LeadId; 
-//         }else if (values.OpportunityId != '') {                
-//              delete values.AccountId; 
-//              delete values.LeadId;    
-//         }else if (values.LeadId != '') {
-//             delete values.OpportunityId; 
-//             delete values.AccountId; 
-//         }else{
-//             delete values.OpportunityId; 
-//             delete values.AccountId; 
-//             delete values.LeadId; 
-//         }
-//     }
-//     console.log('after change form submission value', values);
-
-//         await axios.post(UpsertUrl, values)
-//             .then((res) => {
-//                 console.log('task form Submission  response', res);
-//                 setNotify({
-//                     isOpen: true,
-//                     message: res.data,
-//                     type: 'success'
-//                 })
-//                 setTimeout(() => {
-//                     navigate(-1);
-//                 }, 2000)
-//             })
-//             .catch((error) => {
-//                 console.log('task form Submission  error', error);
-//                 setNotify({
-//                     isOpen: true,
-//                     message: error.message,
-//                     type: 'error'
-//                 })
-//             })
-//     }

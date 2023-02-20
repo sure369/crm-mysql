@@ -228,7 +228,7 @@ const InventoryDetailPage = ({ item }) => {
                                             <label htmlFor="tower">Tower </label>
                                             <Field name="tower" type="text" class="form-input" />
                                         </Grid>
-                                        <Grid item xs={6} md={6}>
+                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="country">Country</label>
                                             <Field
                                                 className="form-input"
@@ -253,7 +253,7 @@ const InventoryDetailPage = ({ item }) => {
                                               }  
                                             </Field>
                                         </Grid>
-                                        <Grid item xs={6} md={6}>
+                                       {/* <Grid item xs={6} md={6}>
                                             <label htmlFor="city">City</label>
                                             <Field
                                                 className="form-input"
@@ -264,15 +264,15 @@ const InventoryDetailPage = ({ item }) => {
                                                 onChange={handleChange}
                                             >
                                                  <MenuItem value=""><em>None</em></MenuItem>
-                                                 {values.propertyCities &&
+                                                 {values.propertyCities  &&
                                                     values.propertyCities.map((r) => (
                                                       
-                                                         <MenuItem key={r.value} value={r.value}>{r.text}</MenuItem>
+                                                         <MenuItem  value={r.value}>{r.text}</MenuItem>
                                                     )
                                                         
                                                     )}
                                             </Field>
-                                        </Grid>
+                                        </Grid>  */}
 
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="floor">Floor</label>
