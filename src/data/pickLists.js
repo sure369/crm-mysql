@@ -1,5 +1,5 @@
 export const AccRatingPickList = [
-    {text:'None',value:'null'},
+    // {text:'None',value:'null'},
     {text:'Hot',value:'Hot'},
     {text:'Cold',value:'Cold'},
     {text:'Warm',value:'Warm'},
@@ -7,7 +7,7 @@ export const AccRatingPickList = [
 
 export const AccTypePickList=[
     
-    {text:'None',value:''},
+    // {text:'None',value:''},
     {text:'Prospect',value:'Prospect'},
     {text:'Customer - Direct',value:'Customer - Direct'},
     {text:'Customer - Channel',value:'Customer - Channel'},
@@ -18,7 +18,7 @@ export const AccTypePickList=[
 ]
 
 export const IndustryPickList=[
-    {text:'None',value:''},
+    // {text:'None',value:''},
     {text:'Banking',value:'Banking'},
     {text:'Construction',value:'Construction'},
     {text:'Consulting',value:'Consulting'},
@@ -33,7 +33,7 @@ export const IndustryPickList=[
 ]
 
 export const AccCountryPickList=[
-    {text:'None',value:''},
+    // {text:'None',value:''},
     {text:'UAE',value:'UAE'},
     {text:'Saudi Arabia',value:'Saudi Arabia'},
     {text:'India',value:'India'},
@@ -42,19 +42,19 @@ export const AccCountryPickList=[
 
 export const AccCitiesPickList={
     UAE: [
-        {text:'None',value:''},
+        // {text:'None',value:''},
         { value: "Dubai", text: "Dubai" },
         { value: "Abu Dhabi", text: "Abu Dhabi" },
         { value: "Sharjah", text: "Sharjah" },
         { value: "Ajman", text: "Ajman" },
     ],
     "Saudi Arabia": [
-        {text:'None',value:''},
+        // {text:'None',value:''},
         { value: "Mecca", text: "Mecca" },
         { value: "Jeddah", text: "Jeddah" },
     ],
     India: [
-        {text:'None',value:''},
+        // {text:'None',value:''},
         { value: "Chennai", text: "Chennai" },
         { value: "Bangalore", text: "Bangalore" },
         { value: "Coimabatore", text: "Coimabatore" },
@@ -63,7 +63,7 @@ export const AccCitiesPickList={
 
 
 export const NameSalutionPickList =[
-    {text:'None',value:''},
+    // {text:'None',value:''},
     {text:'Mr.',value:'Mr.'},
     {text:'Ms.',value:'Ms.'},
     {text:'Mrs.',value:'Mrs.'},
@@ -72,7 +72,7 @@ export const NameSalutionPickList =[
 ]
 
 export const LeadSourcePickList =[
-    {text:'None',value:''},
+    // {text:'None',value:''},
     {text:'Web',value:'Web'},
     {text:'Phone Inquiry',value:'Phone Inquiry'},
     {text:'Partner Referral',value:'Partner Referral'},
@@ -81,7 +81,7 @@ export const LeadSourcePickList =[
 ]
 
 export const InvCountryPickList=[
-    {text:'None',value:''},
+    // {text:'None',value:''},
     {text:'UAE',value:'UAE'},
     {text:'Saudi Arabia',value:'Saudi Arabia'},
     {text:'India',value:'India'},
@@ -90,19 +90,19 @@ export const InvCountryPickList=[
 
 export const InvCitiesPickList={
     UAE: [
-        {text:'None',value:''},
+        // {text:'None',value:''},
         { value: "Dubai", text: "Dubai" },
         { value: "Abu Dhabi", text: "Abu Dhabi" },
         { value: "Sharjah", text: "Sharjah" },
         { value: "Ajman", text: "Ajman" },
     ],
     "Saudi Arabia": [
-        {text:'None',value:''},
+        // {text:'None',value:''},
         { value: "Mecca", text: "Mecca" },
         { value: "Jeddah", text: "Jeddah" },
     ],
     India: [
-        {text:'None',value:''},
+        // {text:'None',value:''},
         { value: "Chennai", text: "Chennai" },
         { value: "Mumbai", text: "Mumbai" },
         { value: "Bangalore", text: "Bangalore" },
@@ -113,7 +113,7 @@ export const InvCitiesPickList={
 };
 
 export const InvTypePicklist =[
-    {text:'None',value:''},
+    // {text:'None',value:''},
     {text:'Apartment',value:'Apartment'},
     {text:'Commercial Space',value:'Commercial Space'},
     {text:'Duplex',value:'Duplex'},
@@ -122,7 +122,7 @@ export const InvTypePicklist =[
 ]
 
 export const InvStatusPicklist =[
-    {text:'None',value:''},
+    // {text:'None',value:''},
     {text:'Available',value:'Available'},
     {text:'Sold',value:'Sold'},
     {text:'Booked',value:'Booked'},
@@ -130,7 +130,7 @@ export const InvStatusPicklist =[
 ]
 
 export const LeadStatusPicklist=[
-    {text:'None',value:''},
+    // {text:'None',value:''},
     {text:'Open-Not Contacted',value:'Open-Not Contacted'},
     {text:'Working-Contacted',value:'Working-Contacted'},
     {text:'Closed-Contacted',value:'Closed-Contacted'},
@@ -138,7 +138,7 @@ export const LeadStatusPicklist=[
 ]
 
 export const OppStagePicklist =[
-    {text:'None',value:''},
+    // {text:'None',value:''},
     {text:'Prospecting',value:'Prospecting'},
     {text:'Needs Analysis',value:'Needs Analysis'},
     {text:'Value Proposition',value:'Value Proposition'},
@@ -150,7 +150,7 @@ export const OppStagePicklist =[
 ]
 
 export const OppTypePicklist=[    
-    {text:'None',value:''},
+    // {text:'None',value:''},
     {text:'New Customer',value:'New Customer'},
     {text:'Existing Customer - Upgrade',value:'Existing Customer - Upgrade'},
     {text:'Existing Customer - Replacement',value:'Existing Customer - Replacement'},
@@ -166,14 +166,14 @@ export const TaskSubjectPicklist=[
 ]
 
 export const TaskObjectPicklist=[  
-    {text:'None',value:''},  
+    // {text:'None',value:''},  
     {text:'Lead',value:'Lead'}, 
     {text:'Opportunity',value:'Opportunity'}, 
     {text:'Account',value:'Account'}, 
 ]
 
 export const UserRolePicklist=[
-    {text:'None',value:''},
+    // {text:'None',value:''},
     {text:'CEO',value:'CEO'}, 
     {text:'Sales Director',value:'Sales Director'}, 
     {text:'Sales Manager',value:'Sales Manager'}, 
@@ -181,7 +181,7 @@ export const UserRolePicklist=[
 ]
 
 export const UserAccessPicklist=[  
-    {text:'None',value:''},
+    // {text:'None',value:''},
     {text:'Read',value:'Read'}, 
     {text:'Read/Create',value:'Read/Create'}, 
     {text:'Read/Create/Edit',value:'Read/Create/Edit'}, 
@@ -189,12 +189,17 @@ export const UserAccessPicklist=[
 ]
 
 export const OppIndexFilterPicklist=[  
-    // {text:'None',value:''},
+    {text:'None',value:''},
     {text:'All Opportunity',value:'All'}, 
     {text:'Closing This Month',value:'Closing This Month'}, 
     {text:'Closing Next Month',value:'Closing Next Month'}, 
     {text:'New Last Week',value:'New Last Week'}, 
     {text:'New Last Month',value:'New Last Month'}, 
-    {text:'Closed Won',value:'Closed Won'}, 
-    {text:'Closed Lost',value:'Closed Lost'}, 
+]
+
+export const DataLoaderObjectPicklist=[  
+    
+    {text:'Account',value:'Account'}, 
+    {text:'Lead',value:'Lead'}, 
+    {text:'Opportunity',value:'Opportunity'}, 
 ]

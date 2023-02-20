@@ -71,11 +71,11 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <div className="app" style={{height: "fit-content"}}>
-          <Sidebar isSidebar={isSidebar} />
+          {/* <Sidebar isSidebar={isSidebar} /> */}
          
           <main className="content" style={{height: "fit-content"}}>
          
-          {/* <AppNavbar/> */}
+          <AppNavbar/>
          
             {/* <Topbar setIsSidebar={setIsSidebar} /> */}
             <Routes>

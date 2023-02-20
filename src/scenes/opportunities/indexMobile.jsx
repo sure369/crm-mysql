@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, useTheme, IconButton,
-     Pagination,Tooltip,Card,CardContent } from "@mui/material";
-
+import {
+  Box, Button, useTheme, IconButton,
+  Pagination, Tooltip, Card, CardContent, Grid, MenuItem, Menu
+} from "@mui/material";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import Notification from '../toast/Notification';
-import ConfirmDialog from '../toast/ConfirmDialog';
+import ToastNotification from '../toast/ToastNotification';
+import DeleteConfirmDialog from '../toast/DeleteConfirmDialog';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 const OpportunitiesMobile = () => {
 
@@ -66,13 +66,13 @@ const OpportunitiesMobile = () => {
     navigate("/new-opportunities", { state: { record: {} } })
   };
 
-  const handleOnCellClick = (e, row) => {
+  const handleCardEdit = (row) => {
     console.log('selected record', row);
     const item = row;
     navigate("/opportunityDetailPage", { state: { record: { item } } })
   };
 
-  const onHandleDelete = (e, row) => {
+  const handleCardDelete = (e, row) => {
     e.stopPropagation();
     console.log('req delete rec', row);
     setConfirmDialog({
@@ -106,6 +106,8 @@ const OpportunitiesMobile = () => {
           message: res.data,
           type: 'success'
         })
+        setMenuOpen(false)
+        fetchRecords()
       })
       .catch((error) => {
         console.log('api delete error', error);
@@ -124,12 +126,26 @@ const OpportunitiesMobile = () => {
     setPage(value);
   };
 
+  // menu dropdown strart //menu pass rec
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [menuSelectRec, setMenuSelectRec] = useState()
+  const [menuOpen, setMenuOpen] = useState();
 
+  const handleTaskMoreMenuClick = (item, event) => {
+    setMenuSelectRec(item)
+    setAnchorEl(event.currentTarget);
+    setMenuOpen(true)
+  };
+  const handleMoreMenuClose = () => {
+    setAnchorEl(null);
+    setMenuOpen(false)
+  };
+  // menu dropdown end
 
   return (
     <>
-      <Notification notify={notify} setNotify={setNotify} />
-      <ConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />
+      <ToastNotification notify={notify} setNotify={setNotify} />
+      <DeleteConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} moreModalClose={handleMoreMenuClose} />
 
       <Box m="20px">
         <Header
@@ -138,14 +154,13 @@ const OpportunitiesMobile = () => {
         />
 
         <div className='btn-test'>
-            <Button variant="contained" color="info" onClick={handleAddRecord}>
-                New
-            </Button>
-
+          <Button variant="contained" color="info" onClick={handleAddRecord}>
+            New
+          </Button>
         </div>
 
-      <Card dense compoent="span" sx={{ bgcolor: "white" }}>
-            { records.length>0?
+        <Card dense compoent="span" sx={{ bgcolor: "white" }}>
+          {records.length > 0 ?
             records
               .slice((page - 1) * itemsPerPage, page * itemsPerPage)
               .map((item) => {
@@ -154,33 +169,58 @@ const OpportunitiesMobile = () => {
                     <CardContent sx={{ bgcolor: "aliceblue", m: "20px" }}>
                       <div
                         key={item._id}
-                        button
-                        onClick={(e) => handleOnCellClick(e,item)}
                       >
-                        {/* //()=>setRecordDetailId(item.Id) */}
-                        <h1>{item.Name} </h1>
-                        <div>Name : {item.opportunityName} </div>
-                        <div>Type :{item.type} </div>
-                        <div>Stage : {item.stage} </div>
-                        <div>Amount : {item.amount} </div>
-                        {/* <div>Related Inventory : {item.Inventorydetails[0].propertyName} </div> */}
-                        
+                        <Grid container spacing={2}>
+                          <Grid item xs={10} md={10}>
+                            <div>Name : {item.opportunityName} </div>
+                            <div>Type :{item.type} </div>
+                            <div>Stage : {item.stage} </div>
+                            <div>Amount : {item.amount} </div>
+
+                          </Grid>
+                          <Grid item xs={2} md={2}>
+                            <IconButton>
+                              <MoreVertIcon onClick={(event) => handleTaskMoreMenuClick(item, event)} />
+                              <Menu
+                                anchorEl={anchorEl}
+                                open={menuOpen}
+                                onClose={handleMoreMenuClose}
+                                anchorOrigin={{
+                                  vertical: 'top',
+                                  horizontal: 'left',
+                                }}
+                                transformOrigin={{
+                                  vertical: 'top',
+                                  horizontal: 'left',
+                                }}
+                              >
+                                <MenuItem onClick={() => handleCardEdit(menuSelectRec)}>Edit</MenuItem>
+                                <MenuItem onClick={(e) => handleCardDelete(e, menuSelectRec)}>Delete</MenuItem>
+                              </Menu>
+                            </IconButton>
+                          </Grid>
+                        </Grid>
                       </div>
                     </CardContent>
                   </div>
                 );
               })
-            :"No Data"
-            }
-          </Card>
-
-          <Box 
-           sx={{
-                    margin: "auto",
-                    width: "fit-content",
-                    alignItems: "center",
-                    // justifyContent:'space-between'
-                }}>
+            :
+            <>
+              <CardContent sx={{ bgcolor: "aliceblue", m: "20px" }}>
+                <div>No Records Found</div>
+              </CardContent>
+            </>
+          }
+        </Card>
+        {records.length > 0 &&
+          <Box
+            sx={{
+              margin: "auto",
+              width: "fit-content",
+              alignItems: "center",
+              // justifyContent:'space-between'
+            }}>
             <Pagination
               count={noOfPages}
               page={page}
@@ -190,14 +230,12 @@ const OpportunitiesMobile = () => {
               size="large"
               showFirstButton
               showLastButton
-              sx={{justifyContent:'center'}}
+              sx={{ justifyContent: 'center' }}
             />
           </Box>
-
-          </Box>
+        }
+      </Box>
     </>
   )
 }
-
-
 export default OpportunitiesMobile;

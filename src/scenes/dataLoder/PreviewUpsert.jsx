@@ -3,7 +3,7 @@ import axios from 'axios';
 import {
     Paper,Table,TableBody,TableCell,TableHead,TableRow,Typography,DialogActions,Button
 } from "@mui/material";
-import Notification from '../toast/Notification';
+import ToastNotification from '../toast/ToastNotification';
 import { useEffect } from 'react';
 
 
@@ -20,13 +20,13 @@ function PreviewUpsert({  data ,file,ModalClose}) {
     const headers = Object.keys(data[0]);
 
     useEffect(()=>{
-      if(window.location.href.includes('deals')){
+      if(window.location.href.includes('opportunities')){
         setUpsertUrl(UpsertOppUrl)
       }
       else if(window.location.href.includes('accounts')){
         setUpsertUrl(UpsertAccountUrl)
       }
-      else if(window.location.href.includes('enquiries')){
+      else if(window.location.href.includes('leads')){
         setUpsertUrl(UpsertLeadUrl)
       }
     })
@@ -67,7 +67,7 @@ function PreviewUpsert({  data ,file,ModalClose}) {
 
   return (
     <>
-     <Notification notify={notify} setNotify={setNotify} />
+     <ToastNotification notify={notify} setNotify={setNotify} />
     <Paper>
       <Table>
         <TableHead>

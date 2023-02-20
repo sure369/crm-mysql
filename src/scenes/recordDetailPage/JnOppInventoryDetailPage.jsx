@@ -6,7 +6,7 @@ import { Grid, Button, Forminput, DialogActions, TextField, Autocomplete } from 
 import { useParams, useNavigate } from "react-router-dom"
 import axios from 'axios'
 import "../formik/FormStyles.css"
-import Notification from '../toast/Notification';
+import ToastNotification from '../toast/ToastNotification';
 
 const url = `${process.env.REACT_APP_SERVER_URL}/UpsertJnOppInventory`;
 const fetchInventoriesbyName = `${process.env.REACT_APP_SERVER_URL}/InventoryName`;
@@ -156,7 +156,7 @@ const JnOppInventoryDetailPage = ({ item }) => {
 
                         return (
                             <>
-                                   <Notification notify={notify} setNotify={setNotify} />
+                                   <ToastNotification notify={notify} setNotify={setNotify} />
 
                                 <Form>
                                     <Grid container spacing={2}>
@@ -180,6 +180,9 @@ const JnOppInventoryDetailPage = ({ item }) => {
                                                 onInputChange={(event, newInputValue) => {
                                                     console.log('newInputValue', newInputValue);
                                                     if (newInputValue.length >= 3) {
+                                                        FetchInventoriesbyName(newInputValue);
+                                                    }
+                                                    else  if (newInputValue.length == 0) {
                                                         FetchInventoriesbyName(newInputValue);
                                                     }
                                                 }}
@@ -209,6 +212,9 @@ const JnOppInventoryDetailPage = ({ item }) => {
                                                 onInputChange={(event, newInputValue) => {
                                                     console.log('newInputValue', newInputValue);
                                                     if (newInputValue.length >= 3) {
+                                                        FetchOpportunitybyName(newInputValue);
+                                                    }
+                                                    else  if (newInputValue.length == 0) {
                                                         FetchOpportunitybyName(newInputValue);
                                                     }
                                                 }}

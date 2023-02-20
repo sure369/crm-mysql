@@ -11,8 +11,8 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import Notification from '../toast/Notification';
-import ConfirmDialog from '../toast/ConfirmDialog';
+import ToastNotification from '../toast/ToastNotification';
+import DeleteConfirmDialog from '../toast/DeleteConfirmDialog';
 
 const Task = () => {
 
@@ -143,32 +143,32 @@ const Task = () => {
       field: "subject", headerName: "Subject",
       headerAlign: 'center', align: 'center', flex: 1,
     },
-    // {
-    //   field: "realatedTo", headerName: "Realated To",
-    //   headerAlign: 'center', align: 'center', flex: 1,
-    //   renderCell: (params) => {
-    //     if (params.row.object === 'Account') {
-    //       return <div className="rowitem">
-    //         {params.row.accountDetails.accountName}
-    //       </div>
-    //     }
-    //     else if (params.row.object === 'Lead') {
+    {
+      field: "realatedTo", headerName: "Realated To",
+      headerAlign: 'center', align: 'center', flex: 1,
+      renderCell: (params) => {
+        if (params.row.object === 'Account') {
+          return <div className="rowitem">
+            {params.row.accountDetails.accountName}
+          </div>
+        }
+        else if (params.row.object === 'Lead') {
 
-    //       return <div className="rowitem">
-    //         {params.row.leadDetails.leadName}
-    //       </div>
-    //     } else if (params.row.object === 'Opportunity') {
-    //       return <div className="rowitem">
-    //         {params.row.opportunityDetails.opportunityName}
-    //       </div>
-    //     } else {
-    //       <div className="rowitem">
-    //         {null}
-    //       </div>
-    //     }
-    //   },
+          return <div className="rowitem">
+            {params.row.leadDetails.leadName}
+          </div>
+        } else if (params.row.object === 'Opportunity') {
+          return <div className="rowitem">
+            {params.row.opportunityDetails.opportunityName}
+          </div>
+        } else {
+          <div className="rowitem">
+            {null}
+          </div>
+        }
+      },
 
-    // },
+    },
     {
       field: "object", headerName: "Object",
       headerAlign: 'center', align: 'center', flex: 1,
@@ -200,8 +200,8 @@ const Task = () => {
 
   return (
     <>
-      <Notification notify={notify} setNotify={setNotify} />
-      <ConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />
+      <ToastNotification notify={notify} setNotify={setNotify} />
+      <DeleteConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />
 
 
       <Box m="20px">

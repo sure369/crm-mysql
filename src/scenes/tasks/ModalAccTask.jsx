@@ -4,23 +4,23 @@ import * as Yup from "yup";
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
     Grid, Button, FormControl, Stack, Alert, DialogActions,
-    Autocomplete, TextField,MenuItem
+    Autocomplete, TextField, MenuItem
 } from "@mui/material";
 import axios from 'axios'
 import "../formik/FormStyles.css"
-import Notification from '../toast/Notification';
-import {  TaskSubjectPicklist } from "../../data/pickLists";
+import { TaskSubjectPicklist } from "../../data/pickLists";
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
-import { LocalizationProvider   } from '@mui/x-date-pickers/LocalizationProvider';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import ToastNotification from '../toast/ToastNotification';
 
 const UpsertUrl = `${process.env.REACT_APP_SERVER_URL}/UpsertTask`;
 
 const ModalAccTask = ({ item, handleModal }) => {
 
     const [taskParentRecord, setTaskParentRecord] = useState();
-    const[notify,setNotify]=useState({isOpen:false,message:'',type:''})
+    const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -66,33 +66,32 @@ const ModalAccTask = ({ item, handleModal }) => {
         let dateSeconds = new Date().getTime();
         let StartDateSec = new Date(values.StartDate).getTime()
         let EndDateSec = new Date(values.EndDate).getTime()
-        
+
         values.modifiedDate = dateSeconds;
         values.createdDate = dateSeconds;
         values.AccountId = account;
         values.object = 'Account'
-        values.accountDetails={
-            accountName:taskParentRecord.accountName,
-            id:taskParentRecord._id
+        values.accountDetails = {
+            accountName: taskParentRecord.accountName,
+            id: taskParentRecord._id
         }
         if (values.StartDate && values.EndDate) {
             values.StartDate = StartDateSec
             values.EndDate = EndDateSec
-        }else if (values.StartDate) {
+        } else if (values.StartDate) {
             values.StartDate = StartDateSec
-        }else if (values.EndDate) {
+        } else if (values.EndDate) {
             values.EndDate = EndDateSec
         }
 
         await axios.post(UpsertUrl, values)
-
             .then((res) => {
                 console.log('task form Submission  response', res);
                 setNotify({
-                    isOpen:true,
-                    message:res.data,
-                    type:'success'
-                  })
+                    isOpen: true,
+                    message: res.data,
+                    type: 'success'
+                })
                 setTimeout(() => {
                     handleModal()
                 }, 1000)
@@ -100,11 +99,11 @@ const ModalAccTask = ({ item, handleModal }) => {
             .catch((error) => {
                 console.log('task form Submission  error', error);
                 setNotify({
-                    isOpen:true,
-                    message:error.message,
-                    type:'error'          
-                  })
-                  setTimeout(() => {
+                    isOpen: true,
+                    message: error.message,
+                    type: 'error'
+                })
+                setTimeout(() => {
                     handleModal()
                 }, 2000)
             })
@@ -135,18 +134,19 @@ const ModalAccTask = ({ item, handleModal }) => {
 
                     return (
                         <>
-                          <Notification notify={notify} setNotify={setNotify}/>
+                            <ToastNotification notify={notify} setNotify={setNotify} />
                             <Form>
                                 <Grid container spacing={2}>
                                     <Grid item xs={6} md={6}>
                                         <label htmlFor="subject">Subject  <span className="text-danger">*</span></label>
-                                        <Field name="subject" component={CustomizedSelectForFormik}  className="form-customSelect">
-                                                    {
-                                                        TaskSubjectPicklist.map((i)=>{
-                                                            return <MenuItem value={i.value}>{i.text}</MenuItem>	
-                                                        })
-                                                    }
-                                                </Field>
+                                        <Field name="subject" component={CustomizedSelectForFormik} className="form-customSelect">
+                                            <MenuItem value=""><em>None</em></MenuItem>
+                                            {
+                                                TaskSubjectPicklist.map((i) => {
+                                                    return <MenuItem value={i.value}>{i.text}</MenuItem>
+                                                })
+                                            }
+                                        </Field>
 
                                         <div style={{ color: 'red' }}>
                                             <ErrorMessage name="subject" />
@@ -157,37 +157,31 @@ const ModalAccTask = ({ item, handleModal }) => {
                                         <Field name="assignedTo" type="text" class="form-input" />
                                     </Grid>
                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <Grid item xs={6} md={6}>
-                                    <label htmlFor="StartDate">Start Date </label> <br/>
-                                    <DateTimePicker 
-                                     name="StartDate"
-                                        value={values.StartDate}
-                                        onChange={(e)=>{
-                                            setFieldValue('StartDate',e)
-                                        }}
-                                         renderInput={(params) => <TextField  {...params} className='form-input' error={false} />}
-                                     />
-
-                                    </Grid>
-                                  
-                                    <Grid item xs={6} md={6}>
-                                        <label htmlFor="EndDate">EndDate   </label> <br/>
-                                        
-                                        <DateTimePicker
-                                                renderInput={(params) => <TextField {...params} className='form-input' error={false}/>}
-                                                value={values.EndDate}
-                                                onChange={(e) => {                                                  
-                                                    setFieldValue('EndDate',e)                                            
+                                        <Grid item xs={6} md={6}>
+                                            <label htmlFor="StartDate">Start Date </label> <br />
+                                            <DateTimePicker
+                                                name="StartDate"
+                                                value={values.StartDate}
+                                                onChange={(e) => {
+                                                    setFieldValue('StartDate', e)
                                                 }}
-                                                />
+                                                renderInput={(params) => <TextField  {...params} className='form-input' error={false} />}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={6} md={6}>
+                                            <label htmlFor="EndDate">EndDate   </label> <br />
+                                            <DateTimePicker
+                                                renderInput={(params) => <TextField {...params} className='form-input' error={false} />}
+                                                value={values.EndDate}
+                                                onChange={(e) => {
+                                                    setFieldValue('EndDate', e)
+                                                }}
+                                            />
 
-                                    </Grid>
-                                  
+                                        </Grid>
                                     </LocalizationProvider>
                                     <Grid item xs={12} md={12}>
-
                                         <label htmlFor="attachments">attachments</label>
-
                                         <Field name="attacgments" type="file"
                                             className="form-input"
                                             onChange={(event) => {
@@ -203,14 +197,10 @@ const ModalAccTask = ({ item, handleModal }) => {
                                         <Field as="textarea" name="description" class="form-input" />
                                     </Grid>
                                 </Grid>
-
                                 <div className='action-buttons'>
                                     <DialogActions sx={{ justifyContent: "space-between" }}>
-
                                         <Button type='success' variant="contained" color="secondary" disabled={isSubmitting}>Save</Button>
-
                                         <Button type="reset" variant="contained" onClick={(e) => handleModal(false)} >Cancel</Button>
-
                                     </DialogActions>
                                 </div>
                             </Form>
@@ -220,7 +210,6 @@ const ModalAccTask = ({ item, handleModal }) => {
             </Formik>
         </Grid>
     )
-
 }
 export default ModalAccTask
 

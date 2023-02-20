@@ -1,19 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useTheme, Box, Button, IconButton, Pagination
-    ,Card,Tooltip ,CardContent} from "@mui/material";
 import {
-  DataGrid, GridToolbar,
-  gridPageCountSelector, gridPageSelector,
-  useGridApiContext, useGridSelector
-} from "@mui/x-data-grid";
+  useTheme, Box, Button, IconButton, Pagination
+  , Card, Tooltip, CardContent, Menu, MenuItem, Grid
+} from "@mui/material";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import axios from 'axios'
 import { useNavigate } from "react-router-dom";
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import Notification from '../toast/Notification';
-import ConfirmDialog from '../toast/ConfirmDialog';
+import ToastNotification from '../toast/ToastNotification';
+import DeleteConfirmDialog from '../toast/DeleteConfirmDialog';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 const LeadsMobile = () => {
 
@@ -24,16 +20,16 @@ const LeadsMobile = () => {
   const colors = tokens(theme.palette.mode);
   const navigate = useNavigate();
   const [records, setRecords] = useState([]);
-  const[fetchLoading,setFetchLoading]=useState(true);
+  const [fetchLoading, setFetchLoading] = useState(true);
   // notification
   const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
   //dialog
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, title: '', subTitle: '' })
 
-  const[showDelete,setShowDelete]=useState(false)
-  const[selectedRecordIds,setSelectedRecordIds]=useState()
-  const[selectedRecordDatas,setSelectedRecordDatas]=useState()
-  
+  const [showDelete, setShowDelete] = useState(false)
+  const [selectedRecordIds, setSelectedRecordIds] = useState()
+  const [selectedRecordDatas, setSelectedRecordDatas] = useState()
+
   const [itemsPerPage, setItemsPerPage] = useState(3);
   const [page, setPage] = useState(1);
   const [noOfPages, setNoOfPages] = useState(0);
@@ -69,13 +65,13 @@ const LeadsMobile = () => {
     navigate("/new-leads", { state: { record: {} } })
   };
 
-  const handleOnCellClick = (e, row) => {
+  const handleCardEdit = (row) => {
     console.log('selected record', row);
     const item = row;
     navigate("/leadDetailPage", { state: { record: { item } } })
   };
 
-  const onHandleDelete = (e, row) => {
+  const handleCardDelete = (e, row) => {
     e.stopPropagation();
     console.log('req delete rec', row);
     setConfirmDialog({
@@ -87,16 +83,16 @@ const LeadsMobile = () => {
   }
 
   const onConfirmDeleteRecord = (row) => {
-    if(row.length){
-      console.log('if row',row);
+    if (row.length) {
+      console.log('if row', row);
       row.forEach(element => {
         onebyoneDelete(element)
       });
     }
-   else{
-    console.log('else',row._id);
-    onebyoneDelete(row._id)
-   }
+    else {
+      console.log('else', row._id);
+      onebyoneDelete(row._id)
+    }
   }
 
   const onebyoneDelete = (row) => {
@@ -110,6 +106,8 @@ const LeadsMobile = () => {
           message: res.data,
           type: 'success'
         })
+        setMenuOpen(false)
+        fetchRecords()
       })
       .catch((error) => {
         console.log('api delete error', error);
@@ -119,18 +117,36 @@ const LeadsMobile = () => {
           type: 'error'
         })
       })
-      setConfirmDialog({
-        ...confirmDialog,
-        isOpen: false
-      })
+    setConfirmDialog({
+      ...confirmDialog,
+      isOpen: false
+    })
   };
   const handleChangePage = (event, value) => {
     setPage(value);
   };
+
+  // menu dropdown strart //menu pass rec
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [menuSelectRec, setMenuSelectRec] = useState()
+  const [menuOpen, setMenuOpen] = useState();
+
+  const handleTaskMoreMenuClick = (item, event) => {
+    setMenuSelectRec(item)
+    setAnchorEl(event.currentTarget);
+    setMenuOpen(true)
+
+  };
+  const handleMoreMenuClose = () => {
+    setAnchorEl(null);
+    setMenuOpen(false)
+  };
+  // menu dropdown end
+
   return (
     <>
-      <Notification notify={notify} setNotify={setNotify} />
-      <ConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />
+      <ToastNotification notify={notify} setNotify={setNotify} />
+      <DeleteConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} moreModalClose={handleMoreMenuClose} />
 
       <Box m="20px">
         <Header
@@ -139,14 +155,12 @@ const LeadsMobile = () => {
         />
 
         <div className='btn-test'>
-            <Button variant="contained" color="info" onClick={handleAddRecord}>
-                New
-            </Button>
-
+          <Button variant="contained" color="info" onClick={handleAddRecord}>
+            New
+          </Button>
         </div>
-
-      <Card dense compoent="span" sx={{ bgcolor: "white" }}>
-            { records.length>0?
+        <Card dense compoent="span" sx={{ bgcolor: "white" }}>
+          {records.length > 0 ?
             records
               .slice((page - 1) * itemsPerPage, page * itemsPerPage)
               .map((item) => {
@@ -155,33 +169,58 @@ const LeadsMobile = () => {
                     <CardContent sx={{ bgcolor: "aliceblue", m: "20px" }}>
                       <div
                         key={item._id}
-                        button
-                        onClick={(e) => handleOnCellClick(e,item)}
                       >
-                        {/* //()=>setRecordDetailId(item.Id) */}
-                        
-                        <div>Lead Name : {item.fullName} </div>
-                        <div>Lead Source :{item.leadSource} </div>
-                        <div>Status : {item.leadStatus} </div>
-                        <div>Phone : {item.phone} </div>
-                        <div>Email : {item.email} </div>
-                        
+                        <Grid container spacing={2}>
+                          <Grid item xs={10} md={10}>
+                            <div>Lead Name : {item.fullName} </div>
+                            <div>Lead Source :{item.leadSource} </div>
+                            <div>Status : {item.leadStatus} </div>
+                            <div>Phone : {item.phone} </div>
+                            <div>Email : {item.email} </div>
+                          </Grid>
+                          <Grid item xs={2} md={2}>
+                            <IconButton>
+                              <MoreVertIcon onClick={(event) => handleTaskMoreMenuClick(item, event)} />
+                              <Menu
+                                anchorEl={anchorEl}
+                                open={menuOpen}
+                                onClose={handleMoreMenuClose}
+                                anchorOrigin={{
+                                  vertical: 'top',
+                                  horizontal: 'left',
+                                }}
+                                transformOrigin={{
+                                  vertical: 'top',
+                                  horizontal: 'left',
+                                }}
+                              >
+                                <MenuItem onClick={() => handleCardEdit(menuSelectRec)}>Edit</MenuItem>
+                                <MenuItem onClick={(e) => handleCardDelete(e, menuSelectRec)}>Delete</MenuItem>
+                              </Menu>
+                            </IconButton>
+                          </Grid>
+                        </Grid>
                       </div>
                     </CardContent>
                   </div>
                 );
               })
-            :"No Data"
-            }
-          </Card>
-
-          <Box 
-           sx={{
-                    margin: "auto",
-                    width: "fit-content",
-                    alignItems: "center",
-                    // justifyContent:'space-between'
-                }}>
+            :
+            <>
+              <CardContent sx={{ bgcolor: "aliceblue", m: "20px" }}>
+                <div>No Records Found</div>
+              </CardContent>
+            </>
+          }
+        </Card>
+        {records.length > 0 &&
+          <Box
+            sx={{
+              margin: "auto",
+              width: "fit-content",
+              alignItems: "center",
+              // justifyContent:'space-between'
+            }}>
             <Pagination
               count={noOfPages}
               page={page}
@@ -191,11 +230,11 @@ const LeadsMobile = () => {
               size="large"
               showFirstButton
               showLastButton
-              sx={{justifyContent:'center'}}
+              sx={{ justifyContent: 'center' }}
             />
           </Box>
-
-          </Box>
+        }
+      </Box>
     </>
   )
 }
