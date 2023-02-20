@@ -10,7 +10,7 @@ import axios from 'axios'
 import "../formik/FormStyles.css"
 import Iframe from 'react-iframe'
 
-import ToastNotification from "../toast/ToastNotification";
+import Notification from '../toast/Notification';
 // import download from 'downloadjs';
 // import { saveAs } from 'file-saver'
 // import fileDownload from "js-file-download";
@@ -182,7 +182,7 @@ const DropFileInput = () => {
 
                     return (
                         <>
-                                <ToastNotification notify={notify} setNotify={setNotify} />
+                                <Notification notify={notify} setNotify={setNotify} />
 
                             <Form>
                                 <Grid container spacing={2}>
