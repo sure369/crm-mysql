@@ -12,8 +12,8 @@ import ToastNotification from '../toast/ToastNotification';
 
 const url = `${process.env.REACT_APP_SERVER_URL}/UpsertAccount`;
 const fetchInventoriesbyName = `${process.env.REACT_APP_SERVER_URL}/InventoryName`;
-const getCountryPicklists= `${process.env.REACT_APP_SERVER_URL}/getpicklistname`;
-const getCityPicklists = `${process.env.REACT_APP_SERVER_URL}/getpicklistvalue?data=`;
+const getCountryPicklists= `${process.env.REACT_APP_SERVER_URL}/getpicklistcountry`;
+const getCityPicklists = `${process.env.REACT_APP_SERVER_URL}/getpickliststate?country=`;
 
 const AccountDetailPage = ({ item }) => {
 
@@ -360,7 +360,7 @@ const AccountDetailPage = ({ item }) => {
                                                 <MenuItem value=""><em>None</em></MenuItem>
                                               {
                                                 countryPicklist.map((i)=>{
-                                                    return <MenuItem value={i.fieldName}>{i.fieldName}</MenuItem>
+                                                    return <MenuItem value={i.Country}>{i.Country}</MenuItem>
                                                 })
                                               }  
                                             </Field>
