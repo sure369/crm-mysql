@@ -73,6 +73,9 @@ const ModalLeadOpportunity = ({ item, handleModal }) => {
 
 
         values.LeadId = leadParentRecord._id;
+        values.LeadName=leadParentRecord.fullName
+        values.InventoryId=values.inventoryDetails.id
+        values.InventoryName=values.inventoryDetails.propertyName
         values.modifiedDate = dateSeconds;
         values.createdDate = dateSeconds;
         values.leadDetails = {

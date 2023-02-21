@@ -119,15 +119,15 @@ const LeadDetailPage = ({ item }) => {
             values.modifiedDate = dateSeconds;
             values.createdDate = dateSeconds;
             values.fullName = values.firstName + ' ' + values.lastName;
-            values.UserName =values.userDetails.userName
-            values.UserId =values.userDetails.id
+            // values.UserName =values.userDetails.userName
+            // values.UserId =values.userDetails.id
         }
         else if (!showNew) {
             values.modifiedDate = dateSeconds;
             values.createdDate = createDateSec;
             values.fullName = values.firstName + ' ' + values.lastName;
-            values.UserName =values.userDetails.userName
-            values.UserId =values.userDetails.id
+            // values.UserName =values.userDetails.userName
+            // values.UserId =values.userDetails.id
         }
         console.log('after change form submission value', values);
 
@@ -273,7 +273,7 @@ const LeadDetailPage = ({ item }) => {
                                                 <ErrorMessage name="leadStatus" />
                                             </div>
                                         </Grid>
-                                        <Grid item xs={6} md={6}>
+                                        {/* <Grid item xs={6} md={6}>
                                             <label htmlFor="createdbyId">User Name </label>
                                             <Autocomplete
                                                 name="createdbyId"
@@ -307,7 +307,7 @@ const LeadDetailPage = ({ item }) => {
                                                     <Field component={TextField} {...params} name="createdbyId" />
                                                 )}
                                             />
-                                        </Grid>
+                                        </Grid> */}
                                         {!showNew && (
                                             <>
                                                 <Grid item xs={6} md={6}>
