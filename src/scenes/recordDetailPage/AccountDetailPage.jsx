@@ -34,8 +34,7 @@ const AccountDetailPage = ({ item }) => {
 
     const initialValues = {
         accountName: '',
-        accountNumber: '',
-        InventoryId: '',
+        accountNumber: '',        
         annualRevenue: '',
         rating: '',
         type: '',
@@ -48,13 +47,12 @@ const AccountDetailPage = ({ item }) => {
         createdbyId: '',
         createdDate:'',
         modifiedDate: '',
+        InventoryId: '',
     }
 
     const savedValues = {
         accountName: singleAccount?.accountName ?? "",
-        accountNumber: singleAccount?.accountNumber ?? "",
-        InventoryId: singleAccount?.InventoryId ?? "",
-        inventoryName: singleAccount?.inventoryName ?? "",
+        accountNumber: singleAccount?.accountNumber ?? "",   
         annualRevenue: singleAccount?.annualRevenue ?? "",
         rating: singleAccount?.rating ?? "",
         type: singleAccount?.type ?? "",
@@ -68,7 +66,9 @@ const AccountDetailPage = ({ item }) => {
         createdDate:  new Date(singleAccount?.createdDate).toLocaleString(),
         modifiedDate: new Date(singleAccount?.modifiedDate).toLocaleString(),
         _id: singleAccount?._id ?? "",
-        inventoryDetails:singleAccount?.inventoryDetails ?? "", 
+        inventoryDetails:singleAccount?.InventoryDetails ?? "", 
+        InventoryId: singleAccount?.InventoryId ?? "",
+        InventoryName: singleAccount?.InventoryName ?? "",
     }
 
     const getCities = (billingCountry) => {
