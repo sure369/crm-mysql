@@ -11,9 +11,22 @@ import {
     DialogContentText,
   } from '@mui/material';
 
-function DeleteConfirmDialog(props) {
+function DeleteConfirmDialog({confirmDialog,setConfirmDialog,moreModalClose}) {
 
-    const{confirmDialog,setConfirmDialog}=props;
+    const handleCloseNo =()=>{
+        setConfirmDialog({...confirmDialog, isOpen:false})
+        if(moreModalClose){
+            moreModalClose()
+        }
+    }
+
+    const handleCloseYes=()=>{
+        confirmDialog.onConfirm()
+        if(moreModalClose){
+            moreModalClose()
+        }
+    }
+
 
   return (
     <Dialog open={confirmDialog.isOpen} onClose={()=>setConfirmDialog({...confirmDialog, isOpen:false})}>
@@ -33,11 +46,11 @@ function DeleteConfirmDialog(props) {
         <Button 
             variant='contained' 
             color='inherit'
-            onClick={()=>setConfirmDialog({...confirmDialog, isOpen:false})}>No</Button>
+            onClick={handleCloseNo}>No</Button>
         <Button
             variant='contained' 
             color='warning' 
-            onClick={confirmDialog.onConfirm}>Yes</Button>
+            onClick={handleCloseYes}>Yes</Button>
         </DialogActions>
 
     </Dialog>

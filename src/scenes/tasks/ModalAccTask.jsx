@@ -40,7 +40,8 @@ const ModalAccTask = ({ item, handleModal }) => {
         description: '',
         attachments: null,
         object: '',
-        AccountId: '',
+        accountId: '',
+        accountName:'',
         createdbyId: '',
         createdDate: '',
         modifiedDate: '',
@@ -62,19 +63,16 @@ const ModalAccTask = ({ item, handleModal }) => {
 
     const formSubmission = async (values, { resetForm }) => {
         console.log('inside form Submission', values);
-        let account = taskParentRecord._id;
         let dateSeconds = new Date().getTime();
         let StartDateSec = new Date(values.StartDate).getTime()
         let EndDateSec = new Date(values.EndDate).getTime()
 
         values.modifiedDate = dateSeconds;
         values.createdDate = dateSeconds;
-        values.AccountId = account;
+        values.accountId = taskParentRecord._id;
+        values.accountName = taskParentRecord.accountName;
         values.object = 'Account'
-        values.accountDetails = {
-            accountName: taskParentRecord.accountName,
-            id: taskParentRecord._id
-        }
+      
         if (values.StartDate && values.EndDate) {
             values.StartDate = StartDateSec
             values.EndDate = EndDateSec

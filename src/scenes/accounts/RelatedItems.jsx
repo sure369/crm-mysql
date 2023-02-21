@@ -194,6 +194,9 @@ console.log('inside handleTaskCardDelete fn')
           type: 'success'
       })
       setMenuOpen(false)
+      setTimeout(
+        getTasksbyAccountId(accountRecordId)
+      )
       })
       .catch((error) => {
         console.log('api delete error', error);
@@ -202,9 +205,7 @@ console.log('inside handleTaskCardDelete fn')
           message: error.message,
           type: 'error'
       })
-      setTimeout(
-        getTasksbyAccountId(accountRecordId)
-      )
+      
       })
       setConfirmDialog({
         ...confirmDialog,
@@ -299,7 +300,7 @@ const columns = [
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <Typography variant="h4">Related Task ({relatedTask.length})</Typography>
+          <Typography variant="h4">Task ({relatedTask.length})</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography>
@@ -395,7 +396,7 @@ const columns = [
           aria-controls="panel2a-content"
           id="panel2a-header"
         >
-          <Typography variant="h4">Conatct Table({relatedContact.length}) </Typography>
+          <Typography variant="h4">Conatct({relatedContact.length}) </Typography>
         </AccordionSummary>
         <AccordionDetails>
        

@@ -42,7 +42,8 @@ const ModalOppTask = ({ item, handleModal }) => {
         description: '',
         attachments: null,
         object: '',
-        OpportunityId: '',
+        opportunityId: '',
+        opportunityName:'',
         createdbyId: '',
         createdDate: '',
         modifiedDate: '',
@@ -65,19 +66,16 @@ const ModalOppTask = ({ item, handleModal }) => {
     const formSubmission = async (values, { resetForm }) => {
         console.log('inside form Submission', values);
 
-        let Opportunity = taskParentRecord._id;
         let dateSeconds = new Date().getTime();
         let StartDateSec = new Date(values.StartDate).getTime()
         let EndDateSec = new Date(values.EndDate).getTime()
 
         values.modifiedDate = dateSeconds;
         values.createdDate = dateSeconds;
-        values.OpportunityId = Opportunity;
+        values.opportunityId = taskParentRecord._id;
+        values.opportunityName = taskParentRecord.opportunityName
         values.object = 'Opportunity'
-        values.opportunityDetails = {
-            opportunityName: taskParentRecord.opportunityName,
-            id: taskParentRecord._id
-        }
+
         if (values.StartDate && values.EndDate) {
             values.StartDate = StartDateSec
             values.EndDate = EndDateSec

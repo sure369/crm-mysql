@@ -12,6 +12,8 @@ import ToastNotification from '../toast/ToastNotification';
 
 const url = `${process.env.REACT_APP_SERVER_URL}/UpsertAccount`;
 const fetchInventoriesbyName = `${process.env.REACT_APP_SERVER_URL}/InventoryName`;
+const getCountryPicklists= `${process.env.REACT_APP_SERVER_URL}/getpicklistname`;
+const getCityPicklists = `${process.env.REACT_APP_SERVER_URL}/getpicklistvalue?data=`;
 
 const AccountDetailPage = ({ item }) => {
 
@@ -23,12 +25,16 @@ const AccountDetailPage = ({ item }) => {
   // notification
     const[notify,setNotify]=useState({isOpen:false,message:'',type:''})
    
+    //const city
+    const[countryPicklist,setCountriesPicklist]=useState([])
+
     useEffect(() => {
         console.log('passed record', location.state.record.item);
         setsingleAccount(location.state.record.item);
         console.log('true', !location.state.record.item);
         setshowNew(!location.state.record.item)
         FetchInventoriesbyName('');
+        getPicklistNameForCities();
       
     }, [])
 
@@ -66,7 +72,7 @@ const AccountDetailPage = ({ item }) => {
         createdDate:  new Date(singleAccount?.createdDate).toLocaleString(),
         modifiedDate: new Date(singleAccount?.modifiedDate).toLocaleString(),
         _id: singleAccount?._id ?? "",
-        inventoryDetails:singleAccount?.inventoryDetails ?? "", 
+        inventoryDetails:singleAccount?.InventoryDetails ?? "", 
         InventoryId: singleAccount?.InventoryId ?? "",
         InventoryName: singleAccount?.InventoryName ?? "",
     }
@@ -99,6 +105,19 @@ const AccountDetailPage = ({ item }) => {
             .string()
             .matches(/^[0-9]+$/, "Must be only digits")
     })
+
+    const getPicklistNameForCities=()=>{
+        axios.post(getCountryPicklists)
+        .then((res)=>{
+            console.log('getCountryPicklists response',res)
+            console.log('dd',res.data)
+            setCountriesPicklist(res.data)
+
+        })
+        .catch((err)=>{
+            console.log(err)
+        })
+    }
 
     const formSubmission = (values) => {
    
@@ -320,18 +339,28 @@ const AccountDetailPage = ({ item }) => {
                                                 component={CustomizedSelectForFormik}
                                                 value={values.billingCountry}
                                                 onChange={async (event) => {
-                                                    const value = event.target.value;
-                                                    const _billingCities = await getCities(value);
-                                                    console.log('billingCities',_billingCities);
-                                                    setFieldValue("billingCountry", value);
-                                                    setFieldValue("billingCity", "");
-                                                    setFieldValue("billingCities", _billingCities);
+                                                    console.log('onchange',event.target.value)
+
+                                                    // axios.post(getCityPicklists,{city:event.target.value,table:'Account'})
+                                                    axios.post(`${getCityPicklists}+${event.target.value}&table=Account`)
+                                                    .then((res)=>{
+                                                        console.log('get cities',res)
+                                                    })
+                                                    .catch((error)=>{
+                                                        console.log('error',error)
+                                                    })
+                                                    // const value = event.target.value;
+                                                    // const _billingCities = await getCities(value);
+                                                    // console.log('billingCities',_billingCities);
+                                                    // setFieldValue("billingCountry", value);
+                                                    // setFieldValue("billingCity", "");
+                                                    // setFieldValue("billingCities", _billingCities);
                                                 }}
                                             >
                                                 <MenuItem value=""><em>None</em></MenuItem>
                                               {
-                                                AccCountryPickList.map((i)=>{
-                                                    return <MenuItem value={i.value}>{i.text}</MenuItem>
+                                                countryPicklist.map((i)=>{
+                                                    return <MenuItem value={i.fieldName}>{i.fieldName}</MenuItem>
                                                 })
                                               }  
                                             </Field>

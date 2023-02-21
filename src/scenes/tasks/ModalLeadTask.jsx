@@ -37,13 +37,12 @@ const ModalTask = ({ item, handleModal }) => {
         realatedTo: '',
         assignedTo: '',
         StartDate: '',
-        StartTime: '',
         EndDate: '',
-        EndTime: '',
         description: '',
         attachments: null,
         object: '',
-        LeadId: '',
+        leadId: '',
+        leadName:'',
         createdbyId: '',
         createdDate: '',
         modifiedDate: '',
@@ -65,19 +64,16 @@ const ModalTask = ({ item, handleModal }) => {
 
     const formSubmission = async (values, { resetForm }) => {
         console.log('inside form Submission', values);
-        let lead = taskParentRecord._id;
+
         let dateSeconds = new Date().getTime();
         let StartDateSec = new Date(values.StartDate).getTime()
         let EndDateSec = new Date(values.EndDate).getTime()
 
         values.modifiedDate = dateSeconds;
         values.createdDate = dateSeconds;
-        values.LeadId = lead;
+        values.leadId = taskParentRecord._id;
+        values.leadName =taskParentRecord.fullName;
         values.object = 'Lead'
-        values.leadDetails = {
-            leadName: taskParentRecord.fullName,
-            id: taskParentRecord._id
-        }
         
         if (values.StartDate && values.EndDate) {
             values.StartDate = StartDateSec

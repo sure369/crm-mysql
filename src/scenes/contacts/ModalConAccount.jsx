@@ -82,7 +82,8 @@ const ModalConAccount = ({ item, handleModal }) => {
 
         values.modifiedDate = dateSeconds;
         values.createdDate = dateSeconds;
-        values.AccountId = account;
+        values.AccountId = accountParentRecord._id;
+        values.AccountName =accountParentRecord.accountName
         values.accountDetails={
             accountName:accountParentRecord.accountName,
             id:accountParentRecord._id
