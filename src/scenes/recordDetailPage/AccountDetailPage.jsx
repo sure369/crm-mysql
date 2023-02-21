@@ -27,7 +27,7 @@ const AccountDetailPage = ({ item }) => {
    
     //const city
     const[countryPicklist,setCountriesPicklist]=useState([])
-
+    const[cityPicklist,setCityPicklist]=useState([])
     useEffect(() => {
         console.log('passed record', location.state.record.item);
         setsingleAccount(location.state.record.item);
@@ -344,7 +344,8 @@ const AccountDetailPage = ({ item }) => {
                                                     // axios.post(getCityPicklists,{city:event.target.value,table:'Account'})
                                                     axios.post(`${getCityPicklists}${event.target.value}&table=Account`)
                                                     .then((res)=>{
-                                                        console.log('get cities',res)
+                                                        console.log('get cities',res.data)
+                                                        setCityPicklist(res.data)
                                                     })
                                                     .catch((error)=>{
                                                         console.log('error',error)
@@ -374,15 +375,30 @@ const AccountDetailPage = ({ item }) => {
                                                 id="billingCity"
                                                 name="billingCity"
                                                 component={CustomizedSelectForFormik}
-                                                // onChange={handleChange}
+                                               onChange={
+                                                axios.post(`${getCityPicklists}${values.billingCountry}&table=Account`)
+                                                .then((res)=>{
+                                                    console.log('get inside billing city',res.data)
+                                                   
+                                                })
+                                                .catch((error)=>{
+                                                    console.log('error',error)
+                                                })
+                                               }
                                             >
                                                 <MenuItem value=""><em>None</em></MenuItem>
-                                                {values.billingCities &&
+                                                { cityPicklist&&
+                                                   cityPicklist.map((r) => (                                                      
+                                                         <MenuItem key={r.State} value={r.State}>{r.State}</MenuItem>
+                                                    )
+                                                        
+                                                    )}
+                                                {/* {values.billingCities &&
                                                     values.billingCities.map((r) => (                                                      
                                                          <MenuItem key={r.value} value={r.value}>{r.text}</MenuItem>
                                                     )
                                                         
-                                                    )}
+                                                    )} */}
                                             </Field>
                                         </Grid>
 

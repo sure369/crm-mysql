@@ -17,6 +17,9 @@ const  CustomizedSelectForFormik = ({ children, form, field,...props }) => {
     if(props.onChange){
       props.onChange(e);
     }
+    if(props.onBlur){
+      props.onBlur(e)
+    }
     setFieldValue(name,e.target.value)
     
   }
