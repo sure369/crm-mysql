@@ -342,7 +342,7 @@ const AccountDetailPage = ({ item }) => {
                                                     console.log('onchange',event.target.value)
 
                                                     // axios.post(getCityPicklists,{city:event.target.value,table:'Account'})
-                                                    axios.post(`${getCityPicklists}+${event.target.value}&table=Account`)
+                                                    axios.post(`${getCityPicklists}${event.target.value}&table=Account`)
                                                     .then((res)=>{
                                                         console.log('get cities',res)
                                                     })
