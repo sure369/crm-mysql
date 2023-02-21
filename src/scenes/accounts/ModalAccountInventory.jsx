@@ -86,10 +86,13 @@ const ModalInventoryAccount = ({ item,handleModal }) => {
             values.modifiedDate = dateSeconds;
             values.createdDate = dateSeconds;
             values.InventoryId=inventoryParentRecord._id;
+            values.InventoryName=inventoryParentRecord.propertyName;
+            
             values.inventoryDetails={
                 propertyName:inventoryParentRecord.propertyName,
                 id:inventoryParentRecord._id
             }
+
        
         console.log('after change form submission value',values);
         

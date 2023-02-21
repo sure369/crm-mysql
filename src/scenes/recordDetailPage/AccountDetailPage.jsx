@@ -66,7 +66,7 @@ const AccountDetailPage = ({ item }) => {
         createdDate:  new Date(singleAccount?.createdDate).toLocaleString(),
         modifiedDate: new Date(singleAccount?.modifiedDate).toLocaleString(),
         _id: singleAccount?._id ?? "",
-        inventoryDetails:singleAccount?.InventoryDetails ?? "", 
+        inventoryDetails:singleAccount?.inventoryDetails ?? "", 
         InventoryId: singleAccount?.InventoryId ?? "",
         InventoryName: singleAccount?.InventoryName ?? "",
     }
@@ -112,7 +112,7 @@ const AccountDetailPage = ({ item }) => {
             values.modifiedDate = dateSeconds;
             values.createdDate = dateSeconds;
             values.InventoryName=values.inventoryDetails.propertyName;
-            values.InventoryId =values.inventoryDetails._id;
+            values.InventoryId =values.inventoryDetails.id;
 
             if(values.InventoryId===''){
                 delete values.InventoryId;
@@ -122,7 +122,7 @@ const AccountDetailPage = ({ item }) => {
             values.modifiedDate = dateSeconds;
             values.createdDate = createDateSec;
             values.InventoryName=values.inventoryDetails.propertyName;
-            values.InventoryId =values.inventoryDetails._id;
+            values.InventoryId =values.inventoryDetails.id;
             
             if(values.InventoryId===''){
                 delete values.InventoryId;

@@ -74,10 +74,14 @@ const ModalInventoryOpportunity = ({ item, handleModal }) => {
         values.InventoryId = inventoryParentRecord._id;
         values.modifiedDate = dateSeconds;
         values.createdDate = dateSeconds;
-        values.inventoryDetails = {
-            propertyName: inventoryParentRecord.propertyName,
-            id: inventoryParentRecord._id
-        }
+        // values.inventoryDetails = {
+        //     propertyName: inventoryParentRecord.propertyName,
+        //     id: inventoryParentRecord._id
+        // }
+        values.InventoryName =inventoryParentRecord.propertyName;
+        values.LeadId=values.leadDetails.id
+        values.LeadName=values.leadDetails.leadName 
+            
         if (values.closeDate) {
             values.closeDate = closeDateSec;
         }

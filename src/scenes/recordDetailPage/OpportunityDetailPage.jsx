@@ -122,8 +122,9 @@ const OpportunityDetailPage = ({ item }) => {
             values.LeadName=values.leadDetails.leadName
             values.LeadId=values.leadDetails.id;
             values.InventoryId=values.inventoryDetails.id
-            // delete values.leadDetails;
-            // delete values.inventoryDetails
+            // delete values.leadDetails{id,leadName}
+
+            // delete values.inventoryDetails{id:,propertyName:}
 
             if (values.closeDate) {
                 values.closeDate = closeDateSec;
