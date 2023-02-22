@@ -13,7 +13,7 @@ const  CustomizedSelectForFormik = ({ children, form, field,...props }) => {
   const { name, value } = field;
   const { setFieldValue } = form;
   const changeFunc = (e)=>{
-    // console.log(props.onChange(e));
+
     if(props.onChange){
       props.onChange(e);
     }

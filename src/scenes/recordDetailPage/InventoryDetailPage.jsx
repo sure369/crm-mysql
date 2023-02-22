@@ -11,6 +11,9 @@ import { InvCitiesPickList,InvCountryPickList, InvStatusPicklist, InvTypePicklis
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 
 const url = `${process.env.REACT_APP_SERVER_URL}/UpsertInventory`;
+const getCountryPicklists= `${process.env.REACT_APP_SERVER_URL}/getpicklistcountry`;
+const getCityPicklists = `${process.env.REACT_APP_SERVER_URL}/getpickliststate?country=`;
+
 
 const InventoryDetailPage = ({ item }) => {
 
@@ -21,11 +24,18 @@ const InventoryDetailPage = ({ item }) => {
     // notification
     const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
 
+    const[countryPicklist,setCountriesPicklist]=useState([])
+    const[cityPicklist,setCitiesPicklist]=useState([])
 
     useEffect(() => {
         console.log('passed record', location.state.record.item);
         setsingleInventory(location.state.record.item);
         setshowNew(!location.state.record.item)
+        getCountriesPicklist();
+        if(location.state.record.item){
+            console.log('inside')
+            getCitiesPicklist(location.state.record.item.country)
+        }
     }, [])
 
 
@@ -37,7 +47,6 @@ const InventoryDetailPage = ({ item }) => {
         tower: '',
         country: '',
         city: '',
-        propertyCities: [],
         floor: '',
         status: '',
         totalArea: '',
@@ -54,7 +63,6 @@ const InventoryDetailPage = ({ item }) => {
         tower: singleInventory?.tower ?? "",
         country: singleInventory?.country ?? "",
         city: singleInventory?.city ?? "",
-        propertyCities: singleInventory?.propertyCities ?? "",
         floor: singleInventory?.floor ?? "",
         status: singleInventory?.status ?? "",
         totalArea: singleInventory?.totalArea ?? "",
@@ -64,30 +72,30 @@ const InventoryDetailPage = ({ item }) => {
         _id: singleInventory?._id ?? "",
     }
 
-    const citiesList = {
-        UAE: [
-            { value: "Dubai", label: "Dubai" },
-            { value: "Abu Dhabi", label: "Abu Dhabi" },
-            { value: "Sharjah", label: "Sharjah" },
-            { value: "Ajman", label: "Ajman" },
-        ],
-        "Saudi Arabia": [
-            { value: "Mecca", label: "Mecca" },
-            { value: "Jeddah", label: "Jeddah" },
-        ],
-        India: [
-            { value: "Chennai", label: "Chennai" },
-            { value: "Bangalore", label: "Bangalore" },
-            { value: "Coimabatore", label: "Coimabatore" },
-        ],
-    };
 
-    const getCities = (country) => {
-        return new Promise((resolve, reject) => {
-            console.log("selected country", country);
-            resolve(InvCitiesPickList[country] || []);
-        });
-    };
+
+    const getCountriesPicklist=()=>{
+        axios.post(getCountryPicklists)
+        .then((res)=>{
+            console.log('get country res',res.data)
+            setCountriesPicklist(res.data)
+        })
+        .catch((error)=>{
+            console.log('get country error',error)
+        })
+    }
+
+    const getCitiesPicklist=(country)=>{
+        console.log('selected country',country)
+        axios.post(`${getCityPicklists}${country}&table=Account`)
+        .then((res)=>{
+            console.log('get city res',res.data)
+            setCitiesPicklist(res.data)
+        })    
+        .catch((error)=>{
+            console.log('get city error',error)
+        })
+    }
 
     const validationSchema = Yup.object({
         projectName: Yup
@@ -149,6 +157,8 @@ const InventoryDetailPage = ({ item }) => {
     }
 
     return (
+        <>
+      
         <Grid item xs={12} style={{ margin: "20px" }}>
             <div style={{ textAlign: "center", marginBottom: "10px" }}>
                 {
@@ -236,24 +246,21 @@ const InventoryDetailPage = ({ item }) => {
                                                 name="country"
                                                 component={CustomizedSelectForFormik}
                                                 value={values.country}
-                                                onChange={async (event) => {
-                                                    const value = event.target.value;
-                                                    const _cities = await getCities(value);
-                                                    console.log(_cities);
-                                                    setFieldValue("country", value);
-                                                    setFieldValue("city", "");
-                                                    setFieldValue("propertyCities", _cities);
+                                                onChange={ (event) => {
+                                                   setFieldValue('country',event.target.value)
+                                                   setFieldValue('city','')
+                                                   getCitiesPicklist(event.target.value)
                                                 }}
                                             >
                                                  <MenuItem value=""><em>None</em></MenuItem>
                                               {
-                                                InvCountryPickList.map((i)=>{
-                                                    return <MenuItem value={i.value}>{i.text}</MenuItem>
+                                                countryPicklist.map((i)=>{
+                                                    return <MenuItem value={i.Country}>{i.Country}</MenuItem>
                                                 })
                                               }  
                                             </Field>
                                         </Grid>
-                                       {/* <Grid item xs={6} md={6}>
+                                       <Grid item xs={6} md={6}>
                                             <label htmlFor="city">City</label>
                                             <Field
                                                 className="form-input"
@@ -264,15 +271,15 @@ const InventoryDetailPage = ({ item }) => {
                                                 onChange={handleChange}
                                             >
                                                  <MenuItem value=""><em>None</em></MenuItem>
-                                                 {values.propertyCities  &&
-                                                    values.propertyCities.map((r) => (
+                                                 {
+                                                    cityPicklist.map((r) => (
                                                       
-                                                         <MenuItem  value={r.value}>{r.text}</MenuItem>
+                                                         <MenuItem  value={r.City}>{r.City}</MenuItem>
                                                     )
                                                         
                                                     )}
                                             </Field>
-                                        </Grid>  */}
+                                        </Grid> 
 
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="floor">Floor</label>
@@ -314,6 +321,7 @@ const InventoryDetailPage = ({ item }) => {
                 </Formik>
             </div>
         </Grid>
+        </>
     )
 }
 export default InventoryDetailPage;

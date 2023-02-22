@@ -35,9 +35,10 @@ const AccountDetailPage = ({ item }) => {
         console.log('true', !location.state.record.item);
         setshowNew(!location.state.record.item)
         FetchInventoriesbyName('');
-        getPicklistNameForCountries();
+        getCountriesPicklist();
         if(location.state.record.item){
-            getPicklistNameForCities(location.state.record.item.billingCountry)
+            console.log('inside')
+            getCitiesPicklist(location.state.record.item.billingCountry)
         }
     }, [])
 
@@ -51,8 +52,7 @@ const AccountDetailPage = ({ item }) => {
         industry: '',
         billingAddress: '',
         billingCountry: '',
-        billingCity: '',
-        billingCities: [],
+        billingCity: '',       
         createdbyId: '',
         createdDate:'',
         modifiedDate: '',
@@ -69,9 +69,7 @@ const AccountDetailPage = ({ item }) => {
         industry: singleAccount?.industry ?? "",
         billingAddress: singleAccount?.billingAddress ?? "",
         billingCountry: singleAccount?.billingCountry ?? "",
-        billingCity: singleAccount?.billingcity ?? "",
-        billingCities: cityPicklist?? "",
-        // billingCities:singleAccount?.billingCities ?? "",
+        billingCity: singleAccount?.billingCity ?? "",
         createdbyId: singleAccount?.createdbyId ?? "",
         createdDate:  new Date(singleAccount?.createdDate).toLocaleString(),
         modifiedDate: new Date(singleAccount?.modifiedDate).toLocaleString(),
@@ -81,14 +79,8 @@ const AccountDetailPage = ({ item }) => {
         InventoryName: singleAccount?.InventoryName ?? "",
     }
 
-    const getCities = (billingCountry) => {
-        return new Promise((resolve, reject) => {
-            console.log("billingCountry", billingCountry);
-            resolve(AccCitiesPickList[billingCountry] || []);
-        });
-    };
 
-    console.log('getCities',getCities('India'))
+
     const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
     const validationSchema = Yup.object({
@@ -110,35 +102,29 @@ const AccountDetailPage = ({ item }) => {
             .matches(/^[0-9]+$/, "Must be only digits")
     })
 
-    const getPicklistNameForCountries=()=>{
+
+
+    const getCountriesPicklist=()=>{
         axios.post(getCountryPicklists)
         .then((res)=>{
-            console.log('getCountryPicklists response',res)
-            console.log('dd',res.data)
+            console.log('get country res',res.data)
             setCountriesPicklist(res.data)
-
         })
-        .catch((err)=>{
-            console.log(err)
+        .catch((error)=>{
+            console.log('get country error',error)
         })
     }
-    const getPicklistNameForCities=(props)=>{
-        if(props){
-            console.log('inside',props)
-            axios.post(`${getCityPicklists}${props}&table=Account`)
-        .then((res)=>{
-            console.log('getPicklistNameForCities',res.data)
-            setCitiesPicklist(res.data)
 
+    const getCitiesPicklist=(country)=>{
+        console.log('selected country',country)
+        axios.post(`${getCityPicklists}${country}&table=Account`)
+        .then((res)=>{
+            console.log('get city res',res.data)
+            setCitiesPicklist(res.data)
+        })    
+        .catch((error)=>{
+            console.log('get city error',error)
         })
-        .catch((err)=>{
-            console.log(err)
-        })
-        }
-        else{
-            console.log('outside',props)
-        }
-      
     }
 
     const formSubmission = (values) => {
@@ -213,9 +199,7 @@ const AccountDetailPage = ({ item }) => {
     const handleFormClose =()=>{
         navigate(-1)
     }
-    const MenuItemhandleclick=(e)=>{
-        console.log(e)
-    }
+
     return (
 
         <Grid item xs={12} style={{ margin: "20px" }}>
@@ -355,6 +339,7 @@ const AccountDetailPage = ({ item }) => {
                                             </Field>
                                         </Grid>
 
+
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="billingCountry">Billing Country</label>
                                             <Field
@@ -364,34 +349,22 @@ const AccountDetailPage = ({ item }) => {
                                                 component={CustomizedSelectForFormik}
                                                 value={values.billingCountry}
                                                 onChange={async (event) => {
-                                                    console.log('onchange',event.target.value)
-                                                    setFieldValue("billingCountry", event.target.value)
-                                                    // axios.post(getCityPicklists,{city:event.target.value,table:'Account'})
-                                                    axios.post(`${getCityPicklists}${event.target.value}&table=Account`)
-                                                    .then((res)=>{
-                                                        console.log('get cities',res.data)
-                                                        setCitiesPicklist(res.data)
-                                                       
-                                                    })
-                                                    .catch((error)=>{
-                                                        console.log('error',error)
-                                                    })
-                                                    // const value = event.target.value;
-                                                    // const _billingCities = await getCities(value);
-                                                    // console.log('billingCities',_billingCities);
-                                                    // setFieldValue("billingCountry", value);
-                                                    // setFieldValue("billingCity", "");
-                                                    // setFieldValue("billingCities", _billingCities);
+                                                    const value = event.target.value;
+                                                    setFieldValue("billingCountry", value);
+                                                    setFieldValue("billingCity", "");
+                                                    getCitiesPicklist(value)
                                                 }}
                                             >
                                                 <MenuItem value=""><em>None</em></MenuItem>
-                                              {
+                                                {
                                                 countryPicklist.map((i)=>{
                                                     return <MenuItem value={i.Country}>{i.Country}</MenuItem>
                                                 })
-                                              }  
+                                              }   
                                             </Field>
                                         </Grid>
+
+                                       
                                         
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="billingCity">Billing City</label>
@@ -401,20 +374,14 @@ const AccountDetailPage = ({ item }) => {
                                                 id="billingCity"
                                                 name="billingCity"
                                                 component={CustomizedSelectForFormik}
-                                        
+                                                onChange={handleChange}
                                             >
                                                 <MenuItem value=""><em>None</em></MenuItem>
-                                                { cityPicklist&&
-                                                   cityPicklist.map((r) => (                                                      
-                                                         <MenuItem key={r.City} value={r.City} onClick={(e)=>MenuItemhandleclick(e)}>{r.City}</MenuItem>
-                                                    )
-                                                        
-                                                    )}
-                                                {/* {values.billingCities &&
-                                                    values.billingCities.map((r) => (                                                      
-                                                         <MenuItem key={r.City} value={r.City}>{r.City}</MenuItem>
-                                                    )                                                        
-                                                    )} */}
+                                                {
+                                                cityPicklist.map((i)=>{
+                                                    return <MenuItem value={i.City}>{i.City}</MenuItem>
+                                                })
+                                              }  
                                             </Field>
                                         </Grid>
 
