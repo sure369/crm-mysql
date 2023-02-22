@@ -27,15 +27,18 @@ const AccountDetailPage = ({ item }) => {
    
     //const city
     const[countryPicklist,setCountriesPicklist]=useState([])
-    const[cityPicklist,setCityPicklist]=useState([])
+    const[cityPicklist,setCitiesPicklist]=useState([])
+
     useEffect(() => {
         console.log('passed record', location.state.record.item);
         setsingleAccount(location.state.record.item);
         console.log('true', !location.state.record.item);
         setshowNew(!location.state.record.item)
         FetchInventoriesbyName('');
-        getPicklistNameForCities();
-      
+        getPicklistNameForCountries();
+        if(location.state.record.item){
+            getPicklistNameForCities(location.state.record.item.billingCountry)
+        }
     }, [])
 
     const initialValues = {
@@ -66,8 +69,9 @@ const AccountDetailPage = ({ item }) => {
         industry: singleAccount?.industry ?? "",
         billingAddress: singleAccount?.billingAddress ?? "",
         billingCountry: singleAccount?.billingCountry ?? "",
-        billingCity: singleAccount?.billingCity ?? "",
-        billingCities: singleAccount?.billingCities ?? "",
+        billingCity: singleAccount?.billingcity ?? "",
+        billingCities: cityPicklist?? "",
+        // billingCities:singleAccount?.billingCities ?? "",
         createdbyId: singleAccount?.createdbyId ?? "",
         createdDate:  new Date(singleAccount?.createdDate).toLocaleString(),
         modifiedDate: new Date(singleAccount?.modifiedDate).toLocaleString(),
@@ -106,7 +110,7 @@ const AccountDetailPage = ({ item }) => {
             .matches(/^[0-9]+$/, "Must be only digits")
     })
 
-    const getPicklistNameForCities=()=>{
+    const getPicklistNameForCountries=()=>{
         axios.post(getCountryPicklists)
         .then((res)=>{
             console.log('getCountryPicklists response',res)
@@ -117,6 +121,24 @@ const AccountDetailPage = ({ item }) => {
         .catch((err)=>{
             console.log(err)
         })
+    }
+    const getPicklistNameForCities=(props)=>{
+        if(props){
+            console.log('inside',props)
+            axios.post(`${getCityPicklists}${props}&table=Account`)
+        .then((res)=>{
+            console.log('getPicklistNameForCities',res.data)
+            setCitiesPicklist(res.data)
+
+        })
+        .catch((err)=>{
+            console.log(err)
+        })
+        }
+        else{
+            console.log('outside',props)
+        }
+      
     }
 
     const formSubmission = (values) => {
@@ -190,6 +212,9 @@ const AccountDetailPage = ({ item }) => {
 
     const handleFormClose =()=>{
         navigate(-1)
+    }
+    const MenuItemhandleclick=(e)=>{
+        console.log(e)
     }
     return (
 
@@ -340,12 +365,13 @@ const AccountDetailPage = ({ item }) => {
                                                 value={values.billingCountry}
                                                 onChange={async (event) => {
                                                     console.log('onchange',event.target.value)
-
+                                                    setFieldValue("billingCountry", event.target.value)
                                                     // axios.post(getCityPicklists,{city:event.target.value,table:'Account'})
                                                     axios.post(`${getCityPicklists}${event.target.value}&table=Account`)
                                                     .then((res)=>{
                                                         console.log('get cities',res.data)
-                                                        setCityPicklist(res.data)
+                                                        setCitiesPicklist(res.data)
+                                                       
                                                     })
                                                     .catch((error)=>{
                                                         console.log('error',error)
@@ -375,29 +401,19 @@ const AccountDetailPage = ({ item }) => {
                                                 id="billingCity"
                                                 name="billingCity"
                                                 component={CustomizedSelectForFormik}
-                                               onChange={
-                                                axios.post(`${getCityPicklists}${values.billingCountry}&table=Account`)
-                                                .then((res)=>{
-                                                    console.log('get inside billing city',res.data)
-                                                   
-                                                })
-                                                .catch((error)=>{
-                                                    console.log('error',error)
-                                                })
-                                               }
+                                        
                                             >
                                                 <MenuItem value=""><em>None</em></MenuItem>
                                                 { cityPicklist&&
                                                    cityPicklist.map((r) => (                                                      
-                                                         <MenuItem key={r.State} value={r.State}>{r.State}</MenuItem>
+                                                         <MenuItem key={r.City} value={r.City} onClick={(e)=>MenuItemhandleclick(e)}>{r.City}</MenuItem>
                                                     )
                                                         
                                                     )}
                                                 {/* {values.billingCities &&
                                                     values.billingCities.map((r) => (                                                      
-                                                         <MenuItem key={r.value} value={r.value}>{r.text}</MenuItem>
-                                                    )
-                                                        
+                                                         <MenuItem key={r.City} value={r.City}>{r.City}</MenuItem>
+                                                    )                                                        
                                                     )} */}
                                             </Field>
                                         </Grid>

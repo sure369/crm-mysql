@@ -329,10 +329,15 @@ const Contacts = () => {
               console.log('checkbox selection ids', ids);
               setSelectedRecordIds(ids)
               const selectedIDs = new Set(ids);
+              // const selectedRowRecords = records.filter((row) =>{
+              // console.log(row)
+              //  console.log( selectedIDs.has(row._id))
+              // }
+              // );
               const selectedRowRecords = records.filter((row) =>
-                selectedIDs.has(row._id.toString())
+                selectedIDs.has(row._id)
               );
-              setSelectedRecordDatas(selectedRowRecords)
+               setSelectedRecordDatas(selectedRowRecords)
               console.log('selectedRowRecords', selectedRowRecords)
             }}
           />
