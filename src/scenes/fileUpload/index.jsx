@@ -138,8 +138,11 @@ const DropFileInput = () => {
             /> */}
            <iframe src={`https://docs.google.com/gview?url=${fileUploadRes}&embedded=true`}></iframe>
 
-            <img src={fileUploadRes} />
+            <iframe src={`https://view.officeapps.live.com/op/view.aspx?src=${fileUploadRes}`}></iframe>
          
+         
+            <img src={fileUploadRes} />
+            
             </Grid>
         </>
     )
