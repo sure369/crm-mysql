@@ -1,0 +1,242 @@
+.my-form {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    width: 100%;
+    /* border: 1px solid #ccc; */
+    padding: 20px;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    border-radius: 12px
+  }
+  
+  .my-form label {
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .my-form .form-input {
+    height: 40px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+
+  .my-form .form-input-textarea {
+    height: 60px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .my-form .form-customSelect {
+    height: 40px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  /* .my-form .MuiAutocomplete-root {
+    height: 40px;
+    align-items: center;
+  } */
+  
+  .my-form .MuiInputBase-root {
+    height: 40px;
+    font-size: 16px;
+    
+
+    
+  }
+
+  .my-form .MuiAutocomplete-root {
+    height: 40px;
+    display: flex;
+    /* align-items: center; */
+  }
+  
+  .my-form .MuiAutocomplete-inputRoot[class*="MuiOutlinedInput-root"] {
+    padding: 0;
+    height: 100%;
+  }
+  
+  .my-form .MuiInputBase-input {
+    font-size: 16px;
+    /* text-align: center; */
+    padding: 10px;
+  }
+  
+  .my-form .MuiFormLabel-root {
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  
+  .login-form-input {
+    height: 40px;
+    width: 100%;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    font-size: 16px;
+  }
+  
+  .login-form-input:focus {
+    outline: none;
+    border: 2px solid #1bbd7e;
+  }
+
+ .typo{
+  background-color: transparent;
+ padding: 8px 16px;
+ border: none;
+ border-radius: 4px;
+ cursor: pointer;
+ }
+
+ .error-note{
+  color: red;
+ }
+
+ .action-buttons{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 15px;
+  /* margin-bottom: 30px; */
+  }
+
+  .modal-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 600px;
+    height: fit-content;
+    max-height: 80vh;
+    overflow-y: auto;
+    background-color: #fff;
+    border: 2px solid #000;
+    box-shadow: 24px;
+  }
+  
+  @media only screen and (max-width: 600px) {
+    .modal-container {
+      width: 95%;
+    }
+  }
+
+  .modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: fit-content;
+    box-shadow: 0 0 10px rgba(254, 252,255, );
+    background-color: rgba(254, 252,255);
+    border-radius: 12px;
+  }
+  
+  /* Media query for smaller screens */
+  @media (max-width: 768px) {
+    .modal {
+      width: 80%;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+  }
+  
+  /* Media query for even smaller screens */
+  @media (max-width: 480px) {
+    .modal {
+      width: 80%;
+      box-shadow: none;
+    }
+  }
+
+  /* .modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50%; 
+    max-width: 600px; 
+    background-color: #fff;
+    border: 2px solid #000;
+    box-shadow: 24px 24px 48px rgba(0, 0, 0, 0.4);
+  }
+  
+  @media (min-width: 768px) {
+    .modal {
+      width: 70%;
+    }
+  }
+  
+  @media (min-width: 992px) {
+    .modal {
+      width: 50%;
+    }
+  }
+  
+  @media (min-width: 1200px) {
+    .modal {
+      width: 40%;
+    }
+  } */
+  
+
+
+  /* .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 1rem;
+  }
+  
+  .login-form {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+  }
+  .login-form label {
+    display: block;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .login-form input {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .login-form button {
+    display: block;
+    background-color: #1bbd7e;
+    color: #fff;
+    border: none;
+    border-radius: 0.25rem;
+    padding: 0.75rem;
+    margin-top: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .login-form button:hover {
+    background-color: #108e5f;
+  }
+  
+  .login-form input:focus {
+    outline: none;
+    border: 2px solid #1bbd7e;
+    box-shadow: 0px 0px 5px rgba(27, 189, 126, 0.5);
+  } */
