@@ -7,14 +7,14 @@ import {
     Autocomplete, TextField ,MenuItem
 } from "@mui/material";
 import axios from 'axios'
-import "../formik/FormStyles.css"
+// import "../formik/FormStyles.css"
 import ToastNotification from "../toast/ToastNotification";
 import { LeadSourcePickList, NameSalutionPickList} from '../../data/pickLists'
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-
+import '../recordDetailPage/Form.css'
 
 const UpsertUrl = `${process.env.REACT_APP_SERVER_URL}/UpsertContact`;
 
@@ -76,7 +76,6 @@ const ModalConAccount = ({ item, handleModal }) => {
 
     const formSubmission = async (values, { resetForm }) => {
         console.log('inside form Submission', values);
-        let account = accountParentRecord._id;
         let dateSeconds = new Date().getTime();
         let dobSec = new Date(values.dob).getTime()
 
@@ -84,10 +83,13 @@ const ModalConAccount = ({ item, handleModal }) => {
         values.createdDate = dateSeconds;
         values.AccountId = accountParentRecord._id;
         values.AccountName =accountParentRecord.accountName
-        values.accountDetails={
-            accountName:accountParentRecord.accountName,
-            id:accountParentRecord._id
-        }
+        values.createdBy = (sessionStorage.getItem("loggedInUser"));
+        values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
+       
+        // values.accountDetails={
+        //     accountName:accountParentRecord.accountName,
+        //     id:accountParentRecord._id
+        // }
         values.fullName = values.firstName + ' ' + values.lastName;
         if (values.dob) {
             values.dob = dobSec;
@@ -142,7 +144,7 @@ const ModalConAccount = ({ item, handleModal }) => {
                     return (
                         <>
                           <ToastNotification notify={notify} setNotify={setNotify}/>
-                          <Form>
+                          <Form className="my-form">
                                         <Grid container spacing={2}>
                                             <Grid item xs={6} md={2}>
                                                 <label htmlFor="salutation">Salutation  </label>
@@ -188,7 +190,7 @@ const ModalConAccount = ({ item, handleModal }) => {
                                                         onChange={(e) => {
                                                             setFieldValue('dob', e)
                                                         }}
-                                                        renderInput={(params) => <TextField  {...params} className='form-input' error={false} />}
+                                                        renderInput={(params) => <TextField  {...params} style={{width:'100%'}} error={false} />}
                                                     />
 
                                                 </LocalizationProvider>
@@ -214,7 +216,7 @@ const ModalConAccount = ({ item, handleModal }) => {
 
                                             <Grid Grid item xs={6} md={12}>
                                                 <label htmlFor="description">Description</label>
-                                                <Field as="textarea" name="description" class="form-input" />
+                                                <Field as="textarea" name="description" class="form-input-textarea" style={{width:'100%'}} />
                                             </Grid>
 
                                 </Grid>

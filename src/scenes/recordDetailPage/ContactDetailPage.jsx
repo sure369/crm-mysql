@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom"
 import axios from 'axios'
-import "../formik/FormStyles.css"
+// import "../formik/FormStyles.css"
 import EmailModalPage from './EmailModalPage';
 import ToastNotification from '../toast/ToastNotification';
 import EmailIcon from '@mui/icons-material/Email';
@@ -19,7 +19,7 @@ import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-
+import './Form.css'
 
 const url = `${process.env.REACT_APP_SERVER_URL}/UpsertContact`;
 const fetchAccountsbyName = `${process.env.REACT_APP_SERVER_URL}/accountsname`;
@@ -59,6 +59,8 @@ const ContactDetailPage = ({ item }) => {
         fullAddress: '',
         description: '',
         createdbyId: '',
+        createdBy: "",
+        modifiedBy: "",
         createdDate: '',
         modifiedDate: '',
     }
@@ -84,6 +86,20 @@ const ContactDetailPage = ({ item }) => {
         modifiedDate: new Date(singleContact?.modifiedDate).toLocaleString(),
         _id: singleContact?._id ?? "",
         accountDetails: singleContact?.accountDetails ?? "",
+        createdBy: (() => {
+            try {
+              return JSON.parse(singleContact?.createdBy);
+            } catch {
+              return "";
+            }
+          })(),
+        modifiedBy: (() => {
+            try {
+              return JSON.parse(singleContact?.modifiedBy);
+            } catch {
+              return "";
+            }
+          })(),
     }
     const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
@@ -121,10 +137,9 @@ const ContactDetailPage = ({ item }) => {
         if (showNew) {
             values.modifiedDate = dateSeconds;
             values.createdDate = dateSeconds;
+            values.createdBy = (sessionStorage.getItem("loggedInUser"));
+            values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
             values.fullName = values.firstName + ' ' + values.lastName;
-            values.AccountName= values.accountDetails.accountName;
-            values.AccountId= values.accountDetails.id
-
             if (values.dob) {
                 values.dob = dobSec;
             }
@@ -135,7 +150,9 @@ const ContactDetailPage = ({ item }) => {
         }
         else if (!showNew) {
             values.modifiedDate = dateSeconds;
-            values.createdDate = createDateSec
+            values.createdDate = createDateSec;
+            values.createdBy = singleContact.createdBy;
+            values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
             values.fullName = values.firstName + ' ' + values.lastName;
             if (values.dob) {
                 values.dob = dobSec;
@@ -207,7 +224,7 @@ const ContactDetailPage = ({ item }) => {
             <Grid item xs={12} style={{ margin: "20px" }}>
                 <div style={{ textAlign: "center", marginBottom: "10px" }}>
                     {
-                        showNew ? <h3>New Contact </h3> : <h3>Contact Detail Page </h3>
+                        showNew ? <h2>New Contact </h2> : <h2>Contact Detail Page </h2>
                     }
                 </div>
                 <div>
@@ -218,12 +235,10 @@ const ContactDetailPage = ({ item }) => {
                                     <Tooltip title="Send Email">
                                         <IconButton> <EmailIcon sx={{ color: '#DB4437' }} onClick={handlesendEmail} /> </IconButton>
                                     </Tooltip>
-                                    <Tooltip title="Whatsapp">
+                                    {/* <Tooltip title="Whatsapp">
                                         <IconButton> <WhatsAppIcon sx={{ color: '#34A853' }} onClick={handlesendWhatsapp} /> </IconButton>
-                                    </Tooltip>
+                                    </Tooltip> */}
                                 </>
-
-
                                 : ''
                         }
                     </div>
@@ -254,7 +269,7 @@ const ContactDetailPage = ({ item }) => {
                                 <>
                                     <ToastNotification notify={notify} setNotify={setNotify} />
 
-                                    <Form>
+                                    <Form className='my-form'>
                                         <Grid container spacing={2}>
                                             <Grid item xs={6} md={2}>
                                                 <label htmlFor="salutation">Salutation  </label>
@@ -300,12 +315,14 @@ const ContactDetailPage = ({ item }) => {
                                                     onChange={(e, value) => {
                                                         if (!value) {
                                                             console.log('!value', value);
-                                                            setFieldValue("AccountId", '')
                                                             setFieldValue("accountDetails", '')
+                                                            setFieldValue("AccountName",'')
+                                                            setFieldValue("AccountId",'')
                                                         } else {
                                                             console.log('value', value);
                                                             setFieldValue("AccountId", value.id)
                                                             setFieldValue("accountDetails", value)
+                                                            setFieldValue("AccountName",value.accountName)
                                                         }
                                                     }}
                                                     onInputChange={(event, newInputValue) => {
@@ -313,7 +330,7 @@ const ContactDetailPage = ({ item }) => {
                                                         if (newInputValue.length >= 3) {
                                                             FetchAccountsbyName(newInputValue);
                                                         }
-                                                        else  if (newInputValue.length == 0) {
+                                                        else  if (newInputValue.length === 0) {
                                                             FetchAccountsbyName(newInputValue);
                                                         }
                                                     }}
@@ -341,7 +358,7 @@ const ContactDetailPage = ({ item }) => {
                                                         onChange={(e) => {
                                                             setFieldValue('dob', e)
                                                         }}
-                                                        renderInput={(params) => <TextField  {...params} className='form-input' error={false} />}
+                                                        renderInput={(params) => <TextField  {...params} style={{width:'100%'}} error={false} />}
                                                     />
 
                                                 </LocalizationProvider>
@@ -358,7 +375,7 @@ const ContactDetailPage = ({ item }) => {
                                                 </div>
                                             </Grid>
                                             <Grid item xs={6} md={6}>
-                                                <label htmlFor="leadSource"> lead Source</label>
+                                                <label htmlFor="leadSource">Lead Source</label>
                                                 <Field name="leadSource" component={CustomizedSelectForFormik} className="form-customSelect">
                                                 <MenuItem value=""><em>None</em></MenuItem>
                                                  {
@@ -370,13 +387,13 @@ const ContactDetailPage = ({ item }) => {
                                             </Grid>
 
                                             <Grid Grid item xs={6} md={6}>
-                                                <label htmlFor="fullAddress">fullAddress</label>
-                                                <Field as="textarea" name="fullAddress" class="form-input" />
+                                                <label htmlFor="fullAddress">Full Address</label>
+                                                <Field as="textarea" name="fullAddress" class="form-input-textarea" style={{width:'100%'}} />
                                             </Grid>
 
                                             <Grid Grid item xs={6} md={12}>
                                                 <label htmlFor="description">Description</label>
-                                                <Field as="textarea" name="description" class="form-input" />
+                                                <Field as="textarea" name="description" class="form-input-textarea" style={{width:'100%'}} />
                                             </Grid>
 
 
@@ -384,13 +401,17 @@ const ContactDetailPage = ({ item }) => {
                                             {!showNew && (
                                                 <>
                                                     <Grid item xs={6} md={6}>
-                                                        <label htmlFor="createdDate" >created Date</label>
-                                                        <Field name='createdDate' type="text" class="form-input" disabled />
+                                                        <label htmlFor="createdDate" >Created Date</label>
+                                                        <Field name='createdDate' type="text" class="form-input" disabled
+                                                          value={ values.createdBy.userFullName +" ,"+ values.createdDate}
+                                                           />
                                                     </Grid>
 
                                                     <Grid item xs={6} md={6}>
                                                         <label htmlFor="modifiedDate" >Modified Date</label>
-                                                        <Field name='modifiedDate' type="text" class="form-input" disabled />
+                                                        <Field name='modifiedDate' type="text" class="form-input"
+                                                          value={ values.modifiedBy.userFullName +" ,"+ values.modifiedDate}
+                                                          disabled />
                                                     </Grid>
                                                 </>
                                             )}
@@ -401,10 +422,10 @@ const ContactDetailPage = ({ item }) => {
 
                                                 {
                                                     showNew ?
-                                                        <Button type='success' variant="contained" color="secondary" disabled={isSubmitting}>Save</Button>
+                                                        <Button type='success' variant="contained" color="secondary" disabled={isSubmitting || !dirty}>Save</Button>
                                                         :
 
-                                                        <Button type='success' variant="contained" color="secondary" disabled={isSubmitting}>Update</Button>
+                                                        <Button type='success' variant="contained" color="secondary" disabled={isSubmitting || !dirty}>Update</Button>
                                                 }
                                                 <Button type="reset" variant="contained" onClick={handleFormClose}  >Cancel</Button>
                                             </DialogActions>
@@ -423,9 +444,9 @@ const ContactDetailPage = ({ item }) => {
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box sx={ModalStyle}>
+              <div className='modal'>
                     <EmailModalPage data={singleContact} handleModal={setEmailModalClose} bulkMail={false} />
-                </Box>
+                </div>
             </Modal>
             <Modal
                 open={whatsAppModalOpen}
@@ -433,9 +454,9 @@ const ContactDetailPage = ({ item }) => {
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box sx={ModalStyle}>
+                 <div className='modal'>
                     <WhatAppModalPage data={singleContact} handleModal={setWhatAppModalClose} bulkMail={true} />
-                </Box>
+                </div>
             </Modal>
 
         </div>

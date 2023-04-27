@@ -9,9 +9,12 @@ import "../formik/FormStyles.css"
 import ToastNotification from '../toast/ToastNotification';
 import {IndustryPickList, AccRatingPickList,AccTypePickList,AccCitiesPickList, AccCountryPickList} from '../../data/pickLists'
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
-
+import { RequestServer } from '../api/HttpReq';
+import "../recordDetailPage/Form.css"
 
 const url = `${process.env.REACT_APP_SERVER_URL}/UpsertAccount`;
+const getCountryPicklists= `${process.env.REACT_APP_SERVER_URL}/getpicklistcountry`;
+const getCityPicklists = `${process.env.REACT_APP_SERVER_URL}/getpickliststate?country=`;
 
 
 const ModalInventoryAccount = ({ item,handleModal }) => {
@@ -21,10 +24,14 @@ const ModalInventoryAccount = ({ item,handleModal }) => {
     const navigate = useNavigate();
   // notification
     const[notify,setNotify]=useState({isOpen:false,message:'',type:''})
-   
+    //const city
+    const[countryPicklist,setCountriesPicklist]=useState([])
+    const[cityPicklist,setCitiesPicklist]=useState([])
+
     useEffect(() => {
         console.log('passed record', location.state.record.item);
         setInventoryParentRecord(location.state.record.item);      
+        getCountriesPicklist()
     }, [])
 
     const initialValues = {
@@ -39,21 +46,17 @@ const ModalInventoryAccount = ({ item,handleModal }) => {
         billingAddress: '',
         billingCountry: '',
         billingCity: '',
-        billingCities: [],
-        createdbyId: '',
+        createdbyId: '',	
+        createdBy: "",
+        modifiedBy: "",
+        // modifiedBy: '',
         createdDate:'',
         modifiedDate: '',
-        inventoryDetails:'',
+        // inventoryDetails:'',
     }
 
 
-    const getCities = (billingCountry) => {
-        return new Promise((resolve, reject) => {
-            console.log("billingCountry", billingCountry);
-            resolve(AccCitiesPickList[billingCountry] || []);
-        });
-    };
-
+   
     const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
     const validationSchema = Yup.object({
@@ -83,15 +86,21 @@ const ModalInventoryAccount = ({ item,handleModal }) => {
         let dateSeconds = new Date().getTime();
         let createDateSec = new Date(values.createdDate).getTime()
 
+        	
+       // values.createdBy = JSON.parse(sessionStorage.getItem('loggedInUser'))	
+        //values.modifiedBy = JSON.parse(sessionStorage.getItem('loggedInUser'))
+
             values.modifiedDate = dateSeconds;
             values.createdDate = dateSeconds;
             values.InventoryId=inventoryParentRecord._id;
             values.InventoryName=inventoryParentRecord.propertyName;
-            
-            values.inventoryDetails={
-                propertyName:inventoryParentRecord.propertyName,
-                id:inventoryParentRecord._id
-            }
+            values.createdBy = (sessionStorage.getItem("loggedInUser"));
+            values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
+           
+            // values.InventoryDetails={
+            //     propertyName:inventoryParentRecord.propertyName,
+            //     id:inventoryParentRecord._id
+            // }
 
        
         console.log('after change form submission value',values);
@@ -122,11 +131,40 @@ const ModalInventoryAccount = ({ item,handleModal }) => {
         })
     }
 
+    const getCountriesPicklist=()=>{
+        RequestServer("post",getCountryPicklists,null,{})
+        .then((res)=>{
+            console.log(res,"getCountryPicklists res")
+            if(res.success){
+                setCountriesPicklist(res.data)
+            }else{
+                setCountriesPicklist()
+            }
+        })
+        .catch((error)=>{
+            console.log('get country error',error)
+        })
+    }
+    const getCitiesPicklist=(country)=>{
+        console.log('selected country',country)
+        RequestServer("post",`${getCityPicklists}${country}&table=Account`,null,{})
+        .then((res)=>{
+            console.log(res,"getCityPicklists res")
+            if(res.success){
+                setCitiesPicklist(res.data)
+            }else{
+                setCitiesPicklist()
+            }
+        })
+        .catch((error)=>{
+            console.log('get city error',error)
+        })
+    }
     return (
 
         <Grid item xs={12} style={{ margin: "20px" }}>
             <div style={{ textAlign: "center", marginBottom: "10px" }}>
-                <h3>New Account</h3> 
+                <h2>New Account</h2> 
             </div>
             <div>
                 <Formik
@@ -151,7 +189,7 @@ const ModalInventoryAccount = ({ item,handleModal }) => {
                                 
                                 <ToastNotification notify={notify} setNotify={setNotify}/>
 
-                                <Form>
+                                <Form className='my-form'>
                                     <Grid container spacing={2}>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="accountName">Account Name  <span className="text-danger">*</span></label>
@@ -165,7 +203,7 @@ const ModalInventoryAccount = ({ item,handleModal }) => {
                                             <Field name="accountNumber" type="number" class="form-input" />
                                         </Grid>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="annualRevenue">Aannual Revenue</label>
+                                            <label htmlFor="annualRevenue">Annual Revenue</label>
                                             <Field class="form-input" type="text" name="annualRevenue" />
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="annualRevenue" />
@@ -195,6 +233,7 @@ const ModalInventoryAccount = ({ item,handleModal }) => {
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="type">Type</label>
                                             <Field name="type" component={CustomizedSelectForFormik}>
+                                            <MenuItem value=""><em>None</em></MenuItem>                                             
                                               {
                                                 AccTypePickList.map((i)=>{
                                                     return <MenuItem value={i.value}>{i.text}</MenuItem>	
@@ -205,7 +244,7 @@ const ModalInventoryAccount = ({ item,handleModal }) => {
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="industry">Industry</label>
                                             <Field name="industry"  component={CustomizedSelectForFormik}>
-                                          
+                                            <MenuItem value=""><em>None</em></MenuItem>    
                                           {
                                             IndustryPickList.map((i)=>{
                                                 return <MenuItem value={i.value}>{i.text}</MenuItem>	
@@ -224,17 +263,17 @@ const ModalInventoryAccount = ({ item,handleModal }) => {
                                                 value={values.billingCountry}
                                                 onChange={async (event) => {
                                                     const value = event.target.value;
-                                                    const _billingCities = await getCities(value);
-                                                    console.log('billingCities',_billingCities);
+                                                 
                                                     setFieldValue("billingCountry", value);
                                                     setFieldValue("billingCity", "");
-                                                    setFieldValue("billingCities", _billingCities);
+                                                    getCitiesPicklist(value)
+                                                    // setFieldValue("billingCities", _billingCities);
                                                 }}
                                             >
-                                               
+                                               <MenuItem value=""><em>None</em></MenuItem>                                             
                                               {
-                                                AccCountryPickList.map((i)=>{
-                                                    return <MenuItem value={i.value}>{i.text}</MenuItem>
+                                                countryPicklist.map((i)=>{
+                                                    return <MenuItem value={i.Country}>{i.Country}</MenuItem>
                                                 })
                                               }  
                                             </Field>
@@ -248,12 +287,12 @@ const ModalInventoryAccount = ({ item,handleModal }) => {
                                                 id="billingCity"
                                                 name="billingCity"
                                                 component={CustomizedSelectForFormik}
-                                                // onChange={handleChange}
+                                                onChange={handleChange}
                                             >
-                                               
-                                                {values.billingCities &&
-                                                    values.billingCities.map((r) => (                                                      
-                                                         <MenuItem key={r.value} value={r.value}>{r.text}</MenuItem>
+                                                <MenuItem value=""><em>None</em></MenuItem>                                        
+                                                {
+                                                    cityPicklist.map((r) => (                                                      
+                                                         <MenuItem key={r.City} value={r.City}>{r.City}</MenuItem>
                                                     )
                                                         
                                                     )}
@@ -261,7 +300,7 @@ const ModalInventoryAccount = ({ item,handleModal }) => {
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="billingAddress">Billing Address </label>
-                                            <Field name="billingAddress" type="text" class="form-input" />
+                                            <Field name="billingAddress" as="textarea" class="form-input-textarea"  style={{width:"100%"}}/>
                                         </Grid>
                                         
                                     </Grid>

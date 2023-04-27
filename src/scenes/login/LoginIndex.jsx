@@ -58,9 +58,9 @@ export default function LoginIndex({onAuthentication}) {
             setSignInData(res.data)
             if(res.data.status==='success'){
                 let obj ={
-                    userId:res.data.userDetails._id,
-                    userName:res.data.userDetails.userName,
-                    userFullName:res.data.userDetails.fullName,
+                    userId:res.data.userDetails[0]._id,
+                    userName:res.data.userDetails[0].userName,
+                    userFullName:res.data.userDetails[0].fullName,
                     // userRole:res.data.userDetails.role
                 }
                 sessionStorage.setItem('token',res.data.content)

@@ -27,13 +27,11 @@ const  CustomizedSelectForFormik = ({ children, form, field,...props }) => {
 
   return (
     <Select
-    className="form-customSelect"
+   style={{width:'100%'}}
       name={name}
       value={value}
       onChange={ (e) => {
         changeFunc(e);
-        
-
       }}
     >
       {children}

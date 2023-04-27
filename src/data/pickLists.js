@@ -203,3 +203,16 @@ export const DataLoaderObjectPicklist=[
     {text:'Lead',value:'Lead'}, 
     {text:'Opportunity',value:'Opportunity'}, 
 ]
+
+export const LeadsDemoPicklist = [
+    { text: "First", value: "First" },
+    { text: "Second", value: "Second" },
+    { text: "Final", value: "Final" },
+  ];
+  
+  export const LeadMonthPicklist =[
+    {text:'Jan',value:'Jan'},  {text:'Feb',value:'Feb'},  {text:'Mar',value:'Mar'},  {text:'Apr',value:'Apr'},
+    {text:'May',value:'May'},  {text:'June',value:'June'},  {text:'July',value:'July'},  {text:'Aug',value:'Aug'},
+    {text:'Sep',value:'Sep'},  {text:'Oct',value:'Oct'},  {text:'Nov',value:'Nov'},  {text:'Dec',value:'Dec'}
+  ]
+  

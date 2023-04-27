@@ -49,30 +49,8 @@ export default function OTPVerification() {
        return handleSendEmailId()
     },[])
 
-    // useEffect(() => {
-    //     console.log('ddd')
-    //     const interval = setInterval(() => {
-    //       if (seconds > 0) {
-    //         setSeconds(seconds - 1);
-    //       }
-      
-    //       if (seconds === 0) {
-    //         if (minutes === 0) {
-    //           clearInterval(interval);
-    //         } else {
-    //           setSeconds(59);
-    //           setMinutes(minutes - 1);
-    //         }
-    //       }
-    //     }, 1000);
-      
-    //     return () => {
-    //       clearInterval(interval);
-    //     };
-    //   }, [seconds]);
-
     const handleSendEmailId = () => {
-        axios.post(generateotpUrl, { emailId: location.state.record.item.email })
+        axios.post(generateotpUrl, { emailId: location.state.record.item[0].email })
             .then((res) => {
                 console.log(res.data, "otp email res")
                 

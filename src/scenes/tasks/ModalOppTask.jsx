@@ -40,11 +40,13 @@ const ModalOppTask = ({ item, handleModal }) => {
         StartDate: '',
         EndDate: '',
         description: '',
-        attachments: null,
+        // attachments: null,
         object: '',
         opportunityId: '',
         opportunityName:'',
         createdbyId: '',
+        createdBy:"",
+        modifiedBy:"",
         createdDate: '',
         modifiedDate: '',
     }
@@ -53,13 +55,13 @@ const ModalOppTask = ({ item, handleModal }) => {
         subject: Yup
             .string()
             .required('Required'),
-        attachments: Yup
-            .mixed()
-            .nullable()
-            .notRequired()
-        //    .test('FILE_SIZE',"Too big !",(value)=>value <1024*1024)
-        //   .test('FILE_TYPE',"Invalid!",(value)=> value && ['image/jpg','image/jpeg','image/gif','image/png'].includes(value.type))
-        ,
+        // attachments: Yup
+        //     .mixed()
+        //     .nullable()
+        //     .notRequired()
+        // //    .test('FILE_SIZE',"Too big !",(value)=>value <1024*1024)
+        // //   .test('FILE_TYPE',"Invalid!",(value)=> value && ['image/jpg','image/jpeg','image/gif','image/png'].includes(value.type))
+        // ,
 
     })
 
@@ -70,6 +72,9 @@ const ModalOppTask = ({ item, handleModal }) => {
         let StartDateSec = new Date(values.StartDate).getTime()
         let EndDateSec = new Date(values.EndDate).getTime()
 
+        values.createdBy = (sessionStorage.getItem("loggedInUser"));
+        values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
+       
         values.modifiedDate = dateSeconds;
         values.createdDate = dateSeconds;
         values.opportunityId = taskParentRecord._id;
@@ -112,7 +117,7 @@ const ModalOppTask = ({ item, handleModal }) => {
     return (
         <Grid item xs={12} style={{ margin: "20px" }}>
             <div style={{ textAlign: "center", marginBottom: "10px" }}>
-                <h3>New Task</h3>
+                <h3>New Event</h3>
             </div>
 
             <Formik
@@ -135,7 +140,7 @@ const ModalOppTask = ({ item, handleModal }) => {
                     return (
                         <>
                             <ToastNotification notify={notify} setNotify={setNotify} />
-                            <Form>
+                            <Form className="my-form">
                                 <Grid container spacing={2}>
                                     <Grid item xs={6} md={6}>
                                         <label htmlFor="subject">Subject  <span className="text-danger">*</span></label>
@@ -163,13 +168,13 @@ const ModalOppTask = ({ item, handleModal }) => {
                                                 onChange={(e) => {
                                                     setFieldValue('StartDate', e)
                                                 }}
-                                                renderInput={(params) => <TextField  {...params} className='form-input' error={false} />}
+                                                renderInput={(params) => <TextField  {...params} style={{width:'100%'}} error={false} />}
                                             />
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="EndDate">EndDate   </label> <br />
                                             <DateTimePicker
-                                                renderInput={(params) => <TextField {...params} className='form-input' error={false} />}
+                                                renderInput={(params) => <TextField {...params} style={{width:'100%'}} error={false} />}
                                                 value={values.EndDate}
                                                 onChange={(e) => {
                                                     setFieldValue('EndDate', e)
@@ -177,7 +182,7 @@ const ModalOppTask = ({ item, handleModal }) => {
                                             />
                                         </Grid>
                                     </LocalizationProvider>
-                                    <Grid item xs={12} md={12}>
+                                    {/* <Grid item xs={12} md={12}>
                                         <label htmlFor="attachments">Attachments</label>
                                         <Field name="attachments" type="file"
                                             className="form-input"
@@ -188,10 +193,10 @@ const ModalOppTask = ({ item, handleModal }) => {
                                         <div style={{ color: 'red' }}>
                                             <ErrorMessage name="attachments" />
                                         </div>
-                                    </Grid>
+                                    </Grid> */}
                                     <Grid item xs={12} md={12}>
                                         <label htmlFor="description">Description</label>
-                                        <Field as="textarea" name="description" class="form-input" />
+                                        <Field as="textarea" name="description" class="form-input-textarea" style={{width:'100%'}} />
                                     </Grid>
                                 </Grid>
                                 <div className='action-buttons'>

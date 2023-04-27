@@ -8,13 +8,16 @@ import {
 } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom"
 import axios from 'axios'
-import "../formik/FormStyles.css"
+// import "../formik/FormStyles.css"
 import ToastNotification from '../toast/ToastNotification';
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 import { UserAccessPicklist, UserRolePicklist } from '../../data/pickLists';
+import './Form.css'
+
 
 const url = `${process.env.REACT_APP_SERVER_URL}/UpsertUser`;
-const fetchUsersbyName = `${process.env.REACT_APP_SERVER_URL}/usersbyName`
+const urlSendEmailbulk = `${process.env.REACT_APP_SERVER_URL}/bulkemail`
+
 
 const UserDetailPage = ({ item }) => {
 
@@ -30,14 +33,13 @@ const UserDetailPage = ({ item }) => {
         console.log('passed record', location.state.record.item);
         setsingleUser(location.state.record.item);
         setshowNew(!location.state.record.item)
-        FetchUsersbyName('')
     }, [])
 
     const initialValues = {
         firstName: '',
         lastName: '',
         fullName: '',
-        username: '',
+        userName: '',
         email: '',
         phone: '',
         role: '',
@@ -51,14 +53,14 @@ const UserDetailPage = ({ item }) => {
         firstName: singleUser?.firstName ?? "",
         lastName: singleUser?.lastName ?? "",
         fullName: singleUser?.fullName ?? "",
-        username: singleUser?.username ?? "",
+        userName: singleUser?.userName ?? "",
         email: singleUser?.email ?? "",
         phone: singleUser?.phone ?? "",
         role: singleUser?.role ?? "",
         access: singleUser?.access ?? "",
         createdbyId: singleUser?.createdbyId ?? "",
-        createdDate: singleUser?.createdDate ?? "",
-        modifiedDate: singleUser?.modifiedDate ?? "",
+        createdDate: new Date(singleUser?.createdDate).toLocaleString(),
+        modifiedDate: new Date(singleUser?.modifiedDate).toLocaleString(),
         _id: singleUser?._id ?? "",
     }
 
@@ -78,10 +80,10 @@ const UserDetailPage = ({ item }) => {
             .min(10, "Phone number must be 10 characters, its short")
             .max(10, "Phone number must be 10 characters,its long"),
 
-        username: Yup
-            .string()
-            .email('invalid Format')
-            .required('Required'),
+        // username: Yup
+        //     .string()
+        //     .email('invalid Format')
+        //     .required('Required'),
         role: Yup
             .string()
             .required('Required'),
@@ -89,6 +91,55 @@ const UserDetailPage = ({ item }) => {
             .string()
             .required('Required'),
     })
+
+    const sendInviteEmail=(values)=>{
+
+        const obj ={
+            emailId:`${values.email}`,
+            subject:'Welcome to CloudDesk CRM',
+            htmlBody: ` Dear ${values.fullName}, `+'\n'+'\n'+
+            `Welcome to Clouddesk CRM you can access.`  +'\n'+'\n'+
+
+            `Your UserName is ${values.userName}` +'\n'+'\n'+
+            
+            `To generate your ClouDesk-CRM password, click here ${process.env.REACT_APP_FORGOT_EMAIL_LINK} `  + '\n'+'\n'+
+            
+            `Note this Link will expire in 4 days.` +'\n'+'\n'+
+
+            `if you have any trouble logging in, write to us at ${process.env.REACT_APP_ADMIN_EMAIL_ID}`+ '\n'+'\n'+
+
+            `Thanks and Regards, `+ '\n'+
+            `Clouddesk.`
+        }
+        console.log(obj,"sendInviteEmail")
+
+        axios.post(urlSendEmailbulk,obj)
+        .then((res)=>{
+            console.log("eamil res",res.data)
+            if(res.data){
+                setNotify({
+                    isOpen: true,
+                    message: res.data,
+                    type: 'success'
+                })
+            }else{
+                setNotify({
+                    isOpen: true,
+                    message: "Mail sent Succesfully",
+                    type: 'success'
+                })
+            }
+        })
+        .catch((error) => {
+            console.log('email send error', error);
+            setNotify({
+                isOpen: true,
+                message: error.message,
+                type: 'error'
+            })
+        })  
+    }
+
 
     const formSubmission = (values) => {
 
@@ -101,15 +152,17 @@ const UserDetailPage = ({ item }) => {
             values.modifiedDate = dateSeconds;
             values.createdDate = dateSeconds;
             values.fullName = values.firstName + ' ' + values.lastName;
-            values.UserName =values.userDetails.userName;
-            values.UserId= values.userDetails.id;
+            values.userName=values.email
+            // values.UserName =values.userDetails.userName;
+            // values.UserId= values.userDetails.id;
         }
         else if (!showNew) {
             values.modifiedDate = dateSeconds;
             values.createdDate = createDateSec;
+            values.userName=values.email
             values.fullName = values.firstName + ' ' + values.lastName;
-            values.UserName =values.userDetails.userName;
-            values.UserId= values.userDetails.id;
+            // values.UserName =values.userDetails.userName;
+            // values.UserId= values.userDetails.id;
         }
         console.log('after change form submission value', values);
 
@@ -121,6 +174,9 @@ const UserDetailPage = ({ item }) => {
                     message: res.data,
                     type: 'success'
                 })
+                if(showNew){
+                    sendInviteEmail(values)
+                }
                 setTimeout(() => {
                     navigate(-1);
                 }, 2000)
@@ -138,21 +194,6 @@ const UserDetailPage = ({ item }) => {
 
     const handleFormClose = () => {
         navigate(-1)
-    }
-
-    const FetchUsersbyName = (inputValue) => {
-        console.log('inside FetchLeadsbyName fn');
-        console.log('newInputValue', inputValue)
-        axios.post(`${fetchUsersbyName}?searchKey=${inputValue}`)
-            .then((res) => {
-                console.log('res fetchLeadsbyName', res.data)
-                if (typeof (res.data) === "object") {
-                    setUsersRecord(res.data)
-                }
-            })
-            .catch((error) => {
-                console.log('error fetchLeadsbyName', error);
-            })
     }
 
     return (
@@ -183,7 +224,7 @@ const UserDetailPage = ({ item }) => {
                         return (
                             <>
                                 <ToastNotification notify={notify} setNotify={setNotify} />
-                                <Form>
+                                <Form className='my-form'>
                                     <Grid container spacing={2}>
 
                                         <Grid item xs={6} md={6}>
@@ -215,8 +256,8 @@ const UserDetailPage = ({ item }) => {
                                             </div>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="username">username<span className="text-danger">*</span> </label>
-                                            <Field name="username" type="text" class="form-input" />
+                                            <label htmlFor="userName">User Name<span className="text-danger">*</span> </label>
+                                            <Field name="userName" type="text" class="form-input" value={values.email} readOnly />
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="username" />
                                             </div>
@@ -251,7 +292,7 @@ const UserDetailPage = ({ item }) => {
                                             </div>
                                         </Grid>
 
-                                        <Grid item xs={6} md={6}>
+                                        {/* <Grid item xs={6} md={6}>
                                             <label htmlFor="createdbyId">User Name </label>
                                             <Autocomplete
                                                 name="createdbyId"
@@ -283,9 +324,9 @@ const UserDetailPage = ({ item }) => {
                                                     <Field component={TextField} {...params} name="createdbyId" />
                                                 )}
                                             />
-                                        </Grid>
+                                        </Grid> */}
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="phone">phone<span className="text-danger">*</span> </label>
+                                            <label htmlFor="phone">Phone<span className="text-danger">*</span> </label>
                                             <Field name="phone" type="text" class="form-input" />
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="phone" />
@@ -294,7 +335,7 @@ const UserDetailPage = ({ item }) => {
                                         {!showNew && (
                                             <>
                                                 <Grid item xs={6} md={6}>
-                                                    <label htmlFor="createdDate" >created Date</label>
+                                                    <label htmlFor="createdDate" >Created Date</label>
                                                     <Field name='createdDate' type="text" class="form-input" disabled />
                                                 </Grid>
 

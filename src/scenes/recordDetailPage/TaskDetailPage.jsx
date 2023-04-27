@@ -13,6 +13,8 @@ import { LocalizationProvider   } from '@mui/x-date-pickers/LocalizationProvider
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import CustomizedSelectDisableForFormik from "../formik/CustomizedSelectDisableFormik";
+import './Form.css'
+
 
 const UpsertUrl = `${process.env.REACT_APP_SERVER_URL}/UpsertTask`;
 const fetchAccountUrl = `${process.env.REACT_APP_SERVER_URL}/accountsname`;
@@ -56,11 +58,13 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
         StartDate: '',
         EndDate: '',
         description: '',
-        attachments: null,
+        // attachments: null,
         object: '',
         // AccountId: '',
         // LeadId: '',
-        // OpportunityId: '',
+        // OpportunityId: '',        
+        createdBy: "",
+        modifiedBy: "",
         createdbyId: '',
         createdDate: '',
         modifiedDate: '',
@@ -71,7 +75,7 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
         relatedto: singleTask?.relatedto ?? "",
         assignedTo: singleTask?.assignedTo ?? "",
         description: singleTask?.description ?? "",
-        attachments: singleTask?.attachments ?? "",
+        // attachments: singleTask?.attachments ?? "",
         object: singleTask?.object ?? "",
         // AccountId: singleTask?.AccountId ?? "",
         // LeadId: singleTask?.LeadId ?? "",
@@ -92,6 +96,20 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
         accountDetails:singleTask?.accountDetails ??"",
         leadDetails:singleTask?.leadDetails ??"",
         opportunityDetails:singleTask?.opportunityDetails ??"",
+        createdBy: (() => {
+            try {
+              return JSON.parse(singleTask?.createdBy);
+            } catch {
+              return "";
+            }
+          })(),
+        modifiedBy: (() => {
+            try {
+              return JSON.parse(singleTask?.modifiedBy);
+            } catch {
+              return "";
+            }
+          })(),
     }
 
     const validationSchema = Yup.object({
@@ -99,13 +117,13 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
             .string()
             .required('Required'),
             // .notOneOf((Yup.ref('None'))),
-        attachments: Yup
-            .mixed()
-            .nullable()
-            .notRequired()
-        //    .test('FILE_SIZE',"Too big !",(value)=>value <1024*1024)
-        //   .test('FILE_TYPE',"Invalid!",(value)=> value && ['image/jpg','image/jpeg','image/gif','image/png'].includes(value.type))
-        ,
+        // attachments: Yup
+        //     .mixed()
+        //     .nullable()
+        //     .notRequired()
+        // //    .test('FILE_SIZE',"Too big !",(value)=>value <1024*1024)
+        // //   .test('FILE_TYPE',"Invalid!",(value)=> value && ['image/jpg','image/jpeg','image/gif','image/png'].includes(value.type))
+        // ,
 
     })
 
@@ -122,6 +140,8 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
             console.log('dateSeconds',dateSeconds)
             values.modifiedDate = dateSeconds;
             values.createdDate = dateSeconds;
+            values.createdBy = (sessionStorage.getItem("loggedInUser"));
+            values.modifiedBy = (sessionStorage.getItem("loggedInUser"));    
 
             if (values.StartDate && values.EndDate) {
                 values.StartDate = StartDateSec
@@ -159,7 +179,9 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
         else if (!showNew) {
             values.modifiedDate = dateSeconds;
             values.createdDate = createDateSec
-
+            values.createdBy = singleTask.createdBy;
+            values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
+           
             if (values.StartDate && values.EndDate) {
                 values.StartDate = StartDateSec
                 values.EndDate = EndDateSec
@@ -286,7 +308,7 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
                     return (
                         <>
                             <ToastNotification notify={notify} setNotify={setNotify} />
-                            <Form>
+                            <Form className="my-form">
                                 <Grid container spacing={2}>
                                     <Grid item xs={6} md={6}>
                                         <label htmlFor="subject">Subject  <span className="text-danger">*</span></label>
@@ -303,7 +325,7 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
                                         </div>
                                     </Grid>                           
                                     <Grid item xs={6} md={6}>
-                                        <label htmlFor="object">object  </label>
+                                        <label htmlFor="object">Object  </label>
                                         <Field 
                                             name="object"
                                             component={autocompleteReadOnly ? CustomizedSelectDisableForFormik :CustomizedSelectForFormik } 
@@ -376,7 +398,7 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
                                                 />                                         
                                     </Grid>
                                     <Grid item xs={6} md={6}>
-                                        <label htmlFor="assignedTo">assignedTo  </label>
+                                        <label htmlFor="assignedTo">Assigned To  </label>
                                         <Field name="assignedTo" type="text" class="form-input" />
                                     </Grid>
                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -388,13 +410,13 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
                                         onChange={(e)=>{
                                             setFieldValue('StartDate',e)
                                         }}
-                                         renderInput={(params) => <TextField  {...params} className='form-input' error={false} />}
+                                         renderInput={(params) => <TextField  {...params} style={{width:'100%'}} error={false} />}
                                      />
                                     </Grid>
                                     <Grid item xs={6} md={6}>
                                         <label htmlFor="EndDate">EndDate   </label> <br/>
                                         <DateTimePicker
-                                                renderInput={(params) => <TextField {...params} className='form-input' error={false}/>}
+                                                renderInput={(params) => <TextField {...params} style={{width:'100%'}} error={false}/>}
                                                 value={values.EndDate}
                                                 onChange={(e) => {                                                  
                                                     setFieldValue('EndDate',e)                                            
@@ -441,17 +463,19 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
 
                                     <Grid item xs={12} md={12}>
                                         <label htmlFor="description">Description</label>
-                                        <Field as="textarea" name="description" class="form-input" />
+                                        <Field as="textarea" name="description" class="form-input-textarea" style={{width:'100%'}}/>
                                     </Grid>
                                     {!showNew && (
                                         <>
                                             <Grid item xs={6} md={6}>
-                                                <label htmlFor="createdDate" >created Date</label>
-                                                <Field name='createdDate' type="text" class="form-input" disabled />
+                                                <label htmlFor="createdDate" >Created Date</label>
+                                                <Field name='createdDate' type="text" class="form-input" 
+                                                value={values.createdBy.userFullName+" , "+ values.createdDate} disabled />
                                             </Grid>
                                             <Grid item xs={6} md={6}>
                                                 <label htmlFor="modifiedDate" >Modified Date</label>
-                                                <Field name='modifiedDate' type="text" class="form-input" disabled />
+                                                <Field name='modifiedDate' type="text" class="form-input" 
+                                                value={values.createdBy.userFullName+" , "+values.createdDate} disabled />
                                             </Grid>
                                         </>
                                     )}

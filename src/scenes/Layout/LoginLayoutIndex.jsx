@@ -30,8 +30,8 @@ function LoginLayoutIndex() {
         <Route path="/" exact element={<ResponsiveInventories />} />
         <Route path="/accounts" element={<ResponsiveAccounts />} />
         <Route path="/contacts" element={<ResponsiveContacts />} />
-        <Route path="/opportunities" element={<ResponsiveOpportunities />} />
-        <Route path="/leads" element={<ResponsiveLeads />} />
+        <Route path="/deals" element={<ResponsiveOpportunities />} />
+        <Route path="/enquiries" element={<ResponsiveLeads />} />
         <Route path="/inventories" element={<ResponsiveInventories />} />
         <Route path="/task" element={<ResponsiveTasks />} />
         <Route path="/users" element={<ResponsiveUsers />} />

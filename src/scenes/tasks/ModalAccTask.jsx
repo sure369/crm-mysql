@@ -7,13 +7,14 @@ import {
     Autocomplete, TextField, MenuItem
 } from "@mui/material";
 import axios from 'axios'
-import "../formik/FormStyles.css"
+// import "../formik/FormStyles.css"
 import { TaskSubjectPicklist } from "../../data/pickLists";
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import ToastNotification from '../toast/ToastNotification';
+import '../recordDetailPage/Form.css'
 
 const UpsertUrl = `${process.env.REACT_APP_SERVER_URL}/UpsertTask`;
 
@@ -38,10 +39,12 @@ const ModalAccTask = ({ item, handleModal }) => {
         StartDate: '',
         EndDate: '',
         description: '',
-        attachments: null,
+        // attachments: null,
         object: '',
         accountId: '',
-        accountName:'',
+        accountName:'',        
+        createdBy:"",
+        modifiedBy:"",
         createdbyId: '',
         createdDate: '',
         modifiedDate: '',
@@ -51,13 +54,13 @@ const ModalAccTask = ({ item, handleModal }) => {
         subject: Yup
             .string()
             .required('Required'),
-        attachments: Yup
-            .mixed()
-            .nullable()
-            .notRequired()
+        // attachments: Yup
+        //     .mixed()
+        //     .nullable()
+        //     .notRequired()
         //    .test('FILE_SIZE',"Too big !",(value)=>value <1024*1024)
         //   .test('FILE_TYPE',"Invalid!",(value)=> value && ['image/jpg','image/jpeg','image/gif','image/png'].includes(value.type))
-        ,
+        
 
     })
 
@@ -67,6 +70,9 @@ const ModalAccTask = ({ item, handleModal }) => {
         let StartDateSec = new Date(values.StartDate).getTime()
         let EndDateSec = new Date(values.EndDate).getTime()
 
+        values.createdBy = (sessionStorage.getItem("loggedInUser"));
+        values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
+       
         values.modifiedDate = dateSeconds;
         values.createdDate = dateSeconds;
         values.accountId = taskParentRecord._id;
@@ -133,7 +139,7 @@ const ModalAccTask = ({ item, handleModal }) => {
                     return (
                         <>
                             <ToastNotification notify={notify} setNotify={setNotify} />
-                            <Form>
+                            <Form className="my-form">
                                 <Grid container spacing={2}>
                                     <Grid item xs={6} md={6}>
                                         <label htmlFor="subject">Subject  <span className="text-danger">*</span></label>
@@ -151,7 +157,7 @@ const ModalAccTask = ({ item, handleModal }) => {
                                         </div>
                                     </Grid>
                                     <Grid item xs={6} md={6}>
-                                        <label htmlFor="assignedTo">assignedTo  </label>
+                                        <label htmlFor="assignedTo">Assigned To  </label>
                                         <Field name="assignedTo" type="text" class="form-input" />
                                     </Grid>
                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -163,13 +169,13 @@ const ModalAccTask = ({ item, handleModal }) => {
                                                 onChange={(e) => {
                                                     setFieldValue('StartDate', e)
                                                 }}
-                                                renderInput={(params) => <TextField  {...params} className='form-input' error={false} />}
+                                                renderInput={(params) => <TextField  {...params} style={{width:'100%'}} error={false} />}
                                             />
                                         </Grid>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="EndDate">EndDate   </label> <br />
+                                            <label htmlFor="EndDate">End Date   </label> <br />
                                             <DateTimePicker
-                                                renderInput={(params) => <TextField {...params} className='form-input' error={false} />}
+                                                renderInput={(params) => <TextField {...params} style={{width:'100%'}} error={false} />}
                                                 value={values.EndDate}
                                                 onChange={(e) => {
                                                     setFieldValue('EndDate', e)
@@ -179,7 +185,7 @@ const ModalAccTask = ({ item, handleModal }) => {
                                         </Grid>
                                     </LocalizationProvider>
                                     <Grid item xs={12} md={12}>
-                                        <label htmlFor="attachments">attachments</label>
+                                        <label htmlFor="attachments">Attachments</label>
                                         <Field name="attacgments" type="file"
                                             className="form-input"
                                             onChange={(event) => {
@@ -192,7 +198,7 @@ const ModalAccTask = ({ item, handleModal }) => {
                                     </Grid>
                                     <Grid item xs={12} md={12}>
                                         <label htmlFor="description">Description</label>
-                                        <Field as="textarea" name="description" class="form-input" />
+                                        <Field as="textarea" name="description" class="form-input-textarea" style={{width:'100%'}}/>
                                     </Grid>
                                 </Grid>
                                 <div className='action-buttons'>

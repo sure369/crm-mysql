@@ -23,28 +23,44 @@ export default function ConfirmPasswordIndex({ item }) {
     const navigate = useNavigate()
 
     useEffect(()=>{
-        console.log(location.state.record.item,"uselocation")
-        setUserRecord(location.state.record.item);
+        console.log(location.state.record.item[0],"uselocation")
+        setUserRecord(location.state.record.item[0]);
     })
 
 
     const initialValues = {
-        userName: location.state.record.item.userName,
-        email: location.state.record.item.email,
+        userName: location.state.record.item[0].userName,
+        email: location.state.record.item[0].email,
         password: '',
         confirmPassword: '',
-        access:location.state.record.item.access,
-        createdDate:location.state.record.item.createdDate,     
-        createdbyId:location.state.record.item.createdbyId,
-        firstName:location.state.record.item.firstName,
-        lastName:location.state.record.item.lastName,
-        fullName:location.state.record.item.fullName,
-        modifiedDate:location.state.record.item.modifiedDate,
-        phone:location.state.record.item.phone,
-        role:location.state.record.item.role,
-        _id:location.state.record.item._id,
+        access:location.state.record.item[0].access,
+        createdDate:location.state.record.item[0].createdDate,     
+        createdbyId:location.state.record.item[0].createdbyId,
+        firstName:location.state.record.item[0].firstName,
+        lastName:location.state.record.item[0].lastName,
+        fullName:location.state.record.item[0].fullName,
+        modifiedDate:location.state.record.item[0].modifiedDate,
+        phone:location.state.record.item[0].phone,
+        role:location.state.record.item[0].role,
+        _id:location.state.record.item[0]._id,
     }
 
+    // const initialValues = {
+    //     userName: userRecord.userName,
+    //     email: userRecord.email,
+    //     password: '',
+    //     confirmPassword: '',
+    //     access:userRecord.access,
+    //     createdDate:userRecord.createdDate,     
+    //     createdbyId:userRecord.createdbyId,
+    //     firstName:userRecord.firstName,
+    //     lastName:userRecord.lastName,
+    //     fullName:userRecord.fullName,
+    //     modifiedDate:userRecord.modifiedDate,
+    //     phone:userRecord.phone,
+    //     role:userRecord.role,
+    //     _id:userRecord._id,
+    // }
     const validationSchema = Yup.object({
         email: Yup
             .string()
@@ -61,7 +77,7 @@ export default function ConfirmPasswordIndex({ item }) {
             .required('Please re-enter your password.')
             .oneOf([Yup.ref('password')], 'Your passwords do not match.')
     })
-    const formSubmission = async (values, { resetForm }) => {
+    const formSubmission = async (values,) => {
         console.log('inside form Submission', values);
         values.userName = values.email;
         delete values.confirmPassword;
@@ -77,7 +93,7 @@ export default function ConfirmPasswordIndex({ item }) {
                     type:res.data.status,          
                   })
                   setTimeout(()=>{
-                    navigate('/');
+                    // navigate('/');
                   },2000)
             })
             .catch((error)=>{
@@ -105,7 +121,7 @@ export default function ConfirmPasswordIndex({ item }) {
                     <Formik
                         initialValues={initialValues}
                         validationSchema={validationSchema}
-                        onSubmit={(values, { resetForm }) => formSubmission(values, { resetForm })}
+                        onSubmit={(values) => formSubmission(values)}
                     >
                         {(props) => {
                             const { isValid, values } = props;

@@ -1,6 +1,6 @@
 import React from "react";
 import {Select} from "@mui/material";
-import "./FormStyles.css"
+// import "./FormStyles.css"
 
 
 const  CustomizedSelectDisableForFormik = ({ children, form, field,...props }) => {
@@ -27,7 +27,7 @@ const  CustomizedSelectDisableForFormik = ({ children, form, field,...props }) =
 
   return (
     <Select
-      className="form-customSelect"
+    style={{width:'100%'}}
       disabled
       name={name}
       value={value}

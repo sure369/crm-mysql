@@ -15,6 +15,7 @@ import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import '../recordDetailPage/Form.css'
 
 
 const url = `${process.env.REACT_APP_SERVER_URL}/UpsertOpportunity`;
@@ -46,7 +47,9 @@ const ModalInventoryOpportunity = ({ item, handleModal }) => {
         closeDate: '',
         stage: '',
         description: '',
-        createdbyId: '',
+        createdbyId: '',        
+        createdBy:"",
+        modifiedBy:"",
         createdDate: '',
         modifiedDate: '',
         leadDetails: '',
@@ -71,16 +74,19 @@ const ModalInventoryOpportunity = ({ item, handleModal }) => {
         let closeDateSec = new Date(values.closeDate).getTime()
 
 
-        values.InventoryId = inventoryParentRecord._id;
+       
         values.modifiedDate = dateSeconds;
         values.createdDate = dateSeconds;
+        values.createdBy = (sessionStorage.getItem("loggedInUser"));
+        values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
+      
         // values.inventoryDetails = {
         //     propertyName: inventoryParentRecord.propertyName,
         //     id: inventoryParentRecord._id
         // }
+        values.InventoryId = inventoryParentRecord._id;
         values.InventoryName =inventoryParentRecord.propertyName;
-        values.LeadId=values.leadDetails.id
-        values.LeadName=values.leadDetails.leadName 
+     
             
         if (values.closeDate) {
             values.closeDate = closeDateSec;
@@ -161,7 +167,7 @@ const ModalInventoryOpportunity = ({ item, handleModal }) => {
                         return (
                             <>
                                 <ToastNotification notify={notify} setNotify={setNotify} />
-                                <Form>
+                                <Form className="my-form">
                                     <Grid container spacing={2}>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="opportunityName" >Opportunity Name<span className="text-danger">*</span> </label>
@@ -180,13 +186,15 @@ const ModalInventoryOpportunity = ({ item, handleModal }) => {
                                                 onChange={(e, value) => {
                                                     console.log('lead onchange', value);
                                                     if (!value) {
-                                                        console.log('!value', value);
-                                                        setFieldValue("LeadId", '')
+                                                        console.log('!value', value);                                                       
                                                         setFieldValue("leadDetails", '')
+                                                        setFieldValue("LeadId", '') 
+                                                        setFieldValue("LeadName", '')
                                                     } else {
                                                         console.log('value', value);
-                                                        setFieldValue("LeadId", value.id)
                                                         setFieldValue("leadDetails", value)
+                                                        setFieldValue("LeadId", value.id)
+                                                        setFieldValue("LeadName", value.leadName)
                                                     }
 
                                                 }}
@@ -246,7 +254,7 @@ const ModalInventoryOpportunity = ({ item, handleModal }) => {
                                                     onChange={(e) => {
                                                         setFieldValue('closeDate', e)
                                                     }}
-                                                    renderInput={(params) => <TextField  {...params} className='form-input' error={false} />}
+                                                    renderInput={(params) => <TextField  {...params} style={{width:'100%'}} error={false} />}
                                                 />
                                             </LocalizationProvider>
                                         </Grid>
@@ -259,7 +267,7 @@ const ModalInventoryOpportunity = ({ item, handleModal }) => {
                                         </Grid>
                                         <Grid item xs={12} md={12}>
                                             <label htmlFor="description">Description</label>
-                                            <Field as="textarea" name="description" class="form-input" />
+                                            <Field as="textarea" name="description" class="form-input-textarea"  style={{width:'100%'}}/>
                                         </Grid>
                                     </Grid>
                                     <div className='action-buttons'>

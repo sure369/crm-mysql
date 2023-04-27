@@ -4,8 +4,8 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Grid, Button, DialogActions,MenuItem } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom"
-import axios from 'axios'
-import "../formik/FormStyles.css"
+import './Form.css'
+import axios from 'axios';
 import ToastNotification from '../toast/ToastNotification';
 import { InvCitiesPickList,InvCountryPickList, InvStatusPicklist, InvTypePicklist } from '../../data/pickLists';
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
@@ -50,7 +50,9 @@ const InventoryDetailPage = ({ item }) => {
         floor: '',
         status: '',
         totalArea: '',
-        createdbyId: '',
+        createdbyId: '',        
+        createdBy: "",
+        modifiedBy: "",
         createdDate: '',
         modifiedDate: '',
     }
@@ -70,6 +72,20 @@ const InventoryDetailPage = ({ item }) => {
         createdDate: new Date(singleInventory?.createdDate).toLocaleString(),
         modifiedDate: new Date(singleInventory?.modifiedDate).toLocaleString(),
         _id: singleInventory?._id ?? "",
+        createdBy: (() => {
+            try {
+              return JSON.parse(singleInventory?.createdBy);
+            } catch {
+              return "";
+            }
+          })(),
+        modifiedBy: (() => {
+            try {
+              return JSON.parse(singleInventory?.modifiedBy);
+            } catch {
+              return "";
+            }
+          })(),
     }
 
 
@@ -122,10 +138,14 @@ const InventoryDetailPage = ({ item }) => {
         if (showNew) {
             values.modifiedDate = dateSeconds;
             values.createdDate = dateSeconds;
+            values.createdBy = (sessionStorage.getItem("loggedInUser"));
+            values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
         }
         else if (!showNew) {
             values.modifiedDate = dateSeconds;
             values.createdDate = createDateSec;
+            values.createdBy = singleInventory.createdBy;
+            values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
         }
 
         console.log('after change form submission value', values);
@@ -186,7 +206,7 @@ const InventoryDetailPage = ({ item }) => {
                         return (
                             <>
                                 <ToastNotification notify={notify} setNotify={setNotify} />
-                                <Form>
+                                <Form className='my-form'>
                                     <Grid container spacing={2}>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="projectName">Project Name <span className="text-danger">*</span> </label>
@@ -292,13 +312,16 @@ const InventoryDetailPage = ({ item }) => {
                                         {!showNew && (
                                             <>
                                                 <Grid item xs={6} md={6}>
-                                                    <label htmlFor="createdDate" >created Date</label>
-                                                    <Field name='createdDate' type="text" class="form-input" disabled />
+                                                    <label htmlFor="createdDate" >Created Date</label>
+                                                    <Field name='createdDate' type="text" class="form-input"
+                                                    value={values.createdBy.userFullName +" , "+values.createdDate} disabled />
                                                 </Grid>
 
                                                 <Grid item xs={6} md={6}>
                                                     <label htmlFor="modifiedDate" >Modified Date</label>
-                                                    <Field name='modifiedDate' type="text" class="form-input" disabled />
+                                                    <Field name='modifiedDate' type="text" class="form-input"
+                                                    value={values.modifiedBy.userFullName +" , "+values.modifiedDate}
+                                                    disabled />
                                                 </Grid>
                                             </>
                                         )}
@@ -307,9 +330,9 @@ const InventoryDetailPage = ({ item }) => {
                                         <DialogActions sx={{ justifyContent: "space-between" }}>
                                             {
                                                 showNew ?
-                                                    <Button type='success' variant="contained" color="secondary" disabled={isSubmitting}>Save</Button>
+                                                    <Button type='success' variant="contained" color="secondary" disabled={isSubmitting || !dirty}>Save</Button>
                                                     :
-                                                    <Button type='success' variant="contained" color="secondary" disabled={isSubmitting}>Update</Button>
+                                                    <Button type='success' variant="contained" color="secondary" disabled={isSubmitting || !dirty}>Update</Button>
                                             }
                                             <Button type="reset" variant="contained" onClick={handleFormClose}   >Cancel</Button>
                                         </DialogActions>

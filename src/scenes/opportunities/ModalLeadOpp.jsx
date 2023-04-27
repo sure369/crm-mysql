@@ -15,7 +15,7 @@ import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-
+import "../recordDetailPage/Form.css"
 
 const url = `${process.env.REACT_APP_SERVER_URL}/UpsertOpportunity`;
 const fetchInventoriesbyName = `${process.env.REACT_APP_SERVER_URL}/InventoryName`;
@@ -47,7 +47,9 @@ const ModalLeadOpportunity = ({ item, handleModal }) => {
         closeDate: '',
         stage: '',
         description: '',
-        createdbyId: '',
+        createdbyId: '',        
+        createdBy:"",
+        modifiedBy:"",
         createdDate: '',
         modifiedDate: '',
         inventoryDetails: '',
@@ -71,17 +73,19 @@ const ModalLeadOpportunity = ({ item, handleModal }) => {
         let createDateSec = new Date(values.createdDate).getTime()
         let closeDateSec = new Date(values.closeDate).getTime()
 
-
+        values.createdBy = (sessionStorage.getItem("loggedInUser"));
+        values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
+       
         values.LeadId = leadParentRecord._id;
         values.LeadName=leadParentRecord.fullName
         values.InventoryId=values.inventoryDetails.id
         values.InventoryName=values.inventoryDetails.propertyName
         values.modifiedDate = dateSeconds;
         values.createdDate = dateSeconds;
-        values.leadDetails = {
-            leadName: leadParentRecord.fullName,
-            id: leadParentRecord._id
-        }
+        // values.leadDetails = {
+        //     leadName: leadParentRecord.fullName,
+        //     id: leadParentRecord._id
+        // }
 
         if (values.closeDate) {
             values.closeDate = closeDateSec;
@@ -158,7 +162,7 @@ const ModalLeadOpportunity = ({ item, handleModal }) => {
                         return (
                             <>
                                 <ToastNotification notify={notify} setNotify={setNotify} />
-                                <Form>
+                                <Form className="my-form">
                                     <Grid container spacing={2}>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="opportunityName" >Opportunity Name<span className="text-danger">*</span> </label>
@@ -180,12 +184,14 @@ const ModalLeadOpportunity = ({ item, handleModal }) => {
                                                 onChange={(e, value) => {
                                                     if (!value) {
                                                         console.log('!value', value);
-                                                        setFieldValue("InventoryId", '')
+                                                        setFieldValue("InventoryId", '')                                                       
+                                                        setFieldValue("InventoryName", '')
                                                         setFieldValue("inventoryDetails", '')
                                                     } else {
                                                         console.log('value', value);
                                                         setFieldValue("InventoryId", value.id)
-                                                        setFieldValue("inventoryDetails", value)
+                                                        setFieldValue("inventoryDetails", value)                                                                                                      
+                                                        setFieldValue("InventoryName", value.propertyName)
                                                     }
                                                 }}
                                                 onInputChange={(event, newInputValue) => {
@@ -244,7 +250,7 @@ const ModalLeadOpportunity = ({ item, handleModal }) => {
                                                     onChange={(e) => {
                                                         setFieldValue('closeDate', e)
                                                     }}
-                                                    renderInput={(params) => <TextField  {...params} className='form-input' error={false} />}
+                                                    renderInput={(params) => <TextField  {...params}  style={{width:"100%"}} error={false} />}
                                                 />
                                             </LocalizationProvider>
                                         </Grid>
@@ -257,7 +263,7 @@ const ModalLeadOpportunity = ({ item, handleModal }) => {
                                         </Grid>
                                         <Grid item xs={12} md={12}>
                                             <label htmlFor="description">Description</label>
-                                            <Field as="textarea" name="description" class="form-input" />
+                                            <Field as="textarea" name="description" class="form-input-textarea" style={{width:"100%"}} />
                                         </Grid>
                                     </Grid>
                                     <div className='action-buttons'>

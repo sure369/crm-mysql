@@ -5,7 +5,7 @@ import * as Yup from "yup";
 import { Grid, Button, DialogActions, Box, TextField, Autocomplete,MenuItem, Select} from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom"
 import axios from 'axios'
-import "../formik/FormStyles.css"
+import "./Form.css";
 import {IndustryPickList, AccRatingPickList,AccTypePickList,AccCitiesPickList, AccCountryPickList} from '../../data/pickLists'
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 import ToastNotification from '../toast/ToastNotification';
@@ -29,9 +29,18 @@ const AccountDetailPage = ({ item }) => {
     const[countryPicklist,setCountriesPicklist]=useState([])
     const[cityPicklist,setCitiesPicklist]=useState([])
 
+    //jsonConvert
+    const[convertedCreatedBy,setConvertedCreatedBy]=useState();
+    const[convertedModifiedBy,setConvertedModifiedBy]=useState();
+    
+
     useEffect(() => {
         console.log('passed record', location.state.record.item);
         setsingleAccount(location.state.record.item);
+        if(location.state.record.item){
+            location.state.record.item.createdBy ? setConvertedCreatedBy(JSON.parse(location.state.record.item.createdBy)):setConvertedCreatedBy(null)
+        location.state.record.item.modifiedBy ? setConvertedModifiedBy(JSON.parse(location.state.record.item.modifiedBy)):setConvertedCreatedBy(null)
+        }
         console.log('true', !location.state.record.item);
         setshowNew(!location.state.record.item)
         FetchInventoriesbyName('');
@@ -54,6 +63,8 @@ const AccountDetailPage = ({ item }) => {
         billingCountry: '',
         billingCity: '',       
         createdbyId: '',
+        createdBy: "",
+        modifiedBy: "",
         createdDate:'',
         modifiedDate: '',
         InventoryId: '',
@@ -77,6 +88,20 @@ const AccountDetailPage = ({ item }) => {
         inventoryDetails:singleAccount?.InventoryDetails ?? "", 
         InventoryId: singleAccount?.InventoryId ?? "",
         InventoryName: singleAccount?.InventoryName ?? "",
+        createdBy: (() => {
+            try {
+              return JSON.parse(singleAccount?.createdBy);
+            } catch {
+              return "";
+            }
+          })(),
+        modifiedBy: (() => {
+            try {
+              return JSON.parse(singleAccount?.modifiedBy);
+            } catch {
+              return "";
+            }
+          })(),
     }
 
 
@@ -87,7 +112,7 @@ const AccountDetailPage = ({ item }) => {
         accountName: Yup
             .string()
             .required('Required')
-            .matches(/^[A-Za-z ]*$/, 'Numeric characters not accepted')
+            // .matches(/^[A-Za-z ]*$/, 'Numeric characters not accepted')
             .max(30, 'lastName must be less than 30 characters'),
         rating: Yup
             .string()
@@ -136,10 +161,13 @@ const AccountDetailPage = ({ item }) => {
         let createDateSec = new Date(values.createdDate).getTime()
 
         if(showNew){
+
             values.modifiedDate = dateSeconds;
             values.createdDate = dateSeconds;
-            values.InventoryName=values.inventoryDetails.propertyName;
-            values.InventoryId =values.inventoryDetails.id;
+            values.createdBy = (sessionStorage.getItem("loggedInUser"));
+            values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
+            // values.InventoryName=values.inventoryDetails.propertyName;
+            // values.InventoryId =values.inventoryDetails.id;
 
             if(values.InventoryId===''){
                 delete values.InventoryId;
@@ -148,8 +176,10 @@ const AccountDetailPage = ({ item }) => {
         else if(!showNew){
             values.modifiedDate = dateSeconds;
             values.createdDate = createDateSec;
-            values.InventoryName=values.inventoryDetails.propertyName;
-            values.InventoryId =values.inventoryDetails.id;
+            values.createdBy = singleAccount.createdBy;
+            values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
+            // values.InventoryName=values.inventoryDetails.propertyName;
+            // values.InventoryId =values.inventoryDetails.id;
             
             if(values.InventoryId===''){
                 delete values.InventoryId;
@@ -205,7 +235,7 @@ const AccountDetailPage = ({ item }) => {
         <Grid item xs={12} style={{ margin: "20px" }}>
             <div style={{ textAlign: "center", marginBottom: "10px" }}>
                 {
-                    showNew ? <h3>New Account</h3> : <h3>Account Detail Page </h3>
+                    showNew ? <h2>New Account</h2> : <h2>Account Detail Page </h2>
                 }
             </div>
             <div>
@@ -233,7 +263,7 @@ const AccountDetailPage = ({ item }) => {
                                 
                                 <ToastNotification notify={notify} setNotify={setNotify}/>
 
-                                <Form>
+                                <Form className="my-form">
                                     <Grid container spacing={2}>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="accountName">Account Name  <span className="text-danger">*</span></label>
@@ -250,7 +280,6 @@ const AccountDetailPage = ({ item }) => {
                                             <label htmlFor="InventoryId">Inventory Name </label>
                                             <Autocomplete
                                                 name="InventoryId"
-                                                className='form-customSelect'
                                                 options={inventoriesRecord}
                                                 value={values.inventoryDetails}
                                                 getOptionLabel={option => option.propertyName || ''}
@@ -263,10 +292,13 @@ const AccountDetailPage = ({ item }) => {
                                                         console.log('!value',value);
                                                         setFieldValue("InventoryId",'')
                                                         setFieldValue("inventoryDetails",'')
+                                                        setFieldValue("InventoryName","")
+                                                        setFieldValue("InventoryId","")
                                                       }else{
                                                         console.log('value',value);
                                                         setFieldValue("InventoryId",value.id)
                                                         setFieldValue("inventoryDetails",value)
+                                                        setFieldValue("InventoryName",value.propertyName)
                                                       }
                                                 }}
                                                 onInputChange={(event, newInputValue) => {
@@ -286,7 +318,7 @@ const AccountDetailPage = ({ item }) => {
                                         </Grid>
 
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="annualRevenue">Aannual Revenue</label>
+                                            <label htmlFor="annualRevenue">Annual Revenue</label>
                                             <Field class="form-input" type="text" name="annualRevenue" />
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="annualRevenue" />
@@ -302,7 +334,7 @@ const AccountDetailPage = ({ item }) => {
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="rating"> Rating<span className="text-danger">*</span></label>
                                            
-                                            <Field name="rating" component={CustomizedSelectForFormik}  className="form-customSelect">	
+                                            <Field name="rating" component={CustomizedSelectForFormik}   className="form-customSelect">	
                                             <MenuItem value=""><em>None</em></MenuItem>
                                                {	
                                                 AccRatingPickList.map((i)=>{	
@@ -387,19 +419,28 @@ const AccountDetailPage = ({ item }) => {
 
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="billingAddress">Billing Address </label>
-                                            <Field name="billingAddress" type="text" class="form-input" />
+                                            <Field
+                                                name="billingAddress"
+                                                as="textarea"
+                                                class="form-input-textarea"
+                                                style={{ width: "100%" }}
+                                            />
                                         </Grid>
                                         
                                         {!showNew && (
                                             <>
                                                 <Grid item xs={6} md={6}>                                                  
-                                                    <label htmlFor="createdDate" >created Date</label>
-                                                    <Field name='createdDate' type="text" class="form-input" disabled />
+                                                    <label htmlFor="createdDate" >Created By</label>
+                                                    <Field name='createdDate' type="text" class="form-input" 
+                                                     value={ values.createdBy.userFullName +" ,"+ values.createdDate}
+                                                    disabled />
                                                 </Grid>
 
                                                 <Grid item xs={6} md={6}>
-                                                    <label htmlFor="modifiedDate" >Modified Date</label>
-                                                    <Field name='modifiedDate' type="text" class="form-input" disabled />
+                                                    <label htmlFor="modifiedDate" >Modified By</label>
+                                                    <Field name='modifiedDate' type="text" class="form-input" 
+                                                     value={ values.modifiedBy.userFullName +" ,"+ values.modifiedDate}
+                                                    disabled />
                                                 </Grid>
                                             </>
                                         )}
@@ -409,9 +450,9 @@ const AccountDetailPage = ({ item }) => {
                                         <DialogActions sx={{ justifyContent: "space-between" }}>
                                             {
                                                 showNew ?
-                                                    <Button type='success' variant="contained" color="secondary" >Save</Button>
+                                                    <Button type='success' variant="contained" color="secondary" disabled={isSubmitting || !dirty} >Save</Button>
                                                 :
-                                                    <Button type='success' variant="contained" color="secondary" disabled={isSubmitting}>Update</Button>
+                                                    <Button type='success' variant="contained" color="secondary" disabled={isSubmitting || !dirty}>Update</Button>
                                             }
                                             <Button type="reset" variant="contained" onClick={handleFormClose}  >Cancel</Button>
                                         </DialogActions>

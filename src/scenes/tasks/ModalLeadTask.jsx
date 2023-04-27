@@ -14,7 +14,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import ToastNotification from '../toast/ToastNotification';
-
+import '../recordDetailPage/Form.css'
 
 const UpsertUrl = `${process.env.REACT_APP_SERVER_URL}/UpsertTask`;
 
@@ -39,11 +39,13 @@ const ModalTask = ({ item, handleModal }) => {
         StartDate: '',
         EndDate: '',
         description: '',
-        attachments: null,
+        // attachments: null,
         object: '',
         leadId: '',
         leadName:'',
-        createdbyId: '',
+        createdbyId: '',        
+        createdBy:"",
+        modifiedBy:"",
         createdDate: '',
         modifiedDate: '',
     }
@@ -52,13 +54,13 @@ const ModalTask = ({ item, handleModal }) => {
         subject: Yup
             .string()
             .required('Required'),
-        attachments: Yup
-            .mixed()
-            .nullable()
-            .notRequired()
+        // attachments: Yup
+        //     .mixed()
+        //     .nullable()
+        //     .notRequired()
         //    .test('FILE_SIZE',"Too big !",(value)=>value <1024*1024)
         //   .test('FILE_TYPE',"Invalid!",(value)=> value && ['image/jpg','image/jpeg','image/gif','image/png'].includes(value.type))
-        ,
+        
 
     })
 
@@ -69,6 +71,9 @@ const ModalTask = ({ item, handleModal }) => {
         let StartDateSec = new Date(values.StartDate).getTime()
         let EndDateSec = new Date(values.EndDate).getTime()
 
+        values.createdBy = (sessionStorage.getItem("loggedInUser"));
+        values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
+       
         values.modifiedDate = dateSeconds;
         values.createdDate = dateSeconds;
         values.leadId = taskParentRecord._id;
@@ -138,7 +143,7 @@ const ModalTask = ({ item, handleModal }) => {
                     return (
                         <>
                             <ToastNotification notify={notify} setNotify={setNotify} />
-                            <Form>
+                            <Form className="my-form">
                                 <Grid container spacing={2}>
                                     <Grid item xs={6} md={6}>
                                         <label htmlFor="subject">Subject  <span className="text-danger">*</span></label>
@@ -167,13 +172,13 @@ const ModalTask = ({ item, handleModal }) => {
                                                 onChange={(e) => {
                                                     setFieldValue('StartDate', e)
                                                 }}
-                                                renderInput={(params) => <TextField  {...params} className='form-input' error={false} />}
+                                                renderInput={(params) => <TextField  {...params} style={{width:'100%'}} error={false} />}
                                             />
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="EndDate">EndDate   </label> <br />
                                             <DateTimePicker
-                                                renderInput={(params) => <TextField {...params} className='form-input' error={false} />}
+                                                renderInput={(params) => <TextField {...params} style={{width:"100%"}} error={false} />}
                                                 value={values.EndDate}
                                                 onChange={(e) => {
                                                     setFieldValue('EndDate', e)
@@ -197,7 +202,7 @@ const ModalTask = ({ item, handleModal }) => {
                                     </Grid> */}
                                     <Grid item xs={12} md={12}>
                                         <label htmlFor="description">Description</label>
-                                        <Field as="textarea" name="description" class="form-input" />
+                                        <Field as="textarea" name="description" class="form-input-textarea" style={{width:"100%"}} />
                                     </Grid>
                                 </Grid>
                                 <div className='action-buttons'>

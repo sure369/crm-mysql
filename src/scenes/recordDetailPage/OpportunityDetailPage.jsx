@@ -12,6 +12,7 @@ import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import './Form.css'
 
 const url = `${process.env.REACT_APP_SERVER_URL}/UpsertOpportunity`;
 const fetchLeadsbyName = `${process.env.REACT_APP_SERVER_URL}/LeadsbyName`;
@@ -49,6 +50,8 @@ const OpportunityDetailPage = ({ item }) => {
         stage: '',
         description: '',
         createdbyId: '',
+        createdBy: "",
+        modifiedBy: "",
         createdDate: '',
         modifiedDate: '',
     }
@@ -71,6 +74,20 @@ const OpportunityDetailPage = ({ item }) => {
         _id: singleOpportunity?._id ?? "",
         inventoryDetails: singleOpportunity?.inventoryDetails ?? "",
         leadDetails: singleOpportunity?.leadDetails ?? "",
+        createdBy: (() => {
+            try {
+              return JSON.parse(singleOpportunity?.createdBy);
+            } catch {
+              return "";
+            }
+          })(),
+        modifiedBy: (() => {
+            try {
+              return JSON.parse(singleOpportunity?.modifiedBy);
+            } catch {
+              return "";
+            }
+          })(),
     }
     const validationSchema = Yup.object({
         opportunityName: Yup
@@ -89,15 +106,17 @@ const OpportunityDetailPage = ({ item }) => {
         let dateSeconds = new Date().getTime();
         let createDateSec = new Date(values.createdDate).getTime()
         let closeDateSec = new Date(values.closeDate).getTime()
-            values.InventoryName=values.inventoryDetails.propertyName;
-            values.LeadName=values.leadDetails.leadName
-            values.LeadId=values.leadDetails.id;
-            values.InventoryId=values.inventoryDetails.id 
+            // values.InventoryName=values.inventoryDetails.propertyName;
+            // values.LeadName=values.leadDetails.leadName
+            // values.LeadId=values.leadDetails.id;
+            // values.InventoryId=values.inventoryDetails.id 
             // delete values.leadDetails;
             // delete values.inventoryDetails
         if (showNew) {
             values.modifiedDate = dateSeconds;
             values.createdDate = dateSeconds;
+            values.createdBy = (sessionStorage.getItem("loggedInUser"));
+            values.modifiedBy = (sessionStorage.getItem("loggedInUser"));       
             if (values.closeDate) {
                 values.closeDate = closeDateSec;
             }
@@ -118,6 +137,9 @@ const OpportunityDetailPage = ({ item }) => {
         else if (!showNew) {
             values.modifiedDate = dateSeconds;
             values.createdDate = createDateSec
+            values.createdBy = singleOpportunity.createdBy;
+            values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
+           
             values.InventoryName=values.inventoryDetails.propertyName;
             values.LeadName=values.leadDetails.leadName
             values.LeadId=values.leadDetails.id;
@@ -229,7 +251,7 @@ const OpportunityDetailPage = ({ item }) => {
                         return (
                             <>
                                 <ToastNotification notify={notify} setNotify={setNotify} />
-                                <Form>
+                                <Form className='my-form'>
                                     <Grid container spacing={2}>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="opportunityName" >Opportunity Name<span className="text-danger">*</span> </label>
@@ -251,12 +273,14 @@ const OpportunityDetailPage = ({ item }) => {
                                                 onChange={(e, value) => {
                                                     if (!value) {
                                                         console.log('!value', value);
-                                                        setFieldValue("InventoryId", '')
                                                         setFieldValue("inventoryDetails", '')
+                                                        setFieldValue("InventoryId", '')
+                                                        setFieldValue("InventoryName", '')
                                                     } else {
                                                         console.log('value', value);
-                                                        setFieldValue("InventoryId", value.id)
                                                         setFieldValue("inventoryDetails", value)
+                                                        setFieldValue("InventoryId", value.id)
+                                                        setFieldValue("InventoryName", value.propertyName)
                                                     }
                                                 }}
                                                 onInputChange={(event, newInputValue) => {
@@ -284,12 +308,14 @@ const OpportunityDetailPage = ({ item }) => {
                                                     console.log('lead onchange', value);
                                                     if (!value) {
                                                         console.log('!value', value);
-                                                        setFieldValue("LeadId", '')
                                                         setFieldValue("leadDetails", '')
+                                                        setFieldValue("LeadId", '')
+                                                        setFieldValue("LeadName",'')
                                                     } else {
                                                         console.log('value', value);
-                                                        setFieldValue("LeadId", value.id)
                                                         setFieldValue("leadDetails", value)
+                                                        setFieldValue("LeadId", value.id)                                                        
+                                                        setFieldValue("LeadName",value.leadName)
                                                     }
 
                                                 }}
@@ -349,7 +375,7 @@ const OpportunityDetailPage = ({ item }) => {
                                                     onChange={(e) => {
                                                         setFieldValue('closeDate', e)
                                                     }}
-                                                    renderInput={(params) => <TextField  {...params} className='form-input' error={false} />}
+                                                    renderInput={(params) => <TextField  {...params} style={{width:'100%'}} error={false} />}
                                                 />
                                             </LocalizationProvider>
                                         </Grid>
@@ -362,20 +388,22 @@ const OpportunityDetailPage = ({ item }) => {
                                         </Grid>
                                         <Grid item xs={12} md={12}>
                                             <label htmlFor="description">Description</label>
-                                            <Field as="textarea" name="description" class="form-input" />
+                                            <Field as="textarea" name="description" class="form-input-textarea" style={{width:'100%'}} />
                                         </Grid>
                                         {!showNew && (
                                             <>
                                                 <Grid item xs={6} md={6}>
                                                     {/* value is aagined to  the fields */}
-                                                    <label htmlFor="createdDate" >created Date</label>
-                                                    <Field name='createdDate' type="text" class="form-input" disabled />
+                                                    <label htmlFor="createdDate" >Created Date</label>
+                                                    <Field name='createdDate' type="text" class="form-input"
+                                                     value={values.createdBy.userFullName +" , "+values.createdDate} disabled />
                                                 </Grid>
 
                                                 <Grid item xs={6} md={6}>
                                                     {/* value is aagined to  the fields */}
                                                     <label htmlFor="modifiedDate" >Modified Date</label>
-                                                    <Field name='modifiedDate' type="text" class="form-input" disabled />
+                                                    <Field name='modifiedDate' type="text" class="form-input"
+                                                     value={values.createdBy.userFullName +" , "+ values.modifiedDate } disabled />
                                                 </Grid>
                                             </>
                                         )}
@@ -384,9 +412,9 @@ const OpportunityDetailPage = ({ item }) => {
                                         <DialogActions sx={{ justifyContent: "space-between" }}>
 
                                             {showNew ?
-                                                <Button type='success' variant="contained" color="secondary" disabled={isSubmitting}>Save</Button>
+                                                <Button type='success' variant="contained" color="secondary" disabled={isSubmitting ||!dirty}>Save</Button>
                                                 :
-                                                <Button type='success' variant="contained" color="secondary" disabled={isSubmitting}>Update</Button>
+                                                <Button type='success' variant="contained" color="secondary" disabled={isSubmitting ||!dirty}>Update</Button>
                                             }
                                             <Button type="reset" variant="contained" onClick={handleFormClose}  >Cancel</Button>
                                         </DialogActions>
