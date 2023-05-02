@@ -22,6 +22,7 @@ const Inventories = () => {
 
   const urlDelete = `${process.env.REACT_APP_SERVER_URL}/deleteInventory?code=`;
   const urlInventory = `${process.env.REACT_APP_SERVER_URL}/inventories`;
+  const urlPermission =`${process.env.REACT_APP_SERVER_URL}/sendRolePermission`
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -40,6 +41,7 @@ const Inventories = () => {
 
   useEffect(() => {
     fetchRecords();
+    fetchPermission();
   }, []);
 
   const fetchRecords = () => {
@@ -61,25 +63,29 @@ const Inventories = () => {
         setFetchError(err.message)
         setFetchLoading(false)
       })
-
-    // axios.post(`${urlInventory}?role=${userData.userRole}`)
-    //   .then(
-    //     (res) => {
-    //       console.log("res Inventory records", res);
-    //       if (res.data.length > 0 && (typeof (res.data) !== 'string')) {
-    //         setRecords(res.data);
-    //          setFetchLoading(false)
-    //       }
-    //       else {
-    //         setRecords([]);
-    //          setFetchLoading(false)
-    //       }
-    //     }
-    //   )
-    //   .catch((error) => {
-    //     console.log('res Inventory error', error);
-    //      setFetchLoading(false)
-    //   })
+  }
+  const fetchPermission=()=>{
+    RequestServer("post", urlPermission, null, {})
+    .then((res) => {
+      console.log("urlPermission INDEX page", res)
+      if (res.success) {
+        console.log(res.data)
+        // setRecords(res.data);
+        // setFetchLoading(false)
+        // setFetchError(null)
+      }
+      else {
+        
+        console.log(res.error.message)
+        // setRecords([]);
+        // setFetchLoading(false)
+        // setFetchError(res.error.message)
+      }
+    })
+    .catch((err) => {
+      console.log(err.message)
+      // setFetchLoading(false)
+    })
   }
 
   const handleAddRecord = () => {
