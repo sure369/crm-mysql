@@ -89,7 +89,7 @@ const PermissiionSetForm = ({ item }) => {
         .catch((error)=>{
             console.log(error,"error")
         })
-        
+
         // let payloadObj ={department:dpt,value:inputValue}
         // RequestServer("post",urlgetRolesByDept,null,payloadObj)
         // .then(res=>{
@@ -159,7 +159,7 @@ const PermissiionSetForm = ({ item }) => {
                                             </Field>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="assignedUser">Assign User</label>
+                                            <label htmlFor="roles">Roles</label>
                                           <Autocomplete
                                             name="roleDetails" 
                                             options={roleRecordsByDept}
