@@ -13,6 +13,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { DatePicker } from '@mui/x-date-pickers';
 import './Form.css'
+import { LeadInitialValues, LeadSavedValues } from '../formik/InitialValues/formValues';
 
 
 const url = `${process.env.REACT_APP_SERVER_URL}/UpsertLead`;
@@ -37,66 +38,69 @@ const LeadDetailPage = ({ item }) => {
         // getTasks(location.state.record.item._id)
     }, [])
 
-    const initialValues = {
-        
-        fullName: '',
-        companyName:'',
-        designation:'',
-        phone: '',    
-        leadSource: '',
-        industry: '',
-        leadStatus: '',
-        email: '',
-        linkedinProfile:'',
-        location:'',
-        appointmentDate:'',
-        demo:'',
-        month:'',
-        remarks:'',
-        primaryPhone:'',
-        secondaryPhone:'',
-        createdDate: '',
-        modifiedDate: '',
-    }
+    const initialValues =LeadInitialValues
+    const savedValues =LeadSavedValues(singleLead)
 
-    const savedValues = {
+    // const initialValues = {
+        
+    //     fullName: '',
+    //     companyName:'',
+    //     designation:'',
+    //     phone: '',    
+    //     leadSource: '',
+    //     industry: '',
+    //     leadStatus: '',
+    //     email: '',
+    //     linkedinProfile:'',
+    //     location:'',
+    //     appointmentDate:'',
+    //     demo:'',
+    //     month:'',
+    //     remarks:'',
+    //     primaryPhone:'',
+    //     secondaryPhone:'',
+    //     createdDate: '',
+    //     modifiedDate: '',
+    // }
+
+    // const savedValues = {
        
-        fullName: singleLead?.fullName ?? "",
-        companyName:singleLead?.companyName ?? "",
-        designation:singleLead?.designation??"",
-        phone: singleLead?.phone ?? "",
-        leadSource: singleLead?.leadSource ?? "",
-        industry: singleLead?.industry ?? "",
-        leadStatus: singleLead?.leadStatus ?? "",
-        email: singleLead?.email ?? "",      
-        linkedinProfile: singleLead?.linkedinProfile ?? "",
-        location: singleLead?.location ?? "",
-        primaryPhone:singleLead?.primaryPhone ??"",
-        secondaryPhone:singleLead?.secondaryPhone??"",
-        appointmentDate: new Date(singleLead?.appointmentDate).getUTCFullYear()
-        + '-' + ('0' + (new Date(singleLead?.appointmentDate).getUTCMonth() + 1)).slice(-2)
-        + '-' + ('0' + (new Date(singleLead?.appointmentDate).getUTCDate())).slice(-2) ||  "",
-        demo: singleLead?.demo ?? "",
-        month:singleLead?.month ??"",
-        remarks: singleLead?.remarks ?? "",
-        createdDate: new Date(singleLead?.createdDate).toLocaleString(),
-        modifiedDate: new Date(singleLead?.modifiedDate).toLocaleString(),
-        _id: singleLead?._id ?? "",
-        createdBy: (() => {
-            try {
-              return JSON.parse(singleLead?.createdBy);
-            } catch {
-              return "";
-            }
-          })(),
-        modifiedBy: (() => {
-            try {
-              return JSON.parse(singleLead?.modifiedBy);
-            } catch {
-              return "";
-            }
-          })(),
-    }
+    //     fullName: singleLead?.fullName ?? "",
+    //     companyName:singleLead?.companyName ?? "",
+    //     designation:singleLead?.designation??"",
+    //     phone: singleLead?.phone ?? "",
+    //     leadSource: singleLead?.leadSource ?? "",
+    //     industry: singleLead?.industry ?? "",
+    //     leadStatus: singleLead?.leadStatus ?? "",
+    //     email: singleLead?.email ?? "",      
+    //     linkedinProfile: singleLead?.linkedinProfile ?? "",
+    //     location: singleLead?.location ?? "",
+    //     primaryPhone:singleLead?.primaryPhone ??"",
+    //     secondaryPhone:singleLead?.secondaryPhone??"",
+    //     appointmentDate: new Date(singleLead?.appointmentDate).getUTCFullYear()
+    //     + '-' + ('0' + (new Date(singleLead?.appointmentDate).getUTCMonth() + 1)).slice(-2)
+    //     + '-' + ('0' + (new Date(singleLead?.appointmentDate).getUTCDate())).slice(-2) ||  "",
+    //     demo: singleLead?.demo ?? "",
+    //     month:singleLead?.month ??"",
+    //     remarks: singleLead?.remarks ?? "",
+    //     createdDate: new Date(singleLead?.createdDate).toLocaleString(),
+    //     modifiedDate: new Date(singleLead?.modifiedDate).toLocaleString(),
+    //     _id: singleLead?._id ?? "",
+    //     createdBy: (() => {
+    //         try {
+    //           return JSON.parse(singleLead?.createdBy);
+    //         } catch {
+    //           return "";
+    //         }
+    //       })(),
+    //     modifiedBy: (() => {
+    //         try {
+    //           return JSON.parse(singleLead?.modifiedBy);
+    //         } catch {
+    //           return "";
+    //         }
+    //       })(),
+    // }
 
     const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 

@@ -157,6 +157,28 @@
     }
   }
 
+
+  
+   /* permission set component */
+   .checkbox-label {
+    display: flex;
+    align-items: center;
+  }
+  
+  .checkbox-label input[type="checkbox"] {
+    margin-right: 5px;
+  }
+
+  .accordion-Header{
+    font-size:larger;
+    font-weight: bold;
+    align-items: center;
+    justify-content: space-between;
+   
+  }
+   /* permission set component */
+
+   
   /* .modal {
     position: absolute;
     top: 50%;

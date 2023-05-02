@@ -4,14 +4,20 @@ export const RequestServer = (method,endpoint,headers,payload)=>{
 
         let token = sessionStorage.getItem('token');
 
+        console.log(method,"method")
+        console.log(endpoint,"endpoint")
+        console.log(headers,"headers")
+        console.log(payload,"payload")
+
         headers = headers||{};
         headers.token = token;
-
+        headers['Content-Type'] = 'application/json';
+        
         return  axios({
             method : method,
             url: endpoint,
             headers : headers,
-            payload:payload
+            body:payload
 
         })
         .then((res)=>{

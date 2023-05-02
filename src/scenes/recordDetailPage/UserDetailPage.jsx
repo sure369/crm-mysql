@@ -11,11 +11,13 @@ import axios from 'axios'
 // import "../formik/FormStyles.css"
 import ToastNotification from '../toast/ToastNotification';
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
-import { UserAccessPicklist, UserRolePicklist } from '../../data/pickLists';
+import { RolesDepartment, UserAccessPicklist, UserRolePicklist } from '../../data/pickLists';
 import './Form.css'
+import { UserInitialValues, UserSavedValues } from '../formik/InitialValues/formValues';
 
 
 const url = `${process.env.REACT_APP_SERVER_URL}/UpsertUser`;
+const urlgetRolesByDept=`${process.env.REACT_APP_SERVER_URL}/roles`;
 const urlSendEmailbulk = `${process.env.REACT_APP_SERVER_URL}/bulkemail`
 
 
@@ -28,41 +30,17 @@ const UserDetailPage = ({ item }) => {
     const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
 
     const [usersRecord, setUsersRecord] = useState([])
+    const [roleRecords,setRoleRecords]=useState([])
 
     useEffect(() => {
         console.log('passed record', location.state.record.item);
-        setsingleUser(location.state.record.item);
+       
+        setsingleUser( location.state?.record?.item ?? {});
         setshowNew(!location.state.record.item)
     }, [])
 
-    const initialValues = {
-        firstName: '',
-        lastName: '',
-        fullName: '',
-        userName: '',
-        email: '',
-        phone: '',
-        role: '',
-        access: '',
-        createdbyId: '',
-        createdDate: '',
-        modifiedDate: '',
-    }
-
-    const savedValues = {
-        firstName: singleUser?.firstName ?? "",
-        lastName: singleUser?.lastName ?? "",
-        fullName: singleUser?.fullName ?? "",
-        userName: singleUser?.userName ?? "",
-        email: singleUser?.email ?? "",
-        phone: singleUser?.phone ?? "",
-        role: singleUser?.role ?? "",
-        access: singleUser?.access ?? "",
-        createdbyId: singleUser?.createdbyId ?? "",
-        createdDate: new Date(singleUser?.createdDate).toLocaleString(),
-        modifiedDate: new Date(singleUser?.modifiedDate).toLocaleString(),
-        _id: singleUser?._id ?? "",
-    }
+    const initialValues = UserInitialValues
+    const savedValues =UserSavedValues(singleUser)
 
     const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
@@ -79,12 +57,7 @@ const UserDetailPage = ({ item }) => {
             .matches(phoneRegExp, 'Phone number is not valid')
             .min(10, "Phone number must be 10 characters, its short")
             .max(10, "Phone number must be 10 characters,its long"),
-
-        // username: Yup
-        //     .string()
-        //     .email('invalid Format')
-        //     .required('Required'),
-        role: Yup
+        departmentName: Yup
             .string()
             .required('Required'),
         access: Yup
@@ -153,16 +126,18 @@ const UserDetailPage = ({ item }) => {
             values.createdDate = dateSeconds;
             values.fullName = values.firstName + ' ' + values.lastName;
             values.userName=values.email
-            // values.UserName =values.userDetails.userName;
-            // values.UserId= values.userDetails.id;
+            values.createdBy = (sessionStorage.getItem("loggedInUser"));
+            values.modifiedBy = (sessionStorage.getItem("loggedInUser"));    
+            values.roleDetails=JSON.stringify(values.roleDetails)
         }
         else if (!showNew) {
             values.modifiedDate = dateSeconds;
             values.createdDate = createDateSec;
             values.userName=values.email
             values.fullName = values.firstName + ' ' + values.lastName;
-            // values.UserName =values.userDetails.userName;
-            // values.UserId= values.userDetails.id;
+            values.createdBy = singleUser.createdBy;
+            values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
+           
         }
         console.log('after change form submission value', values);
 
@@ -194,6 +169,44 @@ const UserDetailPage = ({ item }) => {
 
     const handleFormClose = () => {
         navigate(-1)
+    }
+
+    const FetchRolesbyName=(newInputValue)=>{
+        
+        console.log('new Input  value', newInputValue)
+
+        axios.post(`${urlgetRolesByDept}?searchKey=${newInputValue}`)
+            .then((res) => {
+                console.log('res FetchRolesbyName', res.data)
+                if (typeof (res.data) === "object") {
+                  
+                    setRoleRecords(res.data)
+                }
+            })
+            .catch((error) => {
+                console.log('error FetchRolesbyName', error);
+            })
+    }
+
+    const handleDepartmentChange=(e)=>{
+        console.log(e.target.value,"handleDepartmentChange")
+            let newInputValue=e.target.value
+            console.log(newInputValue.length,"len")
+            if(newInputValue.length>0){
+                axios.post(`${urlgetRolesByDept}?departmentName=${newInputValue}`)
+                .then((res) => {
+                    console.log('res handleDepartmentChange', res.data)
+                    if (typeof (res.data) === "object") {
+                        setRoleRecords(res.data)
+                    }
+                })
+                .catch((error) => {
+                    console.log('error handleDepartmentChange', error);
+                })
+            }else{
+                setRoleRecords([])
+            }
+        
     }
 
     return (
@@ -262,21 +275,6 @@ const UserDetailPage = ({ item }) => {
                                                 <ErrorMessage name="username" />
                                             </div>
                                         </Grid>
-
-                                        <Grid item xs={6} md={6}>
-                                            <label htmlFor="role">Role <span className="text-danger">*</span> </label>
-                                            <Field name="role" component={CustomizedSelectForFormik}>
-                                                <MenuItem value=""><em>None</em></MenuItem>
-                                                {
-                                                    UserRolePicklist.map((i) => {
-                                                        return <MenuItem value={i.value}>{i.text}</MenuItem>
-                                                    })
-                                                }
-                                            </Field>
-                                            <div style={{ color: 'red' }}>
-                                                <ErrorMessage name="role" />
-                                            </div>
-                                        </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="access">Access <span className="text-danger">*</span> </label>
                                             <Field name="access" component={CustomizedSelectForFormik}>
@@ -291,40 +289,55 @@ const UserDetailPage = ({ item }) => {
                                                 <ErrorMessage name="access" />
                                             </div>
                                         </Grid>
+                                        <Grid item xs={6} md={6}>
+                                            <label htmlFor="departmentName">Department <span className="text-danger">*</span> </label>
+                                            <Field name="departmentName" component={CustomizedSelectForFormik}
+                                            onChange={e=>handleDepartmentChange(e)}>
+                                                <MenuItem value=""><em>None</em></MenuItem>
+                                                {
+                                                    RolesDepartment.map((i) => {
+                                                        return <MenuItem value={i.value}>{i.text}</MenuItem>
+                                                    })
+                                                }
+                                            </Field>
+                                            <div style={{ color: 'red' }}>
+                                                <ErrorMessage name="departmentName" />
+                                            </div>
+                                        </Grid>
 
-                                        {/* <Grid item xs={6} md={6}>
-                                            <label htmlFor="createdbyId">User Name </label>
+                                        <Grid item xs={6} md={6}>
+                                            <label htmlFor="role">Role Name </label>
                                             <Autocomplete
-                                                name="createdbyId"
-                                                options={usersRecord}
-                                                value={values.userDetails}
-                                                getOptionLabel={option => option.userName || ''}
+                                                name="role"
+                                                options={roleRecords}
+                                                value={values.roleDetails}
+                                                getOptionLabel={option => option.roleName || ''}
                                                 onChange={(e, value) => {
                                                     console.log('inside onchange values', value);
                                                     if (!value) {
                                                         console.log('!value', value);
-                                                        setFieldValue("createdbyId", '')
-                                                        setFieldValue("userDetails", '')
+                                                        setFieldValue("roleDetails", '')
+                                                        // setFieldValue("roleDetails", '')
                                                     } else {
                                                         console.log('value', value);
-                                                        setFieldValue("createdbyId", value.id)
-                                                        setFieldValue("userDetails", value)
+                                                        setFieldValue("roleDetails", value)
+                                                        // setFieldValue("roleDetails", value)
                                                     }
                                                 }}
                                                 onInputChange={(event, newInputValue) => {
                                                     console.log('newInputValue', newInputValue);
                                                     if (newInputValue.length >= 3) {
-                                                        FetchUsersbyName(newInputValue);
+                                                        FetchRolesbyName(newInputValue);
                                                     }
-                                                    else if (newInputValue.length == 0) {
-                                                        FetchUsersbyName(newInputValue);
+                                                    else if (newInputValue.length === 0) {
+                                                        FetchRolesbyName(newInputValue);
                                                     }
                                                 }}
                                                 renderInput={params => (
-                                                    <Field component={TextField} {...params} name="createdbyId" />
+                                                    <Field component={TextField} {...params} name="role" />
                                                 )}
                                             />
-                                        </Grid> */}
+                                        </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="phone">Phone<span className="text-danger">*</span> </label>
                                             <Field name="phone" type="text" class="form-input" />

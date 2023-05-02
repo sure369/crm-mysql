@@ -9,6 +9,7 @@ import axios from 'axios';
 import ToastNotification from '../toast/ToastNotification';
 import { InvCitiesPickList,InvCountryPickList, InvStatusPicklist, InvTypePicklist } from '../../data/pickLists';
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
+import { InventoryInitialValues, InventorySavedValues } from '../formik/InitialValues/formValues';
 
 const url = `${process.env.REACT_APP_SERVER_URL}/UpsertInventory`;
 const getCountryPicklists= `${process.env.REACT_APP_SERVER_URL}/getpicklistcountry`;
@@ -38,55 +39,57 @@ const InventoryDetailPage = ({ item }) => {
         }
     }, [])
 
+    const initialValues = InventoryInitialValues
+    const savedValues=InventorySavedValues(singleInventory)
 
-    const initialValues = {
-        projectName: '',
-        propertyName: '',
-        propertyUnitNumber: '',
-        type: '',
-        tower: '',
-        country: '',
-        city: '',
-        floor: '',
-        status: '',
-        totalArea: '',
-        createdbyId: '',        
-        createdBy: "",
-        modifiedBy: "",
-        createdDate: '',
-        modifiedDate: '',
-    }
+    // const initialValues = {
+    //     projectName: '',
+    //     propertyName: '',
+    //     propertyUnitNumber: '',
+    //     type: '',
+    //     tower: '',
+    //     country: '',
+    //     city: '',
+    //     floor: '',
+    //     status: '',
+    //     totalArea: '',
+    //     createdbyId: '',        
+    //     createdBy: "",
+    //     modifiedBy: "",
+    //     createdDate: '',
+    //     modifiedDate: '',
+    // }
 
-    const savedValues = {
-        projectName: singleInventory?.projectName ?? "",
-        propertyName: singleInventory?.propertyName ?? "",
-        propertyUnitNumber: singleInventory?.propertyUnitNumber ?? "",
-        type: singleInventory?.type ?? "",
-        tower: singleInventory?.tower ?? "",
-        country: singleInventory?.country ?? "",
-        city: singleInventory?.city ?? "",
-        floor: singleInventory?.floor ?? "",
-        status: singleInventory?.status ?? "",
-        totalArea: singleInventory?.totalArea ?? "",
-        createdbyId: singleInventory?.createdbyId ?? "",
-        createdDate: new Date(singleInventory?.createdDate).toLocaleString(),
-        modifiedDate: new Date(singleInventory?.modifiedDate).toLocaleString(),
-        _id: singleInventory?._id ?? "",
-        createdBy: (() => {
-            try {
-              return JSON.parse(singleInventory?.createdBy);
-            } catch {
-              return "";
-            }
-          })(),
-        modifiedBy: (() => {
-            try {
-              return JSON.parse(singleInventory?.modifiedBy);
-            } catch {
-              return "";
-            }
-          })(),
-    }
+    // const savedValues = {
+        // projectName: singleInventory?.projectName ?? "",
+        // propertyName: singleInventory?.propertyName ?? "",
+        // propertyUnitNumber: singleInventory?.propertyUnitNumber ?? "",
+        // type: singleInventory?.type ?? "",
+        // tower: singleInventory?.tower ?? "",
+        // country: singleInventory?.country ?? "",
+        // city: singleInventory?.city ?? "",
+        // floor: singleInventory?.floor ?? "",
+        // status: singleInventory?.status ?? "",
+        // totalArea: singleInventory?.totalArea ?? "",
+        // createdbyId: singleInventory?.createdbyId ?? "",
+        // createdDate: new Date(singleInventory?.createdDate).toLocaleString(),
+        // modifiedDate: new Date(singleInventory?.modifiedDate).toLocaleString(),
+        // _id: singleInventory?._id ?? "",
+        // createdBy: (() => {
+        //     try {
+        //       return JSON.parse(singleInventory?.createdBy);
+        //     } catch {
+        //       return "";
+        //     }
+        //   })(),
+        // modifiedBy: (() => {
+        //     try {
+        //       return JSON.parse(singleInventory?.modifiedBy);
+        //     } catch {
+        //       return "";
+        //     }
+        //   })(),
+    // }
 
 
 

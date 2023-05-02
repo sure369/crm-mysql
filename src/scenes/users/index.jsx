@@ -84,6 +84,11 @@ const Users = () => {
     navigate("/new-users", { state: { record: {} } })
   };
 
+  const handleAddRecordPer=()=>{
+    navigate("/new-permission", { state: { record: {} } })
+ 
+  }
+
   const handleOnCellClick = (e, row) => {
     console.log(' selected  rec', row);
     const item = row;
@@ -281,7 +286,9 @@ const Users = () => {
             <Button variant="contained" color="info" onClick={handleAddRecord}>
               New
             </Button>
-
+            <Button variant="contained" color="info" onClick={handleAddRecordPer}>
+              New Permission
+            </Button>
                       {/* <ExcelDownload data={records} filename={`OpportunityRecords`}/> */}
                      
                 

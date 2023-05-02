@@ -13,6 +13,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import './Form.css'
+import { OpportunityInitialValues, OpportunitySavedValues } from '../formik/InitialValues/formValues';
 
 const url = `${process.env.REACT_APP_SERVER_URL}/UpsertOpportunity`;
 const fetchLeadsbyName = `${process.env.REACT_APP_SERVER_URL}/LeadsbyName`;
@@ -39,56 +40,59 @@ const OpportunityDetailPage = ({ item }) => {
 
     }, [])
 
-    const initialValues = {
-         LeadId: '',
-         InventoryId: '',
-        opportunityName: '',
-        type: '',
-        leadSource: '',
-        amount: '',
-        closeDate: '',
-        stage: '',
-        description: '',
-        createdbyId: '',
-        createdBy: "",
-        modifiedBy: "",
-        createdDate: '',
-        modifiedDate: '',
-    }
+    const initialValues= OpportunityInitialValues
+    const savedValues=OpportunitySavedValues(singleOpportunity)
 
-    const savedValues = {
-         LeadId: singleOpportunity?.LeadId ?? "",
-         InventoryId: singleOpportunity?.InventoryId ?? "",
-        opportunityName: singleOpportunity?.opportunityName ?? "",
-        type: singleOpportunity?.type ?? "",
-        leadSource: singleOpportunity?.leadSource ?? "",
-        amount: singleOpportunity?.amount ?? "",
-        closeDate: new Date(singleOpportunity?.closeDate).getUTCFullYear()
-            + '-' + ('0' + (new Date(singleOpportunity?.closeDate).getUTCMonth() + 1)).slice(-2)
-            + '-' + ('0' + (new Date(singleOpportunity?.closeDate).getUTCDate() + 1)).slice(-2) || '',
-        stage: singleOpportunity?.stage ?? "",
-        description: singleOpportunity?.description ?? "",
-        createdbyId: singleOpportunity?.createdbyId ?? "",
-        createdDate: new Date(singleOpportunity?.createdDate).toLocaleString(),
-        modifiedDate: new Date(singleOpportunity?.modifiedDate).toLocaleString(),
-        _id: singleOpportunity?._id ?? "",
-        inventoryDetails: singleOpportunity?.inventoryDetails ?? "",
-        leadDetails: singleOpportunity?.leadDetails ?? "",
-        createdBy: (() => {
-            try {
-              return JSON.parse(singleOpportunity?.createdBy);
-            } catch {
-              return "";
-            }
-          })(),
-        modifiedBy: (() => {
-            try {
-              return JSON.parse(singleOpportunity?.modifiedBy);
-            } catch {
-              return "";
-            }
-          })(),
-    }
+    // const initialValues = {
+    //      LeadId: '',
+    //      InventoryId: '',
+    //     opportunityName: '',
+    //     type: '',
+    //     leadSource: '',
+    //     amount: '',
+    //     closeDate: '',
+    //     stage: '',
+    //     description: '',
+    //     createdbyId: '',
+    //     createdBy: "",
+    //     modifiedBy: "",
+    //     createdDate: '',
+    //     modifiedDate: '',
+    // }
+
+    // const savedValues = {
+    //      LeadId: singleOpportunity?.LeadId ?? "",
+    //      InventoryId: singleOpportunity?.InventoryId ?? "",
+    //     opportunityName: singleOpportunity?.opportunityName ?? "",
+    //     type: singleOpportunity?.type ?? "",
+    //     leadSource: singleOpportunity?.leadSource ?? "",
+    //     amount: singleOpportunity?.amount ?? "",
+    //     closeDate: new Date(singleOpportunity?.closeDate).getUTCFullYear()
+    //         + '-' + ('0' + (new Date(singleOpportunity?.closeDate).getUTCMonth() + 1)).slice(-2)
+    //         + '-' + ('0' + (new Date(singleOpportunity?.closeDate).getUTCDate() + 1)).slice(-2) || '',
+    //     stage: singleOpportunity?.stage ?? "",
+    //     description: singleOpportunity?.description ?? "",
+    //     createdbyId: singleOpportunity?.createdbyId ?? "",
+    //     createdDate: new Date(singleOpportunity?.createdDate).toLocaleString(),
+    //     modifiedDate: new Date(singleOpportunity?.modifiedDate).toLocaleString(),
+    //     _id: singleOpportunity?._id ?? "",
+    //     inventoryDetails: singleOpportunity?.inventoryDetails ?? "",
+    //     leadDetails: singleOpportunity?.leadDetails ?? "",
+    //     createdBy: (() => {
+    //         try {
+    //           return JSON.parse(singleOpportunity?.createdBy);
+    //         } catch {
+    //           return "";
+    //         }
+    //       })(),
+    //     modifiedBy: (() => {
+    //         try {
+    //           return JSON.parse(singleOpportunity?.modifiedBy);
+    //         } catch {
+    //           return "";
+    //         }
+    //       })(),
+    // }
     const validationSchema = Yup.object({
         opportunityName: Yup
             .string()

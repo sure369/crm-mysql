@@ -14,6 +14,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import CustomizedSelectDisableForFormik from "../formik/CustomizedSelectDisableFormik";
 import './Form.css'
+import { TaskInitialValues, TaskSavedValues } from "../formik/InitialValues/formValues";
 
 
 const UpsertUrl = `${process.env.REACT_APP_SERVER_URL}/UpsertTask`;
@@ -51,66 +52,69 @@ const TaskDetailPage = ({ item ,handleModal ,showModel }) => {
         
     }, [])
 
-    const initialValues = {
-        subject: '',
-        relatedTo: '',
-        assignedTo: '',
-        StartDate: '',
-        EndDate: '',
-        description: '',
-        // attachments: null,
-        object: '',
-        // AccountId: '',
-        // LeadId: '',
-        // OpportunityId: '',        
-        createdBy: "",
-        modifiedBy: "",
-        createdbyId: '',
-        createdDate: '',
-        modifiedDate: '',
-    }
+    const initialValues =TaskInitialValues
+    const savedValues =TaskSavedValues(singleTask)
 
-    const savedValues = {
-        subject: singleTask?.subject ?? "",
-        relatedto: singleTask?.relatedto ?? "",
-        assignedTo: singleTask?.assignedTo ?? "",
-        description: singleTask?.description ?? "",
-        // attachments: singleTask?.attachments ?? "",
-        object: singleTask?.object ?? "",
-        // AccountId: singleTask?.AccountId ?? "",
-        // LeadId: singleTask?.LeadId ?? "",
-        // OpportunityId: singleTask?.OpportunityId ?? "",
-        createdbyId: singleTask?.createdbyId ?? "",
-        createdDate: new Date(singleTask?.createdDate).toLocaleString(),
-        modifiedDate: new Date(singleTask?.modifiedDate).toLocaleString(),
-        _id: singleTask?._id ?? "",
-        StartDate:new Date(singleTask?.StartDate),
-        EndDate:new Date(singleTask?.EndDate),
-        // StartDate:new Date(singleTask?.StartDate).getUTCFullYear()
-        // + '-' +  ('0'+ (new Date(singleTask?.StartDate).getUTCMonth() + 1)).slice(-2) 
-        // + '-' + ('0'+ ( new Date(singleTask?.StartDate).getUTCDate())).slice(-2) ||'',
-        // EndDate:  new Date(singleTask?.EndDate).getUTCFullYear()
-        // + '-' +  ('0'+ (new Date(singleTask?.EndDate).getUTCMonth() + 1)).slice(-2) 
-        // + '-' + ('0'+ ( new Date(singleTask?.EndDate).getUTCDate())).slice(-2) ||'',
+    // const initialValues = {
+    //     subject: '',
+    //     relatedTo: '',
+    //     assignedTo: '',
+    //     StartDate: '',
+    //     EndDate: '',
+    //     description: '',
+    //     // attachments: null,
+    //     object: '',
+    //     // AccountId: '',
+    //     // LeadId: '',
+    //     // OpportunityId: '',        
+    //     createdBy: "",
+    //     modifiedBy: "",
+    //     createdbyId: '',
+    //     createdDate: '',
+    //     modifiedDate: '',
+    // }
 
-        accountDetails:singleTask?.accountDetails ??"",
-        leadDetails:singleTask?.leadDetails ??"",
-        opportunityDetails:singleTask?.opportunityDetails ??"",
-        createdBy: (() => {
-            try {
-              return JSON.parse(singleTask?.createdBy);
-            } catch {
-              return "";
-            }
-          })(),
-        modifiedBy: (() => {
-            try {
-              return JSON.parse(singleTask?.modifiedBy);
-            } catch {
-              return "";
-            }
-          })(),
-    }
+    // const savedValues = {
+    //     subject: singleTask?.subject ?? "",
+    //     relatedto: singleTask?.relatedto ?? "",
+    //     assignedTo: singleTask?.assignedTo ?? "",
+    //     description: singleTask?.description ?? "",
+    //     // attachments: singleTask?.attachments ?? "",
+    //     object: singleTask?.object ?? "",
+    //     // AccountId: singleTask?.AccountId ?? "",
+    //     // LeadId: singleTask?.LeadId ?? "",
+    //     // OpportunityId: singleTask?.OpportunityId ?? "",
+    //     createdbyId: singleTask?.createdbyId ?? "",
+    //     createdDate: new Date(singleTask?.createdDate).toLocaleString(),
+    //     modifiedDate: new Date(singleTask?.modifiedDate).toLocaleString(),
+    //     _id: singleTask?._id ?? "",
+    //     StartDate:new Date(singleTask?.StartDate),
+    //     EndDate:new Date(singleTask?.EndDate),
+    //     // StartDate:new Date(singleTask?.StartDate).getUTCFullYear()
+    //     // + '-' +  ('0'+ (new Date(singleTask?.StartDate).getUTCMonth() + 1)).slice(-2) 
+    //     // + '-' + ('0'+ ( new Date(singleTask?.StartDate).getUTCDate())).slice(-2) ||'',
+    //     // EndDate:  new Date(singleTask?.EndDate).getUTCFullYear()
+    //     // + '-' +  ('0'+ (new Date(singleTask?.EndDate).getUTCMonth() + 1)).slice(-2) 
+    //     // + '-' + ('0'+ ( new Date(singleTask?.EndDate).getUTCDate())).slice(-2) ||'',
+
+    //     accountDetails:singleTask?.accountDetails ??"",
+    //     leadDetails:singleTask?.leadDetails ??"",
+    //     opportunityDetails:singleTask?.opportunityDetails ??"",
+    //     createdBy: (() => {
+    //         try {
+    //           return JSON.parse(singleTask?.createdBy);
+    //         } catch {
+    //           return "";
+    //         }
+    //       })(),
+    //     modifiedBy: (() => {
+    //         try {
+    //           return JSON.parse(singleTask?.modifiedBy);
+    //         } catch {
+    //           return "";
+    //         }
+    //       })(),
+    // }
 
     const validationSchema = Yup.object({
         subject: Yup

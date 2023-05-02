@@ -21,6 +21,9 @@ import FlexLeads from '../Flex/FlexLeads';
 import FlexOpportunities from '../Flex/FlexOpportunities';
 import FlexTasks from '../Flex/FlexTasks';
 import FileUploadUpdated from '../fileUpload/FileUpdated';
+import RoleDetailPage from '../recordDetailPage/RoleDetailPage';
+import RoleIndex from '../Roles';
+import PermissionDetailPage from '../recordDetailPage/PermissionDetailPage';
 
 function LoginLayoutIndex() {
   return (
@@ -35,6 +38,7 @@ function LoginLayoutIndex() {
         <Route path="/inventories" element={<ResponsiveInventories />} />
         <Route path="/task" element={<ResponsiveTasks />} />
         <Route path="/users" element={<ResponsiveUsers />} />
+        <Route path="/roles" element={<RoleIndex/>}/>
 
         <Route path="/new-contacts" element={<ContactDetailPage />} />
         <Route path="/new-users" element={<UserDetailPage />} />
@@ -43,6 +47,8 @@ function LoginLayoutIndex() {
         <Route path="/new-leads" element={<LeadDetailPage />} />
         <Route path="/new-opportunities" element={<OpportunityDetailPage />} />
         <Route path="/new-accounts" element={<AccountDetailPage />} />
+        <Route path="/new-role" element={<RoleDetailPage/>}/>
+        <Route path="/new-permission" element={<PermissionDetailPage/>}/>
 
         <Route path="/accountDetailPage/:id" element={<FlexAccounts />} />
         <Route path="/taskDetailPage/:id" element={<FlexTasks />} />
@@ -51,6 +57,7 @@ function LoginLayoutIndex() {
         <Route path="/userDetailPage/:id" element={<UserDetailPage />} />
         <Route path="/leadDetailPage/:id" element={<FlexLeads />} />
         <Route path="/opportunityDetailPage/:id" element={<FlexOpportunities />} />
+        <Route path="/roleDetailPage/:id" element={<RoleDetailPage/>}/>
 
         <Route path="/file" element={<FileUploadUpdated />} />
 

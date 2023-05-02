@@ -18,8 +18,9 @@ const pages = [
   { title: 'Deals', toNav: '/deals' },
   { title: 'Event Log', toNav: '/task' },
   { title: 'Users', toNav: '/users' },
-  // { title: 'Data Loader', toNav: '/dataLoader' },
+  { title: 'Roles', toNav: '/roles' },
   { title: 'File Upload', toNav: '/file' },
+  {title:'Permission',toNav:'/permission'}
 
   // {title:'Test',toNav:'/test'},
   // { title: 'Junction Object', toNav: '/oppInventory' },

@@ -9,6 +9,8 @@ import ToastNotification from "../toast/ToastNotification";
 import { convert } from "html-to-text";
 import CustomizedRichTextField from "../formik/CustomizedRichTextField";
  import '../recordDetailPage/Form.css'
+import {EmailInitialValues} from '../formik/InitialValues/formValues';
+
 
 const urlSendEmailbulk = `${process.env.REACT_APP_SERVER_URL}/bulkemail`
 
@@ -31,12 +33,14 @@ const EmailModalPage = ({ data, handleModal, bulkMail }) => {
 
     }, [])
 
-    const initialValues = {
-        subject: '',
-        htmlBody: '',
-        recordsData: '',
-        attachments: ''
-    }
+    const initialValues =EmailInitialValues
+
+    // const initialValues = {
+    //     subject: '',
+    //     htmlBody: '',
+    //     recordsData: '',
+    //     attachments: ''
+    // }
 
     const validationSchema = Yup.object({
         subject: Yup

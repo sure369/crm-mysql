@@ -20,6 +20,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import './Form.css'
+import { ContactInitialValues, ContactSavedValues } from '../formik/InitialValues/formValues';
 
 const url = `${process.env.REACT_APP_SERVER_URL}/UpsertContact`;
 const fetchAccountsbyName = `${process.env.REACT_APP_SERVER_URL}/accountsname`;
@@ -43,64 +44,65 @@ const ContactDetailPage = ({ item }) => {
 
     }, [])
 
+    const initialValues=ContactInitialValues
+    const savedValues=ContactSavedValues(singleContact)
 
+    // const initialValues = {
+    //     AccountId: "",
+    //     salutation: '',
+    //     firstName: '',
+    //     lastName: '',
+    //     fullName: '',
+    //     dob: '',
+    //     phone: '',
+    //     department: '',
+    //     leadSource: '',
+    //     email: '',
+    //     fullAddress: '',
+    //     description: '',
+    //     createdbyId: '',
+    //     createdBy: "",
+    //     modifiedBy: "",
+    //     createdDate: '',
+    //     modifiedDate: '',
+    // }
 
-    const initialValues = {
-        AccountId: "",
-        salutation: '',
-        firstName: '',
-        lastName: '',
-        fullName: '',
-        dob: '',
-        phone: '',
-        department: '',
-        leadSource: '',
-        email: '',
-        fullAddress: '',
-        description: '',
-        createdbyId: '',
-        createdBy: "",
-        modifiedBy: "",
-        createdDate: '',
-        modifiedDate: '',
-    }
+    // const savedValues = {
+    //     AccountId: singleContact?.AccountId ?? "",
+    //     salutation: singleContact?.salutation ?? "",
+    //     firstName: singleContact?.firstName ?? "",
+    //     lastName: singleContact?.lastName ?? "",
+    //     fullName: singleContact?.fullName ?? "",
+    //     phone: singleContact?.phone ?? "",
+    //     dob: new Date(singleContact?.dob).getUTCFullYear()
+    //         + '-' + ('0' + (new Date(singleContact?.dob).getUTCMonth() + 1)).slice(-2)
+    //         + '-' + ('0' + (new Date(singleContact?.dob).getUTCDate()+1)).slice(-2) || '',
 
-    const savedValues = {
-        AccountId: singleContact?.AccountId ?? "",
-        salutation: singleContact?.salutation ?? "",
-        firstName: singleContact?.firstName ?? "",
-        lastName: singleContact?.lastName ?? "",
-        fullName: singleContact?.fullName ?? "",
-        phone: singleContact?.phone ?? "",
-        dob: new Date(singleContact?.dob).getUTCFullYear()
-            + '-' + ('0' + (new Date(singleContact?.dob).getUTCMonth() + 1)).slice(-2)
-            + '-' + ('0' + (new Date(singleContact?.dob).getUTCDate()+1)).slice(-2) || '',
-
-        department: singleContact?.department ?? "",
-        leadSource: singleContact?.leadSource ?? "",
-        email: singleContact?.email ?? "",
-        fullAddress: singleContact?.fullAddress ?? "",
-        description: singleContact?.description ?? "",
-        createdbyId: singleContact?.createdbyId ?? "",
-        createdDate: new Date(singleContact?.createdDate).toLocaleString(),
-        modifiedDate: new Date(singleContact?.modifiedDate).toLocaleString(),
-        _id: singleContact?._id ?? "",
-        accountDetails: singleContact?.accountDetails ?? "",
-        createdBy: (() => {
-            try {
-              return JSON.parse(singleContact?.createdBy);
-            } catch {
-              return "";
-            }
-          })(),
-        modifiedBy: (() => {
-            try {
-              return JSON.parse(singleContact?.modifiedBy);
-            } catch {
-              return "";
-            }
-          })(),
-    }
+    //     department: singleContact?.department ?? "",
+    //     leadSource: singleContact?.leadSource ?? "",
+    //     email: singleContact?.email ?? "",
+    //     fullAddress: singleContact?.fullAddress ?? "",
+    //     description: singleContact?.description ?? "",
+    //     createdbyId: singleContact?.createdbyId ?? "",
+    //     createdDate: new Date(singleContact?.createdDate).toLocaleString(),
+    //     modifiedDate: new Date(singleContact?.modifiedDate).toLocaleString(),
+    //     _id: singleContact?._id ?? "",
+    //     accountDetails: singleContact?.accountDetails ?? "",
+    //     createdBy: (() => {
+    //         try {
+    //           return JSON.parse(singleContact?.createdBy);
+    //         } catch {
+    //           return "";
+    //         }
+    //       })(),
+    //     modifiedBy: (() => {
+    //         try {
+    //           return JSON.parse(singleContact?.modifiedBy);
+    //         } catch {
+    //           return "";
+    //         }
+    //       })(),
+    // }
     const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
     const validationSchema = Yup.object({

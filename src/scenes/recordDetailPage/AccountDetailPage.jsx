@@ -9,6 +9,8 @@ import "./Form.css";
 import {IndustryPickList, AccRatingPickList,AccTypePickList,AccCitiesPickList, AccCountryPickList} from '../../data/pickLists'
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 import ToastNotification from '../toast/ToastNotification';
+import { AccountInitialValues,AccountSavedValues } from '../formik/InitialValues/formValues';
+
 
 const url = `${process.env.REACT_APP_SERVER_URL}/UpsertAccount`;
 const fetchInventoriesbyName = `${process.env.REACT_APP_SERVER_URL}/InventoryName`;
@@ -32,7 +34,6 @@ const AccountDetailPage = ({ item }) => {
     //jsonConvert
     const[convertedCreatedBy,setConvertedCreatedBy]=useState();
     const[convertedModifiedBy,setConvertedModifiedBy]=useState();
-    
 
     useEffect(() => {
         console.log('passed record', location.state.record.item);
@@ -51,58 +52,62 @@ const AccountDetailPage = ({ item }) => {
         }
     }, [])
 
-    const initialValues = {
-        accountName: '',
-        accountNumber: '',        
-        annualRevenue: '',
-        rating: '',
-        type: '',
-        phone: '',
-        industry: '',
-        billingAddress: '',
-        billingCountry: '',
-        billingCity: '',       
-        createdbyId: '',
-        createdBy: "",
-        modifiedBy: "",
-        createdDate:'',
-        modifiedDate: '',
-        InventoryId: '',
-    }
+    
+    const initialValues=AccountInitialValues
+    const savedValues=AccountSavedValues(singleAccount)
 
-    const savedValues = {
-        accountName: singleAccount?.accountName ?? "",
-        accountNumber: singleAccount?.accountNumber ?? "",   
-        annualRevenue: singleAccount?.annualRevenue ?? "",
-        rating: singleAccount?.rating ?? "",
-        type: singleAccount?.type ?? "",
-        phone: singleAccount?.phone ?? "",
-        industry: singleAccount?.industry ?? "",
-        billingAddress: singleAccount?.billingAddress ?? "",
-        billingCountry: singleAccount?.billingCountry ?? "",
-        billingCity: singleAccount?.billingCity ?? "",
-        createdbyId: singleAccount?.createdbyId ?? "",
-        createdDate:  new Date(singleAccount?.createdDate).toLocaleString(),
-        modifiedDate: new Date(singleAccount?.modifiedDate).toLocaleString(),
-        _id: singleAccount?._id ?? "",
-        inventoryDetails:singleAccount?.InventoryDetails ?? "", 
-        InventoryId: singleAccount?.InventoryId ?? "",
-        InventoryName: singleAccount?.InventoryName ?? "",
-        createdBy: (() => {
-            try {
-              return JSON.parse(singleAccount?.createdBy);
-            } catch {
-              return "";
-            }
-          })(),
-        modifiedBy: (() => {
-            try {
-              return JSON.parse(singleAccount?.modifiedBy);
-            } catch {
-              return "";
-            }
-          })(),
-    }
+    // const initialValues = {
+    //     accountName: '',
+    //     accountNumber: '',        
+    //     annualRevenue: '',
+    //     rating: '',
+    //     type: '',
+    //     phone: '',
+    //     industry: '',
+    //     billingAddress: '',
+    //     billingCountry: '',
+    //     billingCity: '',       
+    //     createdbyId: '',
+    //     createdBy: "",
+    //     modifiedBy: "",
+    //     createdDate:'',
+    //     modifiedDate: '',
+    //     InventoryId: '',
+    // }
+
+    // const savedValues = {
+    //     accountName: singleAccount?.accountName ?? "",
+    //     accountNumber: singleAccount?.accountNumber ?? "",   
+    //     annualRevenue: singleAccount?.annualRevenue ?? "",
+    //     rating: singleAccount?.rating ?? "",
+    //     type: singleAccount?.type ?? "",
+    //     phone: singleAccount?.phone ?? "",
+    //     industry: singleAccount?.industry ?? "",
+    //     billingAddress: singleAccount?.billingAddress ?? "",
+    //     billingCountry: singleAccount?.billingCountry ?? "",
+    //     billingCity: singleAccount?.billingCity ?? "",
+    //     createdbyId: singleAccount?.createdbyId ?? "",
+    //     createdDate:  new Date(singleAccount?.createdDate).toLocaleString(),
+    //     modifiedDate: new Date(singleAccount?.modifiedDate).toLocaleString(),
+    //     _id: singleAccount?._id ?? "",
+    //     inventoryDetails:singleAccount?.InventoryDetails ?? "", 
+    //     InventoryId: singleAccount?.InventoryId ?? "",
+    //     InventoryName: singleAccount?.InventoryName ?? "",
+    //     createdBy: (() => {
+    //         try {
+    //           return JSON.parse(singleAccount?.createdBy);
+    //         } catch {
+    //           return "";
+    //         }
+    //       })(),
+    //     modifiedBy: (() => {
+    //         try {
+    //           return JSON.parse(singleAccount?.modifiedBy);
+    //         } catch {
+    //           return "";
+    //         }
+    //       })(),
+    // }
 
 
 
