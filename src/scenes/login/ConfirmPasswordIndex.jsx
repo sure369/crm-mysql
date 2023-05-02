@@ -17,13 +17,13 @@ export default function ConfirmPasswordIndex({ item }) {
     const avatarStyle = { width: 100, height: 100 }
     const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
 
-    const[userRecord,setUserRecord]=useState();
+    const [userRecord, setUserRecord] = useState();
 
-    const location =useLocation();
+    const location = useLocation();
     const navigate = useNavigate()
 
-    useEffect(()=>{
-        console.log(location.state.record.item[0],"uselocation")
+    useEffect(() => {
+        console.log(location.state.record.item[0], "uselocation")
         setUserRecord(location.state.record.item[0]);
     })
 
@@ -33,16 +33,19 @@ export default function ConfirmPasswordIndex({ item }) {
         email: location.state.record.item[0].email,
         password: '',
         confirmPassword: '',
-        access:location.state.record.item[0].access,
-        createdDate:location.state.record.item[0].createdDate,     
-        createdbyId:location.state.record.item[0].createdbyId,
-        firstName:location.state.record.item[0].firstName,
-        lastName:location.state.record.item[0].lastName,
-        fullName:location.state.record.item[0].fullName,
-        modifiedDate:location.state.record.item[0].modifiedDate,
-        phone:location.state.record.item[0].phone,
-        role:location.state.record.item[0].role,
-        _id:location.state.record.item[0]._id,
+        departmentName: location.state.record.item[0].departmentName,
+        roleDetails: location.state.record.item[0].roleDetails,
+        access: location.state.record.item[0].access,
+        phone: location.state.record.item[0].phone,
+        role: location.state.record.item[0].role,
+        _id: location.state.record.item[0]._id,
+        firstName: location.state.record.item[0].firstName,
+        lastName: location.state.record.item[0].lastName,
+        createdDate: location.state.record.item[0].createdDate,
+        modifiedDate: location.state.record.item[0].modifiedDate,
+        createdBy: location.state.record.item[0].createdBy,
+        modifiedBy: location.state.record.item[0].modifiedBy,
+
     }
 
     // const initialValues = {
@@ -66,7 +69,7 @@ export default function ConfirmPasswordIndex({ item }) {
             .string()
             .email('Enter Valid Email Id')
             .required('Required'),
-       
+
         password: Yup
             .string()
             .min(6, "Minimum 6 characters exist")
@@ -88,27 +91,27 @@ export default function ConfirmPasswordIndex({ item }) {
             .then((res) => {
                 console.log(res.data, "UpsertUser response")
                 setNotify({
-                    isOpen:true,
-                    message:res.data.content,
-                    type:res.data.status,          
-                  })
-                  setTimeout(()=>{
-                    // navigate('/');
-                  },2000)
+                    isOpen: true,
+                    message: res.data,
+                    type: "success",
+                })
+                setTimeout(() => {
+                    navigate('/');
+                }, 2000)
             })
-            .catch((error)=>{
-                console.log(error,"error")
+            .catch((error) => {
+                console.log(error, "error")
                 setNotify({
-                    isOpen:true,
-                    message:error.message,
-                    type:'error'
-                  })
+                    isOpen: true,
+                    message: error.message,
+                    type: 'error'
+                })
             })
     }
     return (
         <Grid>
             <Paper elevation={10} style={paperStyle}>
-            <ToastNotification notify={notify} setNotify={setNotify}/>
+                <ToastNotification notify={notify} setNotify={setNotify} />
                 <Grid align='center'>
                     <Avatar style={avatarStyle}>
                         <img src={Cdlogo} alt="cdlogo" style={avatarStyle} />
@@ -164,7 +167,7 @@ export default function ConfirmPasswordIndex({ item }) {
                     </Formik>
                 </Grid>
                 <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
-                        <Typography component={Link} to='/'>Login Page</Typography>
+                    <Typography component={Link} to='/'>Login Page</Typography>
                 </div>
             </Paper>
         </Grid>

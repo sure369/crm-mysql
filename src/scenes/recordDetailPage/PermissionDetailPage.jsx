@@ -5,7 +5,7 @@ import * as Yup from "yup";
 import {
     Grid, Button, DialogActions,
     Autocomplete, Accordion, AccordionSummary, AccordionDetails
-    , Typography,MenuItem,TextField
+    , Typography, MenuItem, TextField
 } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useParams, useNavigate } from "react-router-dom"
@@ -17,9 +17,9 @@ import { RolesDepartment } from '../../data/pickLists';
 import { RequestServer } from '../api/HttpReq';
 import axios from 'axios';
 
-const url = `${process.env.REACT_APP_SERVER_URL}/upsertPermission`;
+const upsertUrl = `${process.env.REACT_APP_SERVER_URL}/upsertPermission`;
 const urlgetUsersByName = `${process.env.REACT_APP_SERVER_URL}/getUsers`;
-const urlgetRolesByDept =`${process.env.REACT_APP_SERVER_URL}/roles`
+const urlgetRolesByDept = `${process.env.REACT_APP_SERVER_URL}/roles`
 
 const PermissiionSetForm = ({ item }) => {
 
@@ -51,44 +51,71 @@ const PermissiionSetForm = ({ item }) => {
     const formSubmission = (values) => {
 
         console.log('form submission value', values);
-        // let dateSeconds = new Date().getTime();
-        // let createDateSec = new Date(values.createdDate).getTime()
+        let dateSeconds = new Date().getTime();
+        let createDateSec = new Date(values.createdDate).getTime()
+        values.roleDetails = JSON.stringify(values.roleDetails)
+        values.permissionSets = JSON.stringify(values.permissionSets)
+        if (showNew) {
+            values.modifiedDate = dateSeconds;
+            values.createdDate = dateSeconds;
+            values.createdBy = (sessionStorage.getItem("loggedInUser"));
+            values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
+            delete values.userDetails;
 
+            // values.userDetails=JSON.stringify(values.userDetails)
 
-        // if (showNew) {
-        //     values.modifiedDate = dateSeconds;
-        //     values.createdDate = dateSeconds;
-        //     values.createdBy = (sessionStorage.getItem("loggedInUser"));
-        //     values.modifiedBy = (sessionStorage.getItem("loggedInUser"));    
-        //     values.userDetails=JSON.stringify(values.userDetails)
-        // }
-        // else if (!showNew) {
-        //     values.modifiedDate = dateSeconds;
-        //     values.createdDate = createDateSec;
-        //     values.createdBy = singlePermission.createdBy;
-        //     values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
+        }
+        else if (!showNew) {
+            values.modifiedDate = dateSeconds;
+            values.createdDate = createDateSec;
+            values.createdBy = singlePermission.createdBy;
+            values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
 
-        // }
-        // console.log('after change form submission value', values);
+        }
+        console.log('after change form submission value', values);
 
+        axios.post(upsertUrl, values)
+            .then((res) => {
+                console.log(res, "res")
+                if (res.status === 200) {
+                    setNotify({
+                        isOpen: true,
+                        message: res.data,
+                        type: 'success'
+
+                    })
+                    setTimeout(() => {
+                        navigate(-1);
+                    }, 2000)
+                }
+            })
+            .catch((err) => {
+                console.log(err, "err")
+                setNotify({
+                    isOpen: true,
+                    message: err.message,
+                    type: 'error'
+                })
+            })
     }
 
     const handleFormClose = () => {
         navigate(-1)
     }
 
-    const FetchRolesbyName=(dpt,inputValue)=>{
-        console.log(dpt,"dpt")
-        console.log(inputValue,'inputValue')
-        let payloadObj ={departmentName:dpt,role:inputValue}
+    const FetchRolesbyName = (dpt, inputValue) => {
+        console.log(dpt, "dpt")
+        console.log(inputValue, 'inputValue')
+        let payloadObj = { departmentName: dpt, role: inputValue }
 
-        axios.post(urlgetRolesByDept,payloadObj)
-        .then((res)=>{
-            console.log(res,"res")
-        })
-        .catch((error)=>{
-            console.log(error,"error")
-        })
+        axios.post(urlgetRolesByDept, payloadObj)
+            .then((res) => {
+                console.log(res, "res")
+                setRoleRecordsByDept(res.data)
+            })
+            .catch((error) => {
+                console.log(error, "error")
+            })
 
         // let payloadObj ={department:dpt,value:inputValue}
         // RequestServer("post",urlgetRolesByDept,null,payloadObj)
@@ -102,7 +129,7 @@ const PermissiionSetForm = ({ item }) => {
         // .catch((error)=>{
         //     console.log(error.message,"error")
         // })
-        
+
     }
 
     return (
@@ -141,16 +168,20 @@ const PermissiionSetForm = ({ item }) => {
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="department">Department</label>
-                                            <Field  name="department" 
-                                                    component={CustomizedSelectForFormik} 
-                                                    className="form-customSelect" 
-                                                    onChange ={(e)=>{
-                                                        console.log(e.target.value,"event")
-                                                        let dpt=e.target.value
-                                                        FetchRolesbyName(dpt,null)
-                                                    }}        
+                                            <Field name="department"
+                                                component={CustomizedSelectForFormik}
+                                                className="form-customSelect"
+                                                onChange={(e) => {
+                                                    console.log(e.target.value, "event")
+                                                    let dpt = e.target.value
+                                                    if (dpt.length > 0) {
+                                                        FetchRolesbyName(dpt, null)
+                                                    } else {
+                                                        setRoleRecordsByDept([])
+                                                    }
+                                                }}
                                             >
-                                            <MenuItem value=""><em>None</em></MenuItem>
+                                                <MenuItem value=""><em>None</em></MenuItem>
                                                 {
                                                     RolesDepartment.map((i) => {
                                                         return <MenuItem value={i.value}>{i.text}</MenuItem>
@@ -160,31 +191,33 @@ const PermissiionSetForm = ({ item }) => {
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="roles">Roles</label>
-                                          <Autocomplete
-                                            name="roleDetails" 
-                                            options={roleRecordsByDept}
-                                            value={values.roleDetails}
-                                            getOptionLabel={option=>option.roleName ||""}
-                                            onChange={(e,value)=>{
-                                                if(!value){
-                                                    console.log("!value",value)
-                                                }else{
-                                                    console.log("value",value)
-                                                }
-                                            }}
-                                            onInputChange={(e,newInputValue)=>{    
-                                                if(values.department){
-                                                    console.log(values.department,"if")
-                                                    FetchRolesbyName(values.department,newInputValue)
-                                                } 
-                                                else{
-                                                    console.log(values.department,"else ")
-                                                }                                  
-                                            }}
-                                            renderInput={params=>(
-                                                <Field component ={TextField} {...params} name="roleDetails" />
-                                            )}
-                                          />
+                                            <Autocomplete
+                                                name="roleDetails"
+                                                options={roleRecordsByDept}
+                                                value={values.roleDetails}
+                                                getOptionLabel={option => option.roleName || ""}
+                                                onChange={(e, value) => {
+                                                    if (!value) {
+                                                        console.log("!value", value)
+                                                        setFieldValue("roleDetails", "")
+                                                    } else {
+                                                        setFieldValue("roleDetails", value)
+                                                        console.log("value", value)
+                                                    }
+                                                }}
+                                                onInputChange={(e, newInputValue) => {
+                                                    if (values.department) {
+                                                        console.log(values.department, "if")
+                                                        FetchRolesbyName(values.department, newInputValue)
+                                                    }
+                                                    else {
+                                                        console.log(values.department, "else ")
+                                                    }
+                                                }}
+                                                renderInput={params => (
+                                                    <Field component={TextField} {...params} name="roleDetails" />
+                                                )}
+                                            />
                                         </Grid>
                                         <Grid item xs={12} md={12}>
                                             <Accordion>
@@ -206,16 +239,6 @@ const PermissiionSetForm = ({ item }) => {
                                                                                 <Grid item xs={8} md={8}>
                                                                                     <Grid container spacing={2} alignItems="center">
                                                                                         <Grid item xs={3} md={3}>
-                                                                                            <label htmlFor={`permissionSets.${index}.permissions.insert`} className="checkbox-label">
-                                                                                                Insert
-                                                                                            </label>
-                                                                                            <Field
-                                                                                                type="checkbox"
-                                                                                                id={`permissionSets.${index}.permissions.insert`}
-                                                                                                name={`permissionSets.${index}.permissions.insert`}
-                                                                                            />
-                                                                                        </Grid>
-                                                                                        <Grid item xs={3} md={3}>
                                                                                             <label htmlFor={`permissionSets.${index}.permissions.read`} className="checkbox-label">
                                                                                                 Read
                                                                                             </label>
@@ -223,8 +246,39 @@ const PermissiionSetForm = ({ item }) => {
                                                                                                 type="checkbox"
                                                                                                 id={`permissionSets.${index}.permissions.read`}
                                                                                                 name={`permissionSets.${index}.permissions.read`}
+                                                                                                onChange={(e) => {
+                                                                                                    if (e.target.checked) {
+                                                                                                        console.log(e.target.checked, "if")
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.read`, e.target.value)
+                                                                                                    } else {
+                                                                                                        console.log(e.target.checked, "else")
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.read`, !e.target.value)
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.create`, !e.target.value)
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.edit`, !e.target.value)
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.delete`, !e.target.value)
+                                                                                                    }
+                                                                                                }}
                                                                                             />
                                                                                         </Grid>
+                                                                                        <Grid item xs={3} md={3}>
+                                                                                            <label htmlFor={`permissionSets.${index}.permissions.create`} className="checkbox-label">
+                                                                                                Create
+                                                                                            </label>
+                                                                                            <Field
+                                                                                                type="checkbox"
+                                                                                                id={`permissionSets.${index}.permissions.create`}
+                                                                                                name={`permissionSets.${index}.permissions.create`}
+                                                                                                onChange={(e) => {
+                                                                                                    if (e.target.checked) {
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.create`, e.target.checked);
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.read`, e.target.checked);
+                                                                                                    } else {
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.create`, e.target.checked);
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
+                                                                                        </Grid>
+
                                                                                         <Grid item xs={3} md={3}>
                                                                                             <label htmlFor={`permissionSets.${index}.permissions.edit`} className="checkbox-label">
                                                                                                 Edit
@@ -234,9 +288,13 @@ const PermissiionSetForm = ({ item }) => {
                                                                                                 id={`permissionSets.${index}.permissions.edit`}
                                                                                                 name={`permissionSets.${index}.permissions.edit`}
                                                                                                 onChange={(e) => {
-                                                                                                    // setFieldValue(`permissionSets.${index}.permissions.insert`,e.target.checked);
-                                                                                                    setFieldValue(`permissionSets.${index}.permissions.read`, e.target.checked);
-                                                                                                    setFieldValue(`permissionSets.${index}.permissions.edit`, e.target.checked);
+                                                                                                    if (e.target.checked) {
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.read`, e.target.checked);
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.edit`, e.target.checked);
+                                                                                                    } else {
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.edit`, e.target.checked);
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.delete`, e.target.checked)
+                                                                                                    }
                                                                                                 }}
                                                                                             />
                                                                                         </Grid>
@@ -249,11 +307,15 @@ const PermissiionSetForm = ({ item }) => {
                                                                                                 id={`permissionSets.${index}.permissions.delete`}
                                                                                                 name={`permissionSets.${index}.permissions.delete`}
                                                                                                 onChange={(e) => {
-                                                                                                    setFieldValue(`permissionSets.${index}.permissions.insert`, e.target.checked);
-                                                                                                    setFieldValue(`permissionSets.${index}.permissions.read`, e.target.checked);
-                                                                                                    setFieldValue(`permissionSets.${index}.permissions.edit`, e.target.checked);
-                                                                                                    setFieldValue(`permissionSets.${index}.permissions.delete`, e.target.checked);
-
+                                                                                                    console.log(e.target.checked, "checkbox")
+                                                                                                    if (e.target.checked) {
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.read`, e.target.checked);
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.edit`, e.target.checked);
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.delete`, e.target.checked);
+                                                                                                    }
+                                                                                                    else {
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.delete`, e.target.checked);
+                                                                                                    }
                                                                                                 }}
                                                                                             />
                                                                                         </Grid>

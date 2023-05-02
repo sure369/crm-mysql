@@ -369,7 +369,6 @@ export const TaskSavedValues = (singleTask) => {
 export const UserInitialValues = {
   firstName: "",
   lastName: "",
-  fullName: "",
   userName: "",
   email: "",
   phone: "",
@@ -466,6 +465,7 @@ export const PermissionSetInitialValues = {
         edit: false,
         delete: false,
       },
+      permissionLevel:0
     },
     {
       object: "Contact",
@@ -475,6 +475,7 @@ export const PermissionSetInitialValues = {
         edit: false,
         delete: false,
       },
+      permissionLevel:0
     },
     {
       object: "Opportunity",
@@ -483,7 +484,8 @@ export const PermissionSetInitialValues = {
         create: false,
         edit: false,
         delete: false,
-      },
+      },      
+      permissionLevel:0
     },
     {
       object: "Lead",
@@ -493,6 +495,7 @@ export const PermissionSetInitialValues = {
         edit: false,
         delete: false,
       },
+      permissionLevel:0
     },
     {
       object: "Inventory",
@@ -502,6 +505,7 @@ export const PermissionSetInitialValues = {
         edit: false,
         delete: false,
       },
+      permissionLevel:0
     },
     {
       object: "Task",
@@ -511,6 +515,7 @@ export const PermissionSetInitialValues = {
         edit: false,
         delete: false,
       },
+      permissionLevel:0
     },
   ],
 
@@ -522,15 +527,18 @@ export const PermissionSetInitialValues = {
 
 export const PermissionSavedValues = (singlePermission) => {
   return {
-    
     permissionName: singlePermission?.permissionName ?? "",
-    insert: singlePermission?.insert ?? "",
-    read: singlePermission?.read ?? "",
-    edit: singlePermission?.edit ?? "",
-    delete: singlePermission?.delete ?? "",
+    department:singlePermission?.department??"",
     createdDate: new Date(singlePermission?.createdDate).toLocaleString(),
     modifiedDate: new Date(singlePermission?.modifiedDate).toLocaleString(),
     _id: singlePermission?._id ?? "",
+    roleDetails: (() => {
+      try {
+        return JSON.parse(singlePermission?.roleDetails);
+      } catch {
+        return "";
+      }
+    })(),
     userDetails: (() => {
       try {
         return JSON.parse(singlePermission?.userDetails);
@@ -553,13 +561,5 @@ export const PermissionSavedValues = (singlePermission) => {
       }
     })(),
   };
-//   return permissionSets.map((set) => ({
-//     object: set.object,
-//     permissions: {
-//       read: set.permissions.read,
-//       insert: set.permissions.insert,
-//       edit: set.permissions.edit,
-//       delete: set.permissions.delete,
-//     },
-//   }));
+  const permissionSets = singlePermission.permissionSets;
 };

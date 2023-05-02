@@ -24,6 +24,8 @@ import FileUploadUpdated from '../fileUpload/FileUpdated';
 import RoleDetailPage from '../recordDetailPage/RoleDetailPage';
 import RoleIndex from '../Roles';
 import PermissionDetailPage from '../recordDetailPage/PermissionDetailPage';
+import PermissionSets from '../permissionSets';
+
 
 function LoginLayoutIndex() {
   return (
@@ -39,6 +41,8 @@ function LoginLayoutIndex() {
         <Route path="/task" element={<ResponsiveTasks />} />
         <Route path="/users" element={<ResponsiveUsers />} />
         <Route path="/roles" element={<RoleIndex/>}/>
+        <Route path="/permissions" element={<PermissionSets/>}/>
+
 
         <Route path="/new-contacts" element={<ContactDetailPage />} />
         <Route path="/new-users" element={<UserDetailPage />} />
@@ -58,6 +62,7 @@ function LoginLayoutIndex() {
         <Route path="/leadDetailPage/:id" element={<FlexLeads />} />
         <Route path="/opportunityDetailPage/:id" element={<FlexOpportunities />} />
         <Route path="/roleDetailPage/:id" element={<RoleDetailPage/>}/>
+        <Route path="/permissionDetailPage/:id" element={<PermissionDetailPage/>}/>
 
         <Route path="/file" element={<FileUploadUpdated />} />
 

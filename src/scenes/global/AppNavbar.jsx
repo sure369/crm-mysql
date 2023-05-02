@@ -20,7 +20,7 @@ const pages = [
   { title: 'Users', toNav: '/users' },
   { title: 'Roles', toNav: '/roles' },
   { title: 'File Upload', toNav: '/file' },
-  {title:'Permission',toNav:'/permission'}
+  {title:'Permission',toNav:'/permissions'}
 
   // {title:'Test',toNav:'/test'},
   // { title: 'Junction Object', toNav: '/oppInventory' },

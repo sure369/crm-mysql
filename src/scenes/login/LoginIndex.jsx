@@ -60,8 +60,10 @@ export default function LoginIndex({onAuthentication}) {
                 let obj ={
                     userId:res.data.userDetails[0]._id,
                     userName:res.data.userDetails[0].userName,
-                    userFullName:res.data.userDetails[0].fullName,
-                    // userRole:res.data.userDetails.role
+                    userFullName:res.data.userDetails[0].firstName +' '+ res.data.userDetails[0].lastName,
+                    userRole:res.data.userDetails[0].roleDetails,
+                    userDepartment:res.data.userDetails[0].departmentName
+
                 }
                 sessionStorage.setItem('token',res.data.content)
                 sessionStorage.setItem('loggedInUser',JSON.stringify(obj))

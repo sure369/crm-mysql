@@ -3,14 +3,14 @@ import axios from "axios";
 export const RequestServer = (method,endpoint,headers,payload)=>{
 
         let token = sessionStorage.getItem('token');
-
-        console.log(method,"method")
-        console.log(endpoint,"endpoint")
-        console.log(headers,"headers")
-        console.log(payload,"payload")
+        let loggedInUser =JSON.parse(sessionStorage.getItem('loggedInUser'))
+        let userRole=JSON.parse(loggedInUser.userRole).roleName;
+        let userDepartment=loggedInUser.userDepartment;
 
         headers = headers||{};
         headers.token = token;
+        headers.departmentName=userDepartment;
+        headers.role=userRole;
         headers['Content-Type'] = 'application/json';
         
         return  axios({
