@@ -178,50 +178,22 @@ const PermissionSets = () => {
       flex: 1,
     },
     {
-      field: "propertyName",
-      headerName: "Inventory Name",
+      field: "department",
+      headerName: "Department Name",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+    },
+    {
+      field: "roleDetails",
+      headerName: "Role",
       headerAlign: "center",
       align: "center",
       flex: 1,
       renderCell: (params) => {
-        if (params.row.InventoryName) {
-          return (
-            <div className="rowitem">
-              {params.row.InventoryName}
-            </div>
-          );
-        } else {
-          return <div className="rowitem">{null}</div>;
-        }
+        let formatValue=JSON.parse(params.value)
+        return <>{formatValue.roleName}</>;
       },
-    },
-    {
-      field: "type",
-      headerName: "Type",
-      headerAlign: "center",
-      align: "center",
-      flex: 1,
-    },
-    {
-      field: "amount",
-      headerName: "Opportunity Amount",
-      headerAlign: "center",
-      align: "center",
-      flex: 1,
-      renderCell: (params) => {
-        const formatCurrency = new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-        });
-        return <>{formatCurrency.format(params.row.amount)}</>;
-      },
-    },
-    {
-      field: "stage",
-      headerName: "Stage",
-      headerAlign: "center",
-      align: "center",
-      flex: 1,
     },
     {
       field: "actions",

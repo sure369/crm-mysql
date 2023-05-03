@@ -42,6 +42,9 @@ const PermissiionSetForm = ({ item }) => {
     const initialValues = PermissionSetInitialValues
     const savedValues = PermissionSavedValues(singlePermission)
 
+
+    console.log(savedValues,"savedValues")
+
     const validationSchema = Yup.object({
         permissionName: Yup
             .string()
@@ -51,6 +54,24 @@ const PermissiionSetForm = ({ item }) => {
     const formSubmission = (values) => {
 
         console.log('form submission value', values);
+        // console.log(values.permissionSets, "values.permissionSets")
+
+        const convertValue = [...values.permissionSets]
+        convertValue.forEach(obj => {
+            let permissionLevel = 
+                (obj.permissions.read ? 1 : 0) +
+                (obj.permissions.create ? 2 : 0) +
+                (obj.permissions.edit ? 3 : 0) +
+                (obj.permissions.delete ? 4 : 0);
+
+            obj.permissionLevel = permissionLevel;
+
+        })
+
+        values.permissionSets = convertValue;
+
+        // console.log(convertValue, "convertValue")
+
         let dateSeconds = new Date().getTime();
         let createDateSec = new Date(values.createdDate).getTime()
         values.roleDetails = JSON.stringify(values.roleDetails)
@@ -62,32 +83,29 @@ const PermissiionSetForm = ({ item }) => {
             values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
             delete values.userDetails;
 
-            // values.userDetails=JSON.stringify(values.userDetails)
-
         }
         else if (!showNew) {
             values.modifiedDate = dateSeconds;
             values.createdDate = createDateSec;
             values.createdBy = singlePermission.createdBy;
             values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
-
+            delete values.userDetails;
         }
         console.log('after change form submission value', values);
+
 
         axios.post(upsertUrl, values)
             .then((res) => {
                 console.log(res, "res")
-                if (res.status === 200) {
                     setNotify({
                         isOpen: true,
                         message: res.data,
                         type: 'success'
-
                     })
                     setTimeout(() => {
                         navigate(-1);
                     }, 2000)
-                }
+                
             })
             .catch((err) => {
                 console.log(err, "err")

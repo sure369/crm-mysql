@@ -465,7 +465,7 @@ export const PermissionSetInitialValues = {
         edit: false,
         delete: false,
       },
-      permissionLevel:0
+      permissionLevel: 0,
     },
     {
       object: "Contact",
@@ -475,7 +475,7 @@ export const PermissionSetInitialValues = {
         edit: false,
         delete: false,
       },
-      permissionLevel:0
+      permissionLevel: 0,
     },
     {
       object: "Opportunity",
@@ -484,8 +484,8 @@ export const PermissionSetInitialValues = {
         create: false,
         edit: false,
         delete: false,
-      },      
-      permissionLevel:0
+      },
+      permissionLevel: 0,
     },
     {
       object: "Lead",
@@ -495,7 +495,7 @@ export const PermissionSetInitialValues = {
         edit: false,
         delete: false,
       },
-      permissionLevel:0
+      permissionLevel: 0,
     },
     {
       object: "Inventory",
@@ -505,7 +505,7 @@ export const PermissionSetInitialValues = {
         edit: false,
         delete: false,
       },
-      permissionLevel:0
+      permissionLevel: 0,
     },
     {
       object: "Task",
@@ -515,7 +515,7 @@ export const PermissionSetInitialValues = {
         edit: false,
         delete: false,
       },
-      permissionLevel:0
+      permissionLevel: 0,
     },
   ],
 
@@ -528,7 +528,7 @@ export const PermissionSetInitialValues = {
 export const PermissionSavedValues = (singlePermission) => {
   return {
     permissionName: singlePermission?.permissionName ?? "",
-    department:singlePermission?.department??"",
+    department: singlePermission?.department ?? "",
     createdDate: new Date(singlePermission?.createdDate).toLocaleString(),
     modifiedDate: new Date(singlePermission?.modifiedDate).toLocaleString(),
     _id: singlePermission?._id ?? "",
@@ -560,6 +560,12 @@ export const PermissionSavedValues = (singlePermission) => {
         return "";
       }
     })(),
+    permissionSets: (() => {
+      try {
+        return JSON.parse(singlePermission?.permissionSets);
+      } catch {
+        return "";
+      }
+    })(),
   };
-  const permissionSets = singlePermission.permissionSets;
 };

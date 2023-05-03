@@ -45,7 +45,7 @@ const Inventories = () => {
   }, []);
 
   const fetchRecords = () => {
-    RequestServer("post", urlInventory, null, {})
+    RequestServer("post", urlInventory, null, {},'inventories')
       .then((res) => {
         console.log("index page", res)
         if (res.success) {
