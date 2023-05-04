@@ -37,17 +37,9 @@ import ExcelDownload from "../Excel";
 import { RequestServer } from "../api/HttpReq";
 import "../recordDetailPage/Form.css";
 import { LeadMonthPicklist } from "../../data/pickLists";
+import { getPermissions } from "../Auth/getPermission";
+import NoAccess from "../Errors/NoAccess";
 
-const ModalStyle = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "fit-content",
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 20,
-};
 
 const Leads = () => {
   const urlLead = `${process.env.REACT_APP_SERVER_URL}/leads`;
@@ -83,9 +75,12 @@ const Leads = () => {
   const [importModalOpen, setImportModalOpen] = useState(false);
 
   const [filterMonth, setFilterMonth] = useState();
+  const [permissionValues,setPermissionValues]=useState({})
 
   useEffect(() => {
-    fetchRecords();
+    fetchRecords();    
+    const getPermission=getPermissions("Lead")
+    setPermissionValues(getPermission)
   }, []);
 
   const fetchRecords = () => {
@@ -107,24 +102,6 @@ const Leads = () => {
         setFetchError(err.message);
         setFetchLoading(false);
       });
-    // axios.post(urlLead)
-    //   .then(
-    //     (res) => {
-    //       console.log("res Lead records", res);
-    //       if (res.data.length > 0 && (typeof (res.data) !== 'string')) {
-    //         setRecords(res.data);
-    //         setFetchLoading(false)
-    //       }
-    //       else {
-    //         setRecords([]);
-    //         setFetchLoading(false)
-    //       }
-    //     }
-    //   )
-    //   .catch((error) => {
-    //     console.log('res Lead error', error);
-    //     setFetchLoading(false)
-    //   })
   };
   const handleAddRecord = () => {
     navigate("/new-leads", { state: { record: {} } });
@@ -195,28 +172,6 @@ const Leads = () => {
           isOpen: false,
         });
       });
-    // axios.post(urlDelete + row)
-    //   .then((res) => {
-    //     console.log('api delete response', res);
-    //     fetchRecords();
-    //     setNotify({
-    //       isOpen: true,
-    //       message: res.data,
-    //       type: 'success'
-    //     })
-    //   })
-    //   .catch((error) => {
-    //     console.log('api delete error', error);
-    //     setNotify({
-    //       isOpen: true,
-    //       message: error.message,
-    //       type: 'error'
-    //     })
-    //   })
-    // setConfirmDialog({
-    //   ...confirmDialog,
-    //   isOpen: false
-    // })
   };
 
   const handleImportModalOpen = () => {
@@ -314,7 +269,9 @@ const Leads = () => {
       headerAlign: "center",
       align: "center",
       flex: 1,
-    },
+    }]
+    if (permissionValues.delete) {
+      columns.push(
     {
       field: "actions",
       headerName: "Actions",
@@ -340,21 +297,18 @@ const Leads = () => {
             ) : (
               ""
             )}
-          </>
-        );
-      },
-    },
-  ];
+          </>)}})
+    }
 
   return (
     <>
       <ToastNotification notify={notify} setNotify={setNotify} />
-      <DeleteConfirmDialog
-        confirmDialog={confirmDialog}
-        setConfirmDialog={setConfirmDialog}
-      />
+      <DeleteConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />
 
       <Box m="20px">
+        {
+          permissionValues.read ? <>
+        
         <Typography
           variant="h2"
           color={colors.grey[100]}
@@ -378,6 +332,9 @@ const Leads = () => {
           >
             {showDelete ? (
               <>
+              {
+                permissionValues.delete &&
+                <>
                 <Tooltip title="Email">
                   <IconButton>
                     <EmailIcon
@@ -397,8 +354,13 @@ const Leads = () => {
                     />
                   </IconButton>
                 </Tooltip>
+                </>
+              }
               </>
             ) : (
+              <>
+              {
+                permissionValues.read &&
               <>
                 <FormControl sx={{ mr: 1, bottom: "15px" }}>
                   <InputLabel id="demo-simple-select-label">
@@ -424,6 +386,11 @@ const Leads = () => {
                     })}
                   </Select>
                 </FormControl>
+                </>
+                }
+                {
+                  permissionValues.create &&
+                <>
                 <Button
                   variant="contained"
                   color="secondary"
@@ -432,7 +399,6 @@ const Leads = () => {
                 >
                   Import
                 </Button>
-
                 <Button
                   variant="contained"
                   color="info"
@@ -442,6 +408,8 @@ const Leads = () => {
                 </Button>
 
                 <ExcelDownload data={records} filename={`LeadRecords`} />
+              </>
+              }
               </>
             )}
           </div>
@@ -492,41 +460,6 @@ const Leads = () => {
             },
           }}
         >
-          {/* <div className='btn-test'>
-            {
-              showDelete ?
-                <>
-                  <Tooltip title="Email">
-                    <IconButton> <EmailIcon sx={{ color: '#DB4437' }} onClick={handlesendEmail} /> </IconButton>
-                  </Tooltip>
-                  // <Tooltip title="Whatsapp">
-                    // <IconButton> <WhatsAppIcon sx={{ color: '#34A853' }} onClick={handlesendWhatsapp} /> </IconButton>
-                  // </Tooltip> 
-                  <Tooltip title="Delete Selected">
-                    <IconButton> <DeleteIcon sx={{ color: '#FF3333' }} onClick={(e) => onHandleDelete(e, selectedRecordIds)} /> </IconButton>
-                  </Tooltip>
-                </>
-                :
-                <Box display="flex" justifyContent="space-between">
-                  <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                      <Button
-                        variant="contained" color="secondary" onClick={handleImportModalOpen}
-                        sx={{ color: 'white' }}
-                      >
-                        Import
-                      </Button>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Button variant="contained" color="info" onClick={handleAddRecord}>
-                        New
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </Box>
-            }
-          </div> */}
-
           <DataGrid
             rows={filteredRecord}
             columns={columns}
@@ -560,6 +493,9 @@ const Leads = () => {
             onRowClick={(e) => handleOnCellClick(e)}
           />
         </Box>
+        </>
+        : <NoAccess/>
+        }
       </Box>
 
       <Modal
@@ -568,9 +504,9 @@ const Leads = () => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={ModalStyle}>
+        <div className="modal">
           <ModalFileUpload handleModal={handleImportModalClose} />
-        </Box>
+        </div>
       </Modal>
 
       <Modal
@@ -579,13 +515,13 @@ const Leads = () => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={ModalStyle}>
+        <div className="modal">
           <EmailModalPage
             data={selectedRecordDatas}
             handleModal={setEmailModalClose}
             bulkMail={true}
           />
-        </Box>
+        </div>
       </Modal>
 
       <Modal
@@ -594,13 +530,13 @@ const Leads = () => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={ModalStyle}>
+        <div className="modal">
           <WhatAppModalPage
             data={selectedRecordDatas}
             handleModal={setWhatAppModalClose}
             bulkMail={true}
           />
-        </Box>
+        </div>
       </Modal>
     </>
   );

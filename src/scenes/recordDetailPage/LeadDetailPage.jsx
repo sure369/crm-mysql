@@ -14,7 +14,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { DatePicker } from '@mui/x-date-pickers';
 import './Form.css'
 import { LeadInitialValues, LeadSavedValues } from '../formik/InitialValues/formValues';
-
+import { getPermissions } from '../Auth/getPermission';
 
 const url = `${process.env.REACT_APP_SERVER_URL}/UpsertLead`;
 const fetchUsersbyName = `${process.env.REACT_APP_SERVER_URL}/usersbyName`;
@@ -25,10 +25,9 @@ const LeadDetailPage = ({ item }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const [showNew, setshowNew] = useState()
-
     const [usersRecord, setUsersRecord] = useState([])
-    // notification
     const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
+    const [permissionValues,setPermissionValues]=useState({})
 
 
     useEffect(() => {
@@ -36,71 +35,14 @@ const LeadDetailPage = ({ item }) => {
         setsingleLead(location.state.record.item);
         setshowNew(!location.state.record.item)
         // getTasks(location.state.record.item._id)
+        const getPermission=getPermissions("Lead")
+        console.log(getPermission,"getPermission")
+        setPermissionValues(getPermission)
+      
     }, [])
 
     const initialValues =LeadInitialValues
     const savedValues =LeadSavedValues(singleLead)
-
-    // const initialValues = {
-        
-    //     fullName: '',
-    //     companyName:'',
-    //     designation:'',
-    //     phone: '',    
-    //     leadSource: '',
-    //     industry: '',
-    //     leadStatus: '',
-    //     email: '',
-    //     linkedinProfile:'',
-    //     location:'',
-    //     appointmentDate:'',
-    //     demo:'',
-    //     month:'',
-    //     remarks:'',
-    //     primaryPhone:'',
-    //     secondaryPhone:'',
-    //     createdDate: '',
-    //     modifiedDate: '',
-    // }
-
-    // const savedValues = {
-       
-    //     fullName: singleLead?.fullName ?? "",
-    //     companyName:singleLead?.companyName ?? "",
-    //     designation:singleLead?.designation??"",
-    //     phone: singleLead?.phone ?? "",
-    //     leadSource: singleLead?.leadSource ?? "",
-    //     industry: singleLead?.industry ?? "",
-    //     leadStatus: singleLead?.leadStatus ?? "",
-    //     email: singleLead?.email ?? "",      
-    //     linkedinProfile: singleLead?.linkedinProfile ?? "",
-    //     location: singleLead?.location ?? "",
-    //     primaryPhone:singleLead?.primaryPhone ??"",
-    //     secondaryPhone:singleLead?.secondaryPhone??"",
-    //     appointmentDate: new Date(singleLead?.appointmentDate).getUTCFullYear()
-    //     + '-' + ('0' + (new Date(singleLead?.appointmentDate).getUTCMonth() + 1)).slice(-2)
-    //     + '-' + ('0' + (new Date(singleLead?.appointmentDate).getUTCDate())).slice(-2) ||  "",
-    //     demo: singleLead?.demo ?? "",
-    //     month:singleLead?.month ??"",
-    //     remarks: singleLead?.remarks ?? "",
-    //     createdDate: new Date(singleLead?.createdDate).toLocaleString(),
-    //     modifiedDate: new Date(singleLead?.modifiedDate).toLocaleString(),
-    //     _id: singleLead?._id ?? "",
-    //     createdBy: (() => {
-    //         try {
-    //           return JSON.parse(singleLead?.createdBy);
-    //         } catch {
-    //           return "";
-    //         }
-    //       })(),
-    //     modifiedBy: (() => {
-    //         try {
-    //           return JSON.parse(singleLead?.modifiedBy);
-    //         } catch {
-    //           return "";
-    //         }
-    //       })(),
-    // }
 
     const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
@@ -227,14 +169,18 @@ const LeadDetailPage = ({ item }) => {
 
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="fullName">Full Name<span className="text-danger">*</span></label>
-                                            <Field name='fullName' type="text" class="form-input" />
+                                            <Field name='fullName' type="text" class="form-input" 
+                                             disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                             />
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="fullName" />
                                             </div>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="companyName" >Company Name<span className="text-danger">*</span> </label>
-                                            <Field name='companyName' type="text" class="form-input" />
+                                            <Field name='companyName' type="text" class="form-input"
+                                             disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                            />
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="companyName" />
                                             </div>
@@ -242,13 +188,17 @@ const LeadDetailPage = ({ item }) => {
 
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="designation" >Designation</label>
-                                            <Field name='designation' type="text" class="form-input" />
+                                            <Field name='designation' type="text" class="form-input" 
+                                             disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                             />
                                         </Grid>
 
                                         
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="phone">Phone</label>
-                                            <Field name="phone" type="phone" class="form-input" />
+                                            <Field name="phone" type="phone" class="form-input" 
+                                             disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                             />
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="phone" />
                                             </div>
@@ -256,14 +206,18 @@ const LeadDetailPage = ({ item }) => {
 
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="email">Email <span className="text-danger">*</span></label>
-                                            <Field name="email" type="text" class="form-input" />
+                                            <Field name="email" type="text" class="form-input"
+                                             disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                             />
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="email" />
                                             </div>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="leadSource"> Lead Source</label>
-                                            <Field name="leadSource" component={CustomizedSelectForFormik} className="form-customSelect">
+                                            <Field name="leadSource" component={CustomizedSelectForFormik} 
+                                             disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                             >
                                                 <MenuItem value=""><em>None</em></MenuItem>
                                                 {
                                                     LeadSourcePickList.map((i) => {
@@ -274,7 +228,9 @@ const LeadDetailPage = ({ item }) => {
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="industry">Industry</label>
-                                            <Field name="industry" component={CustomizedSelectForFormik} className="form-customSelect">
+                                            <Field name="industry" component={CustomizedSelectForFormik} 
+                                             disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                             >
                                                 <MenuItem value=""><em>None</em></MenuItem>
                                                 {
                                                     IndustryPickList.map((i) => {
@@ -285,7 +241,9 @@ const LeadDetailPage = ({ item }) => {
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="leadStatus"> Lead Status <span className="text-danger">*</span> </label>
-                                            <Field name="leadStatus" component={CustomizedSelectForFormik} className="form-customSelect">
+                                            <Field name="leadStatus" component={CustomizedSelectForFormik} 
+                                             disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                             >
                                                 <MenuItem value=""><em>None</em></MenuItem>
                                                 {
                                                     LeadStatusPicklist.map((i) => {
@@ -305,16 +263,18 @@ const LeadDetailPage = ({ item }) => {
                                              onClick={() => {
                                                 const linkedinProfile = values.linkedinProfile;
                                                 if (linkedinProfile) {
-                                                //   window.location.href = linkedinProfile;
                                                   openInNewTab(linkedinProfile)
                                                 }
                                               }}
+                                              disabled={showNew?!permissionValues.create :!permissionValues.edit}
                                               />
                                         
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="location">Location</label>
-                                            <Field name="location" type="text" class="form-input" />
+                                            <Field name="location" type="text" class="form-input" 
+                                             disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                             />
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="appointmentDate">Appointment Date</label>
@@ -325,6 +285,7 @@ const LeadDetailPage = ({ item }) => {
                                                         onChange={(e) => {
                                                             setFieldValue('appointmentDate', e)
                                                         }}
+                                                        disabled={showNew?!permissionValues.create :!permissionValues.edit}
                                                         renderInput={(params) => <TextField  {...params} style={{width:'100%'}} error={false} />}
                                                     />
 
@@ -333,7 +294,9 @@ const LeadDetailPage = ({ item }) => {
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="demo">Demo</label>
-                                            <Field name="demo" component={CustomizedSelectForFormik} className="form-customSelect">
+                                            <Field name="demo" component={CustomizedSelectForFormik} 
+                                             disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                             >
                                                 <MenuItem value=""><em>None</em></MenuItem>
                                                 {
                                                     LeadsDemoPicklist.map((i) => {
@@ -344,7 +307,9 @@ const LeadDetailPage = ({ item }) => {
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="month">Pipeline Month</label>
-                                            <Field name="month" component={CustomizedSelectForFormik} className="form-customSelect">
+                                            <Field name="month" component={CustomizedSelectForFormik} 
+                                             disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                             >
                                                 <MenuItem value=""><em>None</em></MenuItem>
                                                 {
                                                     LeadMonthPicklist.map((i) => {
@@ -355,21 +320,27 @@ const LeadDetailPage = ({ item }) => {
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="primaryPhone">Primary Phone</label>
-                                            <Field name="primaryPhone" type="text" class="form-input" />
+                                            <Field name="primaryPhone" type="text" class="form-input"
+                                             disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                             />
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="primaryPhone" />
                                             </div>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="secondaryPhone">Secondary Phone</label>
-                                            <Field name="secondaryPhone" type="text" class="form-input" />
+                                            <Field name="secondaryPhone" type="text" class="form-input" 
+                                             disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                             />
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="secondaryPhone" />
                                             </div>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="remarks">Remarks</label>
-                                            <Field name="remarks" as="textarea" rows="6" class="form-input-textarea" style={{width:'100%'}} />
+                                            <Field name="remarks" as="textarea" rows="6" class="form-input-textarea"
+                                             style={{width:'100%'}}  disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                             />
                                         </Grid>
                                         {!showNew && (
                                             <>

@@ -12,6 +12,9 @@ import DeleteConfirmDialog from "../toast/DeleteConfirmDialog";
 import ModalInventoryAccount from "../accounts/ModalAccountInventory";
 import '../recordDetailPage/Form.css'
 import { RequestServer } from "../api/HttpReq";
+import { getPermissions } from "../Auth/getPermission";
+import NoAccess from "../Errors/NoAccess";
+import NoAccessCard from "../Errors/NoAccessCard";
 
 const InventoryRelatedItems = ({ item }) => {
 
@@ -41,12 +44,24 @@ const InventoryRelatedItems = ({ item }) => {
   const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, title: '', subTitle: '' })
 
+  const [permissionValuesAccount,setPermissionValuesAccount]=useState({})
+  const [permissionValuesOpportunity,setPermissionValuesOpportunity]=useState({})
+
+
+
   useEffect(() => {
     console.log('related Inventories', location.state.record.item);
 
     setInventoryRecordId(location.state.record.item._id)
     getOpportunitiesbyInvId(location.state.record.item._id)
     getAccountsbyInvId(location.state.record.item._id)
+
+    const getAccountPermission=getPermissions("Account")
+    setPermissionValuesAccount(getAccountPermission)
+
+    const getOpportunityPermission=getPermissions("Opportunity")
+    setPermissionValuesOpportunity(getOpportunityPermission)
+
   }, [])
 
   const getOpportunitiesbyInvId = (recId) => {
@@ -63,21 +78,6 @@ const InventoryRelatedItems = ({ item }) => {
       .catch((err)=>{
         console.log('error getOpportunitiesbyInvId fetch', err)
       })
-    // axios.post(urlgetOpportunitiesbyInvid + recId)
-    //     .then((res) => {
-    //         console.log('response getOpportunitiesbyInvId fetch', res);
-    //         if (res.data.length > 0) {
-    //             setRealtedOpportunity(res.data);
-    //             setOpportunityNoOfPages(Math.ceil(res.data.length / opportunityItemsPerPage));
-    //             setOpportunityPerPage(1)
-    //         }
-    //         else {
-    //           setRealtedOpportunity([]);
-    //         }
-    //     })
-    //     .catch((error) => {
-    //         console.log('error getTasksbyOppId fetch', error)
-    //     })
   }
 
   const getAccountsbyInvId = (InventoryId) => {
@@ -94,21 +94,6 @@ const InventoryRelatedItems = ({ item }) => {
     .catch((err)=>{
       console.log('error getAccountsbyInvId fetch', err)
     })
-    // axios.post(urlgetAccountsbyInvid + InventoryId)
-    //   .then((res) => {
-    //     console.log('response getAccountsbyInvId fetch', res);
-    //     if (res.data.length > 0) {
-    //       setRelatedAccount(res.data);
-    //       setAccountNoOfPages(Math.ceil(res.data.length / accountItemsPerPage));
-    //       setAccountPerPage(1)
-    //     }
-    //     else {
-    //       setRelatedAccount([]);
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.log('error task fetch', error)
-    //   })
   }
 
 
@@ -170,32 +155,6 @@ const InventoryRelatedItems = ({ item }) => {
         isOpen: false
       })
     })
-
-    // axios.post(opportunityDeleteURL + row._id)
-    //   .then((res) => {
-    //     console.log('api delete response', res);
-    //     setOppMenuOpen(false)
-    //     setNotify({
-    //       isOpen: true,
-    //       message: res.data,
-    //       type: 'success'
-    //     })
-    //     setTimeout(() => {
-    //       getOpportunitiesbyInvId(inventoryRecordId)
-    //     })
-    //   })
-    //   .catch((error) => {
-    //     console.log('api delete error', error);
-    //     setNotify({
-    //       isOpen: true,
-    //       message: error.message,
-    //       type: 'error'
-    //     })
-    //   })
-    // setConfirmDialog({
-    //   ...confirmDialog,
-    //   isOpen: false
-    // })
   };
 
   const handleAccountCardEdit = (row) => {
@@ -203,7 +162,6 @@ const InventoryRelatedItems = ({ item }) => {
     const item = row;
     navigate(`/accountDetailPage/${item._id}`, { state: { record: { item } } })
   };
-
 
 
   const handleReqAccountCardDelete = (e, row) => {
@@ -256,32 +214,6 @@ const InventoryRelatedItems = ({ item }) => {
         isOpen: false
       })
     })
-    // axios.post(accountDeleteURL + row._id)
-    //   .then((res) => {
-    //     console.log('api delete response', res);
-
-    //     setNotify({
-    //       isOpen: true,
-    //       message: res.data,
-    //       type: 'success'
-    //     })
-    //     setAccountMenuOpen(false)
-    //     setTimeout(() => {
-    //       getAccountsbyInvId(inventoryRecordId)
-    //     })
-    //   })
-    //   .catch((error) => {
-    //     console.log('api delete error', error);
-    //     setNotify({
-    //       isOpen: true,
-    //       message: error.message,
-    //       type: 'error'
-    //     })
-    //   })
-    // setConfirmDialog({
-    //   ...confirmDialog,
-    //   isOpen: false
-    // })
   };
 
 
@@ -372,13 +304,17 @@ const InventoryRelatedItems = ({ item }) => {
         </AccordionSummary>
         <AccordionDetails>
           <Typography>
+            {
+              permissionValuesOpportunity.read? <>
+             
             <div style={{ textAlign: "end", marginBottom: "5px" }}>
-              <Button variant="contained" color="info" onClick={() => handleOpportunityModalOpen()} >Add Deal</Button>
-            </div>
-            <Card dense compoent="span" >
-
               {
-
+                permissionValuesOpportunity.create &&              
+                <Button variant="contained" color="info" onClick={() => handleOpportunityModalOpen()} >Add Deal</Button>
+              }
+              </div>
+            <Card dense compoent="span" >
+              {
                 realtedOpportunity.length > 0 ?
                   realtedOpportunity
                     .slice((opportunityPerPage - 1) * opportunityItemsPerPage, opportunityPerPage * opportunityItemsPerPage)
@@ -420,10 +356,17 @@ const InventoryRelatedItems = ({ item }) => {
                                         vertical: 'top',
                                         horizontal: 'left',
                                       }}
-                                    >
+                                    >{
+                                      permissionValuesOpportunity.edit ?
                                       <MenuItem onClick={() => handleOpportunityCardEdit(oppMenuSelectRec)}>Edit</MenuItem>
+                                     :
+                                     <MenuItem onClick={() => handleOpportunityCardEdit(oppMenuSelectRec)}>View</MenuItem>
+                                    }
+                                    {
+                                      permissionValuesOpportunity.delete &&                                    
                                       <MenuItem onClick={(e) => handleReqOpportunityCardDelete(e, oppMenuSelectRec)}>Delete</MenuItem>
-                                    </Menu>
+                                    }
+                                      </Menu>
                                   </IconButton>
                                 </Grid>
                               </Grid>
@@ -452,6 +395,8 @@ const InventoryRelatedItems = ({ item }) => {
                 />
               </Box>
             }
+             </> :<NoAccessCard/>
+            }
           </Typography>
         </AccordionDetails>
       </Accordion>
@@ -466,9 +411,15 @@ const InventoryRelatedItems = ({ item }) => {
         </AccordionSummary>
         <AccordionDetails>
           <Typography>
+            {
+              permissionValuesAccount.read ? <>
+            
             <div style={{ textAlign: "end", marginBottom: "5px" }}>
+              {
+                permissionValuesAccount.create &&             
               <Button variant="contained" color="info" onClick={() => handleAccountModalOpen()} >Add Account</Button>
-            </div>
+            }
+              </div>
             <Card dense compoent="span" >
 
               {
@@ -504,9 +455,17 @@ const InventoryRelatedItems = ({ item }) => {
                                         horizontal: 'left',
                                       }}
                                     >
-                                      <MenuItem onClick={() => handleAccountCardEdit(accountMenuSelectRec)}>Edit</MenuItem>
+                                      {
+                                        permissionValuesAccount.edit ?
+                                        <MenuItem onClick={() => handleAccountCardEdit(accountMenuSelectRec)}>Edit</MenuItem>
+                                     :
+                                     <MenuItem onClick={() => handleAccountCardEdit(accountMenuSelectRec)}>View</MenuItem>                                     
+                                      }
+                                      {
+                                        permissionValuesAccount.delete &&                                     
                                       <MenuItem onClick={(e) => handleReqAccountCardDelete(e, accountMenuSelectRec)}>Delete</MenuItem>
-                                    </Menu>
+                                    }
+                                      </Menu>
                                   </IconButton>
                                 </Grid>
                               </Grid>
@@ -534,6 +493,8 @@ const InventoryRelatedItems = ({ item }) => {
                   showLastButton
                 />
               </Box>
+            }
+              </> :<NoAccessCard/>
             }
           </Typography>
         </AccordionDetails>

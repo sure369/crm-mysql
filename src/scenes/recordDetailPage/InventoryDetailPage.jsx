@@ -10,11 +10,11 @@ import ToastNotification from '../toast/ToastNotification';
 import { InvCitiesPickList,InvCountryPickList, InvStatusPicklist, InvTypePicklist } from '../../data/pickLists';
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 import { InventoryInitialValues, InventorySavedValues } from '../formik/InitialValues/formValues';
+import { getPermissions } from '../Auth/getPermission';
 
 const url = `${process.env.REACT_APP_SERVER_URL}/UpsertInventory`;
 const getCountryPicklists= `${process.env.REACT_APP_SERVER_URL}/getpicklistcountry`;
 const getCityPicklists = `${process.env.REACT_APP_SERVER_URL}/getpickliststate?country=`;
-
 
 const InventoryDetailPage = ({ item }) => {
 
@@ -22,76 +22,28 @@ const InventoryDetailPage = ({ item }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const [showNew, setshowNew] = useState()
-    // notification
     const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
-
     const[countryPicklist,setCountriesPicklist]=useState([])
     const[cityPicklist,setCitiesPicklist]=useState([])
+    const [permissionValues,setPermissionValues]=useState({})
 
     useEffect(() => {
         console.log('passed record', location.state.record.item);
         setsingleInventory(location.state.record.item);
         setshowNew(!location.state.record.item)
         getCountriesPicklist();
+        const getPermission=getPermissions("Inventory")
+        console.log(getPermission,"getPermission")
+        setPermissionValues(getPermission)
+
         if(location.state.record.item){
             console.log('inside')
-            getCitiesPicklist(location.state.record.item.country)
+            getCitiesPicklist(location.state.record.item.country)            
         }
     }, [])
 
     const initialValues = InventoryInitialValues
     const savedValues=InventorySavedValues(singleInventory)
-
-    // const initialValues = {
-    //     projectName: '',
-    //     propertyName: '',
-    //     propertyUnitNumber: '',
-    //     type: '',
-    //     tower: '',
-    //     country: '',
-    //     city: '',
-    //     floor: '',
-    //     status: '',
-    //     totalArea: '',
-    //     createdbyId: '',        
-    //     createdBy: "",
-    //     modifiedBy: "",
-    //     createdDate: '',
-    //     modifiedDate: '',
-    // }
-
-    // const savedValues = {
-        // projectName: singleInventory?.projectName ?? "",
-        // propertyName: singleInventory?.propertyName ?? "",
-        // propertyUnitNumber: singleInventory?.propertyUnitNumber ?? "",
-        // type: singleInventory?.type ?? "",
-        // tower: singleInventory?.tower ?? "",
-        // country: singleInventory?.country ?? "",
-        // city: singleInventory?.city ?? "",
-        // floor: singleInventory?.floor ?? "",
-        // status: singleInventory?.status ?? "",
-        // totalArea: singleInventory?.totalArea ?? "",
-        // createdbyId: singleInventory?.createdbyId ?? "",
-        // createdDate: new Date(singleInventory?.createdDate).toLocaleString(),
-        // modifiedDate: new Date(singleInventory?.modifiedDate).toLocaleString(),
-        // _id: singleInventory?._id ?? "",
-        // createdBy: (() => {
-        //     try {
-        //       return JSON.parse(singleInventory?.createdBy);
-        //     } catch {
-        //       return "";
-        //     }
-        //   })(),
-        // modifiedBy: (() => {
-        //     try {
-        //       return JSON.parse(singleInventory?.modifiedBy);
-        //     } catch {
-        //       return "";
-        //     }
-        //   })(),
-    // }
-
-
 
     const getCountriesPicklist=()=>{
         axios.post(getCountryPicklists)
@@ -213,25 +165,32 @@ const InventoryDetailPage = ({ item }) => {
                                     <Grid container spacing={2}>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="projectName">Project Name <span className="text-danger">*</span> </label>
-                                            <Field name="projectName" type="text" class="form-input" />
+                                            <Field name="projectName" type="text" class="form-input"
+                                                disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                             />
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="projectName" />
                                             </div>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="propertyName">Property Name <span className="text-danger">*</span> </label>
-                                            <Field name="propertyName" type="text" class="form-input" />
+                                            <Field name="propertyName" type="text" class="form-input" 
+                                                disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                            />
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="propertyName" />
                                             </div>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="propertyUnitNumber">Property Unit Number</label>
-                                            <Field name="propertyUnitNumber" type="text" class="form-input" />
+                                            <Field name="propertyUnitNumber" type="text" class="form-input" 
+                                                disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                            />
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="type">Type <span className="text-danger">*</span> </label>
-                                            <Field name="type" component={CustomizedSelectForFormik}>
+                                            <Field name="type" component={CustomizedSelectForFormik}
+                                            disabled={showNew?!permissionValues.create :!permissionValues.edit}>
                                             <MenuItem value=""><em>None</em></MenuItem>
                                              {
                                                 InvTypePicklist.map((i)=>{
@@ -245,7 +204,9 @@ const InventoryDetailPage = ({ item }) => {
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="status">Status <span className="text-danger">*</span> </label>
-                                            <Field name="status" component={CustomizedSelectForFormik}>
+                                            <Field name="status" component={CustomizedSelectForFormik}
+                                            disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                            >
                                             <MenuItem value=""><em>None</em></MenuItem>
                                                {
                                                 InvStatusPicklist.map((i)=>{
@@ -259,7 +220,9 @@ const InventoryDetailPage = ({ item }) => {
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="tower">Tower </label>
-                                            <Field name="tower" type="text" class="form-input" />
+                                            <Field name="tower" type="text" class="form-input" 
+                                                disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                            />
                                         </Grid>
                                          <Grid item xs={6} md={6}>
                                             <label htmlFor="country">Country</label>
@@ -274,6 +237,7 @@ const InventoryDetailPage = ({ item }) => {
                                                    setFieldValue('city','')
                                                    getCitiesPicklist(event.target.value)
                                                 }}
+                                                disabled={showNew?!permissionValues.create :!permissionValues.edit}
                                             >
                                                  <MenuItem value=""><em>None</em></MenuItem>
                                               {
@@ -292,6 +256,7 @@ const InventoryDetailPage = ({ item }) => {
                                                 name="city"
                                                 component={CustomizedSelectForFormik}
                                                 onChange={handleChange}
+                                                disabled={showNew?!permissionValues.create :!permissionValues.edit}
                                             >
                                                  <MenuItem value=""><em>None</em></MenuItem>
                                                  {
@@ -306,11 +271,13 @@ const InventoryDetailPage = ({ item }) => {
 
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="floor">Floor</label>
-                                            <Field name="floor" type="text" class="form-input" />
+                                            <Field name="floor" type="text" class="form-input" 
+                                            disabled={showNew?!permissionValues.create :!permissionValues.edit}/>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="totalArea">Total Area</label>
-                                            <Field name="totalArea" type="text" class="form-input" />
+                                            <Field name="totalArea" type="text" class="form-input"
+                                            disabled={showNew?!permissionValues.create :!permissionValues.edit} />
                                         </Grid>
                                         {!showNew && (
                                             <>

@@ -16,13 +16,13 @@ import ToastNotification from '../toast/ToastNotification';
 import DeleteConfirmDialog from '../toast/DeleteConfirmDialog';
 // import ExcelDownload from '../Excel';
 import { RequestServer } from '../api/HttpReq';
-
+import { getPermissions } from '../Auth/getPermission';
+import NoAccess from '../Errors/NoAccess';
 
 const Inventories = () => {
 
   const urlDelete = `${process.env.REACT_APP_SERVER_URL}/deleteInventory?code=`;
   const urlInventory = `${process.env.REACT_APP_SERVER_URL}/inventories`;
-  const urlPermission =`${process.env.REACT_APP_SERVER_URL}/sendRolePermission`
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -38,10 +38,13 @@ const Inventories = () => {
   const [showDelete, setShowDelete] = useState(false)
   const [selectedRecordIds, setSelectedRecordIds] = useState()
   const [selectedRecordDatas, setSelectedRecordDatas] = useState()
+  const [permissionValues,setPermissionValues]=useState({})
 
   useEffect(() => {
     fetchRecords();
-    fetchPermission();
+    const getPermission=getPermissions("Inventory")
+    setPermissionValues(getPermission)
+
   }, []);
 
   const fetchRecords = () => {
@@ -63,29 +66,6 @@ const Inventories = () => {
         setFetchError(err.message)
         setFetchLoading(false)
       })
-  }
-  const fetchPermission=()=>{
-    RequestServer("post", urlPermission, null, {})
-    .then((res) => {
-      console.log("urlPermission INDEX page", res)
-      if (res.success) {
-        console.log(res.data)
-        // setRecords(res.data);
-        // setFetchLoading(false)
-        // setFetchError(null)
-      }
-      else {
-        
-        console.log(res.error.message)
-        // setRecords([]);
-        // setFetchLoading(false)
-        // setFetchError(res.error.message)
-      }
-    })
-    .catch((err) => {
-      console.log(err.message)
-      // setFetchLoading(false)
-    })
   }
 
   const handleAddRecord = () => {
@@ -161,31 +141,6 @@ const Inventories = () => {
           isOpen: false
         })
       })
-     
-
-    // axios.post(urlDelete + row)
-    //   .then((res) => {
-    //     console.log('api delete response', res);
-    //     fetchRecords();
-    //     setNotify({
-    //       isOpen: true,
-    //       message: res.data,
-    //       type: 'success'
-    //     })
-    //   })
-    //   .catch((error) => {
-    //     console.log('api delete error', error);
-    //     setNotify({
-    //       isOpen: true,
-    //       message: error.message,
-    //       type: 'error'
-    //     })
-    //   })
-    //   setConfirmDialog({
-    //     ...confirmDialog,
-    //     isOpen: false
-    //   })
-
   };
 
   function CustomPagination() {
@@ -230,29 +185,29 @@ const Inventories = () => {
               (params.row.status === 'Processed') ? 'yellow' : ''
         return statusClassName;
       }
-    },
-    {
-      field: 'actions', headerName: 'Actions',
-      headerAlign: 'center', align: 'center', flex: 1, width: 400,
-      renderCell: (params) => {
-        return (
-          <>
-            {
-              !showDelete ? <>
-                {/* <IconButton onClick={(e) => handleOnCellClick(e, params.row)} style={{ padding: '20px', color: '#0080FF' }}>
-              <EditIcon  />
-            </IconButton> */}
-                <IconButton onClick={(e) => onHandleDelete(e, params.row)} style={{ padding: '20px', color: '#FF3333' }}>
-                  <DeleteIcon />
-                </IconButton>
-              </>
-                : ''
-            }
-          </>
-        );
-      }
+    }]
+
+    if(permissionValues.delete){
+      columns.push({
+        field: 'actions', headerName: 'Actions',
+        headerAlign: 'center', align: 'center', flex: 1, width: 400,
+        renderCell: (params) => {
+          return (
+            <>
+              {
+                !showDelete ? <>
+                  {/* <IconButton onClick={(e) => handleOnCellClick(e, params.row)} style={{ padding: '20px', color: '#0080FF' }}>
+                <EditIcon  />
+              </IconButton> */}
+                  <IconButton onClick={(e) => onHandleDelete(e, params.row)} style={{ padding: '20px', color: '#FF3333' }}>
+                    <DeleteIcon />
+                  </IconButton>
+                </>
+                  : ''
+              }
+            </>
+          )}})
     }
-  ];
 
 
 
@@ -263,56 +218,60 @@ const Inventories = () => {
 
 
       <Box m="20px">
+      {
+            permissionValues.read ?
+            <>
+              <Typography
+                variant="h2"
+                color={colors.grey[100]}
+                fontWeight="bold"
+                sx={{ m: "0 0 5px 0" }}
+              >
+                Inventories
+              </Typography>
+              <Box display="flex" justifyContent="space-between">
+                <Typography variant="h5" color={colors.greenAccent[400]}>
+                  List Of Inventories
+                </Typography>
 
-        <Typography
-          variant="h2"
-          color={colors.grey[100]}
-          fontWeight="bold"
-          sx={{ m: "0 0 5px 0" }}
-        >
-          Inventories
-        </Typography>
-        <Box display="flex" justifyContent="space-between">
-          <Typography variant="h5" color={colors.greenAccent[400]}>
-            List Of Inventories
-          </Typography>
-
-          <div
-            style={{
-              display: "flex",
-              width: "250px",
-              justifyContent: "space-evenly",
-              height: '30px',
-            }}
-          >
-
-            {showDelete ? (
-              <>
-                <Tooltip title="Delete Selected">
-                  <IconButton>
-                    <DeleteIcon
-                      sx={{ color: "#FF3333" }}
-                      onClick={(e) => onHandleDelete(e, selectedRecordIds)}
-                    />
-                  </IconButton>
-                </Tooltip>
-              </>
-            ) : (
-              <>
-
-
-                <Button variant="contained" color="info" onClick={handleAddRecord}>
-                  New
-                </Button>
-
-                {/* <ExcelDownload data={records} filename={`AccountRecords`} /> */}
-
-
-              </>
-            )}
-          </div>
-
-        </Box>
+                <div
+                  style={{
+                    display: "flex",
+                    width: "250px",
+                    justifyContent: "space-evenly",
+                    height: '30px',
+                  }}
+                >
+                  {showDelete ? (
+                    <>
+                      {
+                        permissionValues.delete && <>
+                          <Tooltip title="Delete Selected">
+                            <IconButton>
+                              <DeleteIcon
+                                sx={{ color: "#FF3333" }}
+                                onClick={(e) => onHandleDelete(e, selectedRecordIds)}
+                              />
+                            </IconButton>
+                          </Tooltip>
+                        </>
+                      }
+                    </>
+                  ) : (
+                    <>
+                      {
+                        permissionValues.create &&
+                        <>
+                          <Button variant="contained" color="info" onClick={handleAddRecord}>
+                            New
+                          </Button>
+                          {/* <ExcelDownload data={records} filename={`AccountRecords`} /> */}
+                        </>
+                      }
+                    </>
+                  )}
+                </div>
+              </Box>
         <Box
           m="15px 0 0 0"
           height="380px"
@@ -380,23 +339,6 @@ const Inventories = () => {
             },
           }}
         >
-
-          {/* <div className='btn-test'>
-            {
-              showDelete ? 
-              <>
-              <Tooltip title="Delete Selected">
-                  <IconButton> <DeleteIcon sx={{ color: '#FF3333' }} onClick={(e) => onHandleDelete(e,selectedRecordIds)} /> </IconButton>
-              </Tooltip>
-              </>
-              :
-              <Button variant="contained" color="info" onClick={handleAddRecord}>
-                New
-              </Button>
-            }
-            
-          </div> */}
-
           <DataGrid
             rows={records}
             columns={columns}
@@ -430,6 +372,10 @@ const Inventories = () => {
 
           />
         </Box>
+        </>
+  :
+  <NoAccess/>
+          }
       </Box>
 
     </>

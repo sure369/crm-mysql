@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Card, CardContent, Box, Button, Typography, Modal
-  , IconButton, Grid, Accordion, AccordionSummary, AccordionDetails, 
+  , IconButton, Grid, Accordion, AccordionSummary, AccordionDetails,
   Pagination, Menu, MenuItem
 } from "@mui/material";
 import ModalOppTask from "../tasks/ModalOppTask";
@@ -17,10 +17,13 @@ import ToastNotification from "../toast/ToastNotification";
 import DeleteConfirmDialog from "../toast/DeleteConfirmDialog";
 import '../recordDetailPage/Form.css'
 import { RequestServer } from "../api/HttpReq";
+import { getPermissions } from "../Auth/getPermission";
+import NoAccess from "../Errors/NoAccess";
+import NoAccessCard from "../Errors/NoAccessCard";
 
 
 const OpportunityRelatedItems = ({ item }) => {
-  
+
   const taskDeleteURL = `${process.env.REACT_APP_SERVER_URL}/deleteTask?code=`;
   const urlTaskbyOppId = `${process.env.REACT_APP_SERVER_URL}/getTaskbyOpportunityId?searchId=`;
   const navigate = useNavigate();
@@ -36,42 +39,33 @@ const OpportunityRelatedItems = ({ item }) => {
   const [taskPerPage, setTaskPerPage] = useState(1);
   const [taskNoOfPages, setTaskNoOfPages] = useState(0);
 
+  const [permissionValuesTask, setPermissionValuesTask] = useState({})
+
   useEffect(() => {
     console.log('inside useEffect', location.state.record.item);
     setOpportunityRecordId(location.state.record.item._id)
     getTasksbyOppId(location.state.record.item._id)
+
+    const getTaskPermission = getPermissions("Task")
+    setPermissionValuesTask(getTaskPermission)
+
   }, [])
 
   const getTasksbyOppId = (recId) => {
-    
-    RequestServer("post",urlTaskbyOppId + recId,null,{})
-    .then((res)=>{
-      if(res.success){
-        setRelatedTask(res.data);
-        setTaskNoOfPages(Math.ceil(res.data.length / taskItemsPerPage));
-        setTaskPerPage(1)
-      }else{
-        setRelatedTask([])
-      }
-    })
-    .catch((err)=>{
-      console.log('error task fetch', err)
-    })
-    // axios.post(urlTask + recId)
-    //   .then((res) => {
-    //     console.log('response getTasksbyOppId fetch', res);
-    //     if (res.data.length > 0) {
-    //       setRelatedTask(res.data);
-    //       setTaskNoOfPages(Math.ceil(res.data.length / taskItemsPerPage));
-    //       setTaskPerPage(1)
-    //     }
-    //     else {
-    //       setRelatedTask([]);
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.log('error getTasksbyOppId fetch', error)
-    //   })
+
+    RequestServer("post", urlTaskbyOppId + recId, null, {})
+      .then((res) => {
+        if (res.success) {
+          setRelatedTask(res.data);
+          setTaskNoOfPages(Math.ceil(res.data.length / taskItemsPerPage));
+          setTaskPerPage(1)
+        } else {
+          setRelatedTask([])
+        }
+      })
+      .catch((err) => {
+        console.log('error task fetch', err)
+      })
 
   }
 
@@ -87,95 +81,68 @@ const OpportunityRelatedItems = ({ item }) => {
   const handleTaskCardEdit = (row) => {
     console.log('selected record', row);
     const item = row;
-   navigate(`/taskDetailPage/${item._id}`, { state: { record: { item } } })
+    navigate(`/taskDetailPage/${item._id}`, { state: { record: { item } } })
   };
 
-  const handleReqTaskCardDelete = (e,row) => {
+  const handleReqTaskCardDelete = (e, row) => {
     e.stopPropagation();
     console.log('inside handleTaskCardDelete fn')
-        setConfirmDialog({
-          isOpen:true,
-          title:`Are you sure to delete this Record ?`,
-          subTitle:"You can't undo this Operation",
-          onConfirm:()=>{onConfirmTaskCardDelete(row)}
-        })
-      }
+    setConfirmDialog({
+      isOpen: true,
+      title: `Are you sure to delete this Record ?`,
+      subTitle: "You can't undo this Operation",
+      onConfirm: () => { onConfirmTaskCardDelete(row) }
+    })
+  }
 
-  const onConfirmTaskCardDelete=(row)=>{
+  const onConfirmTaskCardDelete = (row) => {
 
     console.log('req delete rec', row);
     console.log('req delete rec id', row._id);
-    RequestServer("post",taskDeleteURL+row._id)
-    .then((res)=>{
-      if(res.success){
-        
-        getTasksbyOppId(opportunityRecordId)
-        setMenuOpen(false)
-        setNotify({
-          isOpen:true,
-          message:res.data,
-          type:'success'
-        })
-      }
-      else{
-        console.log(res,"error in then")
-        setNotify({
-          isOpen: true,
-          message: res.error.message,
-          type: 'error'
-        })
-        getTasksbyOppId(opportunityRecordId)
-        setMenuOpen(false)
-      }
-    })
-    .catch((error)=>{
-      console.log('api delete error', error);
+    RequestServer("post", taskDeleteURL + row._id)
+      .then((res) => {
+        if (res.success) {
+
+          getTasksbyOppId(opportunityRecordId)
+          setMenuOpen(false)
           setNotify({
             isOpen: true,
-            message: error.message,
+            message: res.data,
+            type: 'success'
+          })
+        }
+        else {
+          console.log(res, "error in then")
+          setNotify({
+            isOpen: true,
+            message: res.error.message,
             type: 'error'
           })
-    })
-    .finally(()=>{
-      setConfirmDialog({
-        ...confirmDialog,
-        isOpen: false
+          getTasksbyOppId(opportunityRecordId)
+          setMenuOpen(false)
+        }
       })
-    })
-    // axios.post(taskDeleteURL + row._id)
-    //   .then((res) => {
-    //     console.log('api delete response', res);
-    //     console.log('inside delete response opportunityRecordId', opportunityRecordId)
-        
-    //     setNotify({
-    //       isOpen: true,
-    //       message: res.data,
-    //       type: 'success'
-    //     })
-    //     setMenuOpen(false)
-    //     setTimeout(
-    //       getTasksbyOppId(opportunityRecordId)
-    //     )
-    //   })
-    //   .catch((error) => {
-    //     console.log('api delete error', error);
-    //     setNotify({
-    //       isOpen: true,
-    //       message: error.message,
-    //       type: 'error'
-    //     })
-    //   })
-    //   setConfirmDialog({
-    //     ...confirmDialog,
-    //     isOpen:false
-    //   })
+      .catch((error) => {
+        console.log('api delete error', error);
+        setNotify({
+          isOpen: true,
+          message: error.message,
+          type: 'error'
+        })
+      })
+      .finally(() => {
+        setConfirmDialog({
+          ...confirmDialog,
+          isOpen: false
+        })
+      })
   };
 
   const handleChangeTaskPage = (event, value) => {
     setTaskPerPage(value);
   };
 
-  
+
 
   // Task menu dropdown strart 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -198,9 +165,9 @@ const OpportunityRelatedItems = ({ item }) => {
 
   return (
     <>
-    
-    <ToastNotification notify={notify} setNotify={setNotify} />
-    <DeleteConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog}  moreModalClose={handleTaskMoreMenuClose}/>
+
+      <ToastNotification notify={notify} setNotify={setNotify} />
+      <DeleteConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} moreModalClose={handleTaskMoreMenuClose} />
 
 
       <div style={{ textAlign: "center", marginBottom: "10px" }}>
@@ -218,87 +185,104 @@ const OpportunityRelatedItems = ({ item }) => {
         </AccordionSummary>
         <AccordionDetails>
           <Typography>
-            <div style={{ textAlign: "end", marginBottom: "5px" }}>
-              <Button variant="contained" color="info" onClick={() => handleTaskModalOpen()} >NEW EVENT</Button>
-            </div>
-            <Card dense compoent="span" >
-
-              {
-
-                relatedTask.length > 0 ?
-                  relatedTask
-                    .slice((taskPerPage - 1) * taskItemsPerPage, taskPerPage * taskItemsPerPage)
-                    .map((item) => {
-                      
-                      let   starDateConvert ;
-                      if(item.StartDate){
-                        starDateConvert = new Date(item.StartDate).getUTCFullYear()
-                        + '-' +  ('0'+ (new Date(item.StartDate).getUTCMonth() + 1)).slice(-2) 
-                        + '-' + ('0'+ ( new Date(item.StartDate).getUTCDate())).slice(-2)  ||''
-                      }
-
-                      return (
-                        <div >
-
-                          <CardContent sx={{ bgcolor: "aliceblue", m: "15px" }}>
-                            <div
-                              key={item._id}
-                            >
-                              <Grid container spacing={2}>
-                                <Grid item xs={10} md={10}>
-                                  <div>Subject : {item.subject} </div>
-                                  <div>Date&Time :{starDateConvert} </div>
-                                  <div>Description : {item.description} </div>
-                                </Grid>
-                                <Grid item xs={2} md={2}>
-
-                                  <IconButton>
-                                    <MoreVertIcon onClick={(event) => handleTaskMoreMenuClick(item, event)} />
-                                    <Menu
-                                      anchorEl={anchorEl}
-                                      open={menuOpen}
-                                      onClose={handleTaskMoreMenuClose}
-                                      anchorOrigin={{
-                                        vertical: 'top',
-                                        horizontal: 'left',
-                                      }}
-                                      transformOrigin={{
-                                        vertical: 'top',
-                                        horizontal: 'left',
-                                      }}
-                                    >
-                                      <MenuItem onClick={() => handleTaskCardEdit(menuSelectRec)}>Edit</MenuItem>
-                                      <MenuItem onClick={(e) => handleReqTaskCardDelete(e,menuSelectRec)}>Delete</MenuItem>
-                                    </Menu>
-                                  </IconButton>
-                                </Grid>
-                              </Grid>
-                            </div>
-                          </CardContent>
-                        </div>
-
-                      );
-                    })
-                  : ""
-              }
-
-            </Card>
             {
-              relatedTask.length > 0 &&
-              <Box display="flex" alignItems="center" justifyContent="center">
-                <Pagination
-                  count={taskNoOfPages}
-                  page={taskPerPage}
-                  onChange={handleChangeTaskPage}
-                  defaultPage={1}
-                  color="primary"
-                  size="medium"
-                  showFirstButton
-                  showLastButton
-                />
-              </Box>
-            }
+              permissionValuesTask.read ? <>
 
+
+                <div style={{ textAlign: "end", marginBottom: "5px" }}>
+                  {
+                    permissionValuesTask.create &&
+                    <Button variant="contained" color="info" onClick={() => handleTaskModalOpen()} >NEW EVENT</Button>
+                  }
+                </div>
+                <Card dense compoent="span" >
+
+                  {
+
+                    relatedTask.length > 0 ?
+                      relatedTask
+                        .slice((taskPerPage - 1) * taskItemsPerPage, taskPerPage * taskItemsPerPage)
+                        .map((item) => {
+
+                          let starDateConvert;
+                          if (item.StartDate) {
+                            starDateConvert = new Date(item.StartDate).getUTCFullYear()
+                              + '-' + ('0' + (new Date(item.StartDate).getUTCMonth() + 1)).slice(-2)
+                              + '-' + ('0' + (new Date(item.StartDate).getUTCDate())).slice(-2) || ''
+                          }
+
+                          return (
+                            <div >
+
+                              <CardContent sx={{ bgcolor: "aliceblue", m: "15px" }}>
+                                <div
+                                  key={item._id}
+                                >
+                                  <Grid container spacing={2}>
+                                    <Grid item xs={10} md={10}>
+                                      <div>Subject : {item.subject} </div>
+                                      <div>Date&Time :{starDateConvert} </div>
+                                      <div>Description : {item.description} </div>
+                                    </Grid>
+                                    <Grid item xs={2} md={2}>
+
+                                      <IconButton>
+                                        <MoreVertIcon onClick={(event) => handleTaskMoreMenuClick(item, event)} />
+                                        <Menu
+                                          anchorEl={anchorEl}
+                                          open={menuOpen}
+                                          onClose={handleTaskMoreMenuClose}
+                                          anchorOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'left',
+                                          }}
+                                          transformOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'left',
+                                          }}
+                                        >
+                                          {
+                                            permissionValuesTask.edit ?
+                                              <MenuItem onClick={() => handleTaskCardEdit(menuSelectRec)}>Edit</MenuItem>
+                                              :
+                                              <MenuItem onClick={() => handleTaskCardEdit(menuSelectRec)}>View</MenuItem>
+                                          }
+                                          {
+                                            permissionValuesTask.delete &&
+                                            <MenuItem onClick={(e) => handleReqTaskCardDelete(e, menuSelectRec)}>Delete</MenuItem>
+                                          }
+
+                                        </Menu>
+                                      </IconButton>
+                                    </Grid>
+                                  </Grid>
+                                </div>
+                              </CardContent>
+                            </div>
+
+                          );
+                        })
+                      : ""
+                  }
+
+                </Card>
+                {
+                  relatedTask.length > 0 &&
+                  <Box display="flex" alignItems="center" justifyContent="center">
+                    <Pagination
+                      count={taskNoOfPages}
+                      page={taskPerPage}
+                      onChange={handleChangeTaskPage}
+                      defaultPage={1}
+                      color="primary"
+                      size="medium"
+                      showFirstButton
+                      showLastButton
+                    />
+                  </Box>
+                }
+              </> : <NoAccessCard/>
+            }
           </Typography>
         </AccordionDetails>
       </Accordion>
@@ -310,9 +294,9 @@ const OpportunityRelatedItems = ({ item }) => {
         sx={{ backdropFilter: "blur(1px)" }}
       >
         <div className="modal">
-        {/* <Box sx={style}> */}
+          {/* <Box sx={style}> */}
           <ModalOppTask handleModal={handleTaskModalClose} />
-        {/* </Box> */}
+          {/* </Box> */}
         </div>
       </Modal>
 

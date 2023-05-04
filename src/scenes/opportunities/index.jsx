@@ -13,17 +13,9 @@ import ModalFileUpload from "../dataLoader/ModalFileUpload";
 import { OppIndexFilterPicklist } from "../../data/pickLists";
 import ExcelDownload from '../Excel';
 import { RequestServer } from "../api/HttpReq";
+import { getPermissions } from '../Auth/getPermission';
+import NoAccess from '../Errors/NoAccess';
 
-const ModalStyle = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 600,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-};
 
 const Opportunities = () => {
   const urlOpportunity = `${process.env.REACT_APP_SERVER_URL}/opportunities`;
@@ -55,10 +47,13 @@ const Opportunities = () => {
   const [importModalOpen, setImportModalOpen] = useState(false);
   const [filterOpportunity, setFilterOpportunity] = useState("All");
   const [filteredRecords, setFilteredRecords] = useState([]);
+  const [permissionValues,setPermissionValues]=useState({})
 
   useEffect(() => {
     fetchRecords();
     // filterRecords();
+    const getPermission=getPermissions("Opportunity")
+    setPermissionValues(getPermission)
   }, []);
 
   const fetchRecords = () => {
@@ -154,187 +149,6 @@ const Opportunities = () => {
     })
   };
 
-  const handleOppFilterChange = (e) => {
-    console.log(e.target.value, "onselect");
-    setFilterOpportunity(e.target.value);
-
-    // assuming your array of objects is named "records"
-    const now = new Date(); // get the current date
-    const currentMonth = now.getMonth(); // get the current month (0-11)
-    const nextMonth = (now.getMonth() + 1) % 12; // get the next month (0-11, wrap around to 0 if December)
-    const lastMonth = (now.getMonth() - 1 + 12) % 12;
-    const today = new Date();
-    const thisWeekStart = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate() - today.getDay()
-    );
-    const thisWeekEnd = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate() + (6 - today.getDay())
-    );
-    const lastMonthStart = new Date(
-      today.getFullYear(),
-      today.getMonth() - 1,
-      1
-    );
-    const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0);
-    const lastWeekStart = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate() - today.getDay() - 7
-    );
-    const lastWeekEnd = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate() - today.getDay() - 1
-    );
-    const ninetyDaysAgo = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate() - 90
-    );
-    const selectedOption = e.target.value; // replace with the selected option
-
-    const filteredRecords = records.filter((record) => {
-      if (!record.closeDate || !record.createdDate) {
-        return false; // skip records without closeDate or createdDate fields
-      }
-      const closeDate = new Date(record.closeDate);
-      const createdDate = new Date(record.createdDate);
-
-      switch (selectedOption) {
-        case "Closing_This_Month":
-          return (
-            closeDate.getMonth() === currentMonth &&
-            closeDate.getFullYear() === now.getFullYear()
-          );
-        case "Closing_Next_Month":
-          return (
-            closeDate.getMonth() === nextMonth &&
-            closeDate.getFullYear() === now.getFullYear()
-          );
-        case "Closing_Last_Month":
-          return (
-            closeDate.getMonth() === lastMonth &&
-            closeDate.getFullYear() === now.getFullYear()
-          );
-        case "New_This_Week":
-          return createdDate >= thisWeekStart && createdDate <= thisWeekEnd;
-        case "New_Last_Week":
-          return createdDate >= lastWeekStart && createdDate <= lastWeekEnd;
-        case "New_This_Month":
-          return (
-            createdDate.getMonth() === currentMonth &&
-            createdDate.getFullYear() === now.getFullYear()
-          );
-        case "New_Last_Month":
-          return createdDate >= lastMonthStart && createdDate <= lastMonthEnd;
-        case "Last_90_Days":
-          return createdDate >= ninetyDaysAgo && createdDate <= now;
-        default:
-          return true; // return all records if no valid option is selected
-      }
-    });
-
-    console.log(filteredRecords, "filteredRecords"); // output the filtered records
-
-    setFilteredRecords(filteredRecords);
-    //     // assuming your array of objects is named "records"
-    // const now = new Date(); // get the current date
-    // const currentMonth = now.getMonth(); // get the current month (0-11)
-    // const nextMonth = (currentMonth + 1) % 12; // get the next month (0-11, wrap around to 0 if December)
-
-    // // filter records for the current month
-    // const currentMonthRecords = records.filter(record => {
-    //   const closeDate = new Date(record.closeDate);
-    //   return closeDate.getMonth() === currentMonth && closeDate.getFullYear() === now.getFullYear();
-    // });
-
-    // // filter records for the next month
-    // const nextMonthRecords = records.filter(record => {
-    //   const closeDate = new Date(record.closeDate);
-    //   return closeDate.getMonth() === nextMonth && closeDate.getFullYear() === (now.getMonth() === 11 ? now.getFullYear() + 1 : now.getFullYear());
-    // });
-
-    // // filter records created this month
-    // const thisMonthRecords = records.filter(record => {
-    //   const createdDate = new Date(record.createdDate);
-    //   const thisMonth = new Date().getMonth();
-    //   return createdDate.getMonth() === thisMonth;
-    // });
-    // console.log(thisMonthRecords,"thisMonthRecords")
-
-    // // filter records created this week
-    // const today = new Date();
-    // const thisWeekStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay());
-    // const thisWeekEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate() + (6 - today.getDay()));
-    // console.log(thisWeekStart,"thisWeekStart")
-    // console.log(thisWeekEnd,"thisWeekEnd")
-    // const thisWeekRecords = records.filter(record => {
-    //   const createdDate = new Date(record.createdDate);
-    //   console.log(createdDate,"createdDate")
-    //   console.log(createdDate >= thisWeekStart && createdDate <= thisWeekEnd,"thisWeekRecords")
-    //   return createdDate >= thisWeekStart && createdDate <= thisWeekEnd;
-    // });
-    // console.log(thisWeekRecords,"thisWeekRecords")
-
-    // // filter records created last week
-    // const lastWeekStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() - 7);
-    // const lastWeekEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() - 1);
-    // const lastWeekRecords = records.filter(record => {
-    //   const createdDate = new Date(record.createdDate);
-    //   return createdDate >= lastWeekStart && createdDate <= lastWeekEnd;
-    // });
-
-    // console.log(lastWeekRecords,"lastWeekRecords")
-    // // filter records created last month
-    // const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-    // const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0);
-    // const lastMonthRecords = records.filter(record => {
-    //   const createdDate = new Date(record.createdDate);
-    //   return createdDate >= lastMonthStart && createdDate <= lastMonthEnd;
-    // });
-
-    // console.log(lastMonthRecords,"lastMonthRecords")
-
-    // if(e.target.value ==='Closing This Month'){
-    //   console.log('1st')
-    //   console.log(currentMonthRecords,"currentMonthRecords")
-    //   setFilteredRecords(currentMonthRecords)
-    // }
-    // else if(e.target.value ==='Closing Next Month'){
-    //   console.log('2nd')
-    //   console.log(nextMonthRecords,"nextMonthRecords")
-    //   setFilteredRecords(nextMonthRecords)
-    // }
-    // else if(e.target.value ==='All'){
-    //   setFilteredRecords(records)
-    // }
-
-    console.log(records, "allRecords");
-
-    // axios.post(urlFilterOpportunity+e.target.value)
-    // .then(
-    //   (res) => {
-    //     console.log("res filter Opp", res);
-    //     if (res.data.length > 0 && (typeof (res.data) !== 'string')) {
-    //       setRecords(res.data);
-    //       setFetchLoading(false)
-    //     }
-    //     else {
-    //       setRecords([]);
-    //       setFetchLoading(false)
-    //     };
-    //   }
-    // )
-    // .catch((error) => {
-    //   console.log('filter Opportunity error', error);
-    //   setFetchLoading(false)
-    // })
-  };
-
   const handleImportModalOpen = () => {
     setImportModalOpen(true);
   };
@@ -410,7 +224,9 @@ const Opportunities = () => {
       headerAlign: "center",
       align: "center",
       flex: 1,
-    },
+    },]
+    if (permissionValues.delete) {
+      columns.push(
     {
       field: "actions",
       headerName: "Actions",
@@ -437,10 +253,8 @@ const Opportunities = () => {
               ""
             )}
           </>
-        );
-      },
-    },
-  ];
+        )}})
+  }
 
   return (
     <>
@@ -451,6 +265,9 @@ const Opportunities = () => {
       />
 
       <Box m="20px">
+        {
+          permissionValues.read ? <>
+       
         <Typography
           variant="h2"
           color={colors.grey[100]}
@@ -474,8 +291,13 @@ const Opportunities = () => {
             }}
           >
 
-{showDelete ? (
+
+
+{showDelete ? 
+(
               <>
+              {
+              permissionValues.delete ?
                 <Tooltip title="Delete Selected">
                   <IconButton>
                     <DeleteIcon
@@ -484,9 +306,14 @@ const Opportunities = () => {
                     />
                   </IconButton>
                 </Tooltip>
+                : null
+                }
               </>
             ) : (
             <>
+            {
+              permissionValues.create ?
+          <>
                 <Button
                   variant="contained"
                   color="secondary"
@@ -500,7 +327,8 @@ const Opportunities = () => {
               New
             </Button>
                       <ExcelDownload data={records} filename={`OpportunityRecords`}/>
-                     
+                  </>:null
+                    }      
                 
             </>
             )}
@@ -553,69 +381,6 @@ const Opportunities = () => {
             },
           }}
         >
-          {/* <div className="btn-test">
-            {showDelete ? (
-              <>
-                <Tooltip title="Delete Selected">
-                  <IconButton>
-                    {" "}
-                    <DeleteIcon
-                      sx={{ color: "#FF3333" }}
-                      onClick={(e) => onHandleDelete(e, selectedRecordIds)}
-                    />{" "}
-                  </IconButton>
-                </Tooltip>
-              </>
-            ) : (
-              <>
-                <Box display="flex" justifyContent="space-between">
-                  <Grid container spacing={2}>
-                   <Grid item xs={6}>
-                   <FormControl sx={{mr:1 , boxSizing:'small'}}> 
-                  <InputLabel id="demo-simple-select-label">Select Opportunity</InputLabel>
-                  <Select 
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={filterOpportunity}
-                    label='Select Opportunity'
-                     style={{ width: 150 }}
-                    SelectDisplayProps={{ style: { paddingTop: 8, paddingBottom: 8 } }}
-                    onChange={handleOppFilterChange}
-                  >
-             
-                  {	
-                    OppIndexFilterPicklist.map((i)=>{	
-                        return <MenuItem  value={i.value}>{i.text}</MenuItem>	
-                    })	
-                  }
-                  </Select>
-                  </FormControl>
-                  </Grid> 
-                    <Grid item xs={6}>
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        onClick={handleImportModalOpen}
-                        sx={{ color: "white" }}
-                      >
-                        Import
-                      </Button>
-                    </Grid>
-
-                    <Grid item xs={6}>
-                      <Button
-                        variant="contained"
-                        color="info"
-                        onClick={handleAddRecord}
-                      >
-                        New
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </Box>
-              </>
-            )}
-          </div> */}
 
           <DataGrid
             rows={filteredRecords.length > 0 ? filteredRecords : records}
@@ -649,6 +414,10 @@ const Opportunities = () => {
             onRowClick={(e) => handleOnCellClick(e)}
           />
         </Box>
+        </>
+        :<NoAccess/>
+        }
+
       </Box>
 
       <Modal
@@ -657,9 +426,9 @@ const Opportunities = () => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={ModalStyle}>
+        <div className='modal'>
           <ModalFileUpload handleModal={handleImportModalClose} />
-        </Box>
+        </div>
       </Modal>
     </>
   );

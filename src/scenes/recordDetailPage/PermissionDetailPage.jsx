@@ -104,8 +104,7 @@ const PermissiionSetForm = ({ item }) => {
                     })
                     setTimeout(() => {
                         navigate(-1);
-                    }, 2000)
-                
+                    }, 2000)                
             })
             .catch((err) => {
                 console.log(err, "err")
@@ -247,7 +246,8 @@ const PermissiionSetForm = ({ item }) => {
                                                     <FieldArray name="permissionSets">
                                                         {({ remove, push }) => (
                                                             <>
-                                                                {values.permissionSets && values.permissionSets.length > 0 &&
+                                                                {
+                                                                values.permissionSets && values.permissionSets.length > 0 &&
                                                                     values.permissionSets.map((obj, index) => (
                                                                         <div key={index} style={{ margin: '5px' }}>
                                                                             <Grid container spacing={2} alignItems="center">

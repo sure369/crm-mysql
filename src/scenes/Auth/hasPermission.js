@@ -1,12 +1,16 @@
-// function hasPermission(objectName, permissionType) {
+export const hasPermission =(objectName, permissionType) =>{
 
+// fetchPermission();
 
-//     const permission = permissions.find(p => p.object === objectName);
-//     if (permission) {
-//       return permission.permissions[permissionType];
-//     }
-//     return false;
-// }
+const permissions = JSON.parse(sessionStorage.getItem("userPermissions"))
+   
+console.log(permissions,"inside hasPermission ")
+    const permission = permissions.find(p => p.object === objectName);
+    if (permission) {
+      return permission.permissions[permissionType];
+    }
+    return false;
+}
 
 //   This function takes in an objectName (e.g. "Account", "Contact", etc.) and a permissionType (e.g. "read", "create", "edit", or "delete") and returns true or false depending on whether the user has permission to perform that action on that object.
   

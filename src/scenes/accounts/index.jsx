@@ -17,6 +17,8 @@ import DeleteConfirmDialog from '../toast/DeleteConfirmDialog';
 import ModalFileUpload from '../dataLoader/ModalFileUpload';
 import ExcelDownload from '../Excel';
 import { RequestServer } from '../api/HttpReq';
+import { getPermissions } from '../Auth/getPermission';
+import NoAccess from '../Errors/NoAccess';
 
 const Accounts = () => {
 
@@ -34,10 +36,13 @@ const Accounts = () => {
   const [showDelete, setShowDelete] = useState(false)
   const [selectedRecordIds, setSelectedRecordIds] = useState()
   const [selectedRecordDatas, setSelectedRecordDatas] = useState()
-  const[importModalOpen,setImportModalOpen]= useState(false)
+  const [importModalOpen,setImportModalOpen]= useState(false)
+  const [permissionValues,setPermissionValues]=useState({})
 
   useEffect(() => {
     fetchRecords();
+    const getPermission=getPermissions("Account")
+    setPermissionValues(getPermission)
   }, []
   );
 
@@ -61,26 +66,8 @@ const Accounts = () => {
       setFetchError(err.message)
       setFetchLoading(false)
     })
-
-    // axios.post(urlAccount)
-    //   .then(
-    //     (res) => {
-    //       console.log("res Account records",(res.data));
-    //       if (res.data.length > 0 && (typeof (res.data) !== 'string')) {
-    //         setRecords((res.data));
-    //         setFetchLoading(false)
-    //       }
-    //       else {
-    //         setRecords([]);
-    //         setFetchLoading(false)
-    //       }
-    //     }
-    //   )
-    //   .catch((error) => {
-    //     console.log('res Account error', error);
-    //     setFetchLoading(false)
-    //   })
   }
+
   const handleAddRecord = () => {
     navigate("/new-accounts", { state: { record: {} } })
   };
@@ -152,29 +139,6 @@ const Accounts = () => {
         isOpen: false
       })
     })
-    // axios.post(urlDelete + row)
-    //   .then((res) => {
-    //     console.log('api delete response', res);
-    //     fetchRecords();
-    //     setNotify({
-    //       isOpen: true,
-    //       message: res.data,
-    //       type: 'success'
-    //     })
-    //   })
-    //   .catch((error) => {
-    //     console.log('api delete error', error);
-    //     setNotify({
-    //       isOpen: true,
-    //       message: error.message,
-    //       type: 'error'
-    //     })
-    //   })
-    // setConfirmDialog({
-    //   ...confirmDialog,
-    //   isOpen: false
-    // })
-
   };
 
   const handleImportModalOpen = () => {
@@ -235,9 +199,12 @@ const Accounts = () => {
       field: "industry", headerName: "Industry",
       headerAlign: 'center', align: 'center', flex: 1,
     },
-    {
+  ]
+  if (permissionValues.delete) {
+    columns.push(
+    {          
       field: 'actions', headerName: 'Actions',
-      headerAlign: 'center', align: 'center', width: 400, flex: 1,
+      headerAlign: 'center', align: 'center', width: 400, flex: 1,      
       renderCell: (params) => {
         return (
           <>
@@ -256,8 +223,9 @@ const Accounts = () => {
           </>
         )
       }
-    }
-  ];
+    })
+  }
+  
 
   return (
     <>
@@ -265,8 +233,12 @@ const Accounts = () => {
       <DeleteConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />
  
 
+     
 
       <Box m="20px">
+      {
+            permissionValues.read ?
+            <>
       <Typography
           variant="h2"
           color={colors.grey[100]}
@@ -290,39 +262,49 @@ const Accounts = () => {
             }}
           >
 
-{showDelete ? (
+            {showDelete ? (
               <>
-                <Tooltip title="Delete Selected">
-                  <IconButton>
-                    <DeleteIcon
-                      sx={{ color: "#FF3333" }}
-                      onClick={(e) => onHandleDelete(e, selectedRecordIds)}
-                    />
-                  </IconButton>
-                </Tooltip>
+                {
+                  permissionValues.delete &&
+                  <>
+                    <Tooltip title="Delete Selected">
+                      <IconButton>
+                        <DeleteIcon
+                          sx={{ color: "#FF3333" }}
+                          onClick={(e) => onHandleDelete(e, selectedRecordIds)}
+                        />
+                      </IconButton>
+                    </Tooltip>
+                  </>
+                }
               </>
             ) : (
             <>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={handleImportModalOpen}
-                  sx={{ color: "white" }}
-                >
-                  Import
-                </Button>
+                  {
+                    permissionValues.create &&
+                    <>
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={handleImportModalOpen}
+                        sx={{ color: "white" }}
+                      >
+                        Import
+                      </Button>
 
-            <Button variant="contained" color="info" onClick={handleAddRecord}>
-              New
-            </Button>
+                      <Button variant="contained" color="info" onClick={handleAddRecord}>
+                        New
+                      </Button>
 
-                      <ExcelDownload data={records} filename={`AccountRecords`}/>
-                     
-                
+                      <ExcelDownload data={records} filename={`AccountRecords`} />
+                    </>
+                  }           
             </>
             )}
           </div>
         </Box>
+       
+         
         <Box
           m="15px 0 0 0"
           height="380px"
@@ -369,41 +351,7 @@ const Accounts = () => {
               backgroundColor: "#F0F8FF",
             },
           }}
-        >
-          {/* <div className='btn-test'>
-            {
-              showDelete ?
-                <>
-                  <Tooltip title="Delete Selected">
-                    <IconButton> <DeleteIcon sx={{ color: '#FF3333' }} onClick={(e) => onHandleDelete(e, selectedRecordIds)} /> </IconButton>
-                  </Tooltip>
-                </>
-                :
-                <Box display="flex" justifyContent="space-between">
-                  <Grid container spacing={2}>
-                    <Grid item xs={4}>
-                      <Button
-                        variant="contained" color="secondary" onClick={handleImportModalOpen}
-                        sx={{ color: 'white' }}
-                      >
-                        Import
-                      </Button>
-                    </Grid>
-                    <Grid item xs={4}>
-                      <Button variant="contained" color="info" onClick={handleAddRecord}>
-                        New
-                      </Button>
-                    </Grid>
-                    <Grid item xs={4}>
-                      <ExcelDownload data={records} filename={`AccountRecords`}/>
-                     
-                    </Grid>
-                  </Grid>
-                </Box>
-
-            }
-          </div> */}
-
+        >          
           <DataGrid
             rows={records}
             columns={columns}
@@ -434,11 +382,12 @@ const Accounts = () => {
             onRowClick={(e) => handleOnCellClick(e)}
           />
         </Box>
-
-
+        </>
+  :
+  <NoAccess/>
+          }
       </Box>
-
-      
+            
       <Modal
         open={importModalOpen}
         onClose={handleImportModalClose}

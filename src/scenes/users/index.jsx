@@ -209,11 +209,20 @@ const Users = () => {
       headerAlign: 'center', align: 'center', flex: 1,
     },
     {
-      field: "role", headerName: "Role",
+      field: "roleDetails", headerName: "Role",
       headerAlign: 'center', align: 'center', flex: 1,
+      renderCell:(params)=>{
+        let formatValue=JSON.parse(params.value)
+        if(formatValue){
+          return <>{formatValue.roleName }</>;
+        }else{
+          return null
+        }
+        
+      }
     },
     {
-      field: "access", headerName: "Access",
+      field: "departmentName", headerName: "Department",
       headerAlign: 'center', align: 'center', flex: 1,
     },
     {

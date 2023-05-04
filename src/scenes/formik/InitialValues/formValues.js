@@ -369,12 +369,32 @@ export const TaskSavedValues = (singleTask) => {
 export const UserInitialValues = {
   firstName: "",
   lastName: "",
+  fullName:"",
   userName: "",
   email: "",
   phone: "",
   departmentName: "",
   roleDetails: "",
-  access: "",
+  // access: [
+  //   {
+  //     object: "Account",permissions: {read: false,create: false,edit: false,delete: false,},permissionLevel: 0,
+  //   },
+  //   {
+  //     object: "Contact",permissions: { read: false,create: false,edit: false,delete: false,},permissionLevel: 0,
+  //   },
+  //   {
+  //     object: "Opportunity",permissions: {read: false,create: false,edit: false,delete: false,},permissionLevel: 0,
+  //   },
+  //   {
+  //     object: "Lead", permissions: {read: false,create: false,edit: false, delete: false,},permissionLevel: 0,
+  //   },
+  //   {
+  //     object: "Inventory",permissions: {read: false,create: false,edit: false, delete: false,},permissionLevel: 0,
+  //   },
+  //   {
+  //     object: "Task",permissions: {read: false,create: false,edit: false,delete: false,},permissionLevel: 0,
+  //   },
+  // ],
   createdBy: "",
   modifiedBy: "",
   createdDate: "",
@@ -390,10 +410,8 @@ export const UserSavedValues = (singleUser) => {
     email: singleUser?.email ?? "",
     phone: singleUser?.phone ?? "",
     departmentName: singleUser?.departmentName ?? "",
-    role: singleUser?.role ?? "",
-    access: singleUser?.access ?? "",
-    createdbyId: singleUser?.createdbyId ?? "",
-    createdDate: new Date(singleUser?.createdDate).toLocaleString(),
+    // access: singleUser?.access ?? "",
+     createdDate: new Date(singleUser?.createdDate).toLocaleString(),
     modifiedDate: new Date(singleUser?.modifiedDate).toLocaleString(),
     _id: singleUser?._id ?? "",
     roleDetails: (() => {

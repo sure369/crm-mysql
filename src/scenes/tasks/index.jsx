@@ -13,6 +13,8 @@ import ToastNotification from '../toast/ToastNotification';
 import DeleteConfirmDialog from '../toast/DeleteConfirmDialog';
 import ExcelDownload from '../Excel';
 import { RequestServer } from '../api/HttpReq';
+import { getPermissions } from '../Auth/getPermission';
+import NoAccess from '../Errors/NoAccess';
 
 const Task = () => {
 
@@ -24,7 +26,7 @@ const Task = () => {
   const navigate = useNavigate();
   const [records, setRecords] = useState([]);
   const [fetchLoading, setFetchLoading] = useState(true);
-  const [fetchError,setFetchError]=useState()
+  const [fetchError, setFetchError] = useState()
   // notification
   const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
   //dialog
@@ -33,52 +35,35 @@ const Task = () => {
   const [showDelete, setShowDelete] = useState(false)
   const [selectedRecordIds, setSelectedRecordIds] = useState()
   const [selectedRecordDatas, setSelectedRecordDatas] = useState()
+  const [permissionValues, setPermissionValues] = useState({})
 
   useEffect(() => {
     fetchRecords();
+    const getPermission = getPermissions("Task")
+    setPermissionValues(getPermission)
 
   }, []
   );
 
   const fetchRecords = () => {
-    RequestServer("post",urlTask,null,{})
-    .then((res)=>{
-      console.log(res,"index page res")
-      if(res.success){
-        setRecords(res.data)
-        setFetchError(null)
+    RequestServer("post", urlTask, null, {})
+      .then((res) => {
+        console.log(res, "index page res")
+        if (res.success) {
+          setRecords(res.data)
+          setFetchError(null)
+          setFetchLoading(false)
+        }
+        else {
+          setRecords([])
+          setFetchError(res.error.message)
+          setFetchLoading(false)
+        }
+      })
+      .catch((err) => {
+        setFetchError(err.message)
         setFetchLoading(false)
-      }
-      else{
-        setRecords([])
-        setFetchError(res.error.message)
-        setFetchLoading(false)
-      }
-    })
-    .catch((err)=>{
-      setFetchError(err.message)
-      setFetchLoading(false)
-    })
-    // console.log('urlTask', urlTask);
-    // axios.post(urlTask)
-    //   .then(
-    //     (res) => {
-    //       console.log("res task records", res);
-
-    //       if (res.data.length > 0 && (typeof (res.data) !== 'string')) {
-    //         setRecords(res.data);
-    //         setFetchLoading(false)
-    //       }
-    //       else {
-    //         setRecords([]);
-    //         setFetchLoading(false)
-    //       }
-    //     }
-    //   )
-    //   .catch((error) => {
-    //     console.log('res task error', error);
-    //     setFetchLoading(false)
-    //   })
+      })
   }
   const handleAddRecord = () => {
     navigate("/new-task", { state: { record: {} } })
@@ -116,63 +101,39 @@ const Task = () => {
 
   const onebyoneDelete = (row) => {
     console.log('onebyoneDelete rec id', row)
-    RequestServer("post",urlDelete+row)
-    .then((res)=>{
-      if(res.success){
-        fetchRecords()
-        setNotify({
-          isOpen:true,
-          message:res.data,
-          type:'success'
-        })
-      }
-      else{
-        console.log(res,"error in then")
-        setNotify({
-          isOpen: true,
-          message: res.error.message,
-          type: 'error'
-        })
-      }
-    })
-    .catch((error)=>{
-      console.log('api delete error', error);
+    RequestServer("post", urlDelete + row)
+      .then((res) => {
+        if (res.success) {
+          fetchRecords()
           setNotify({
             isOpen: true,
-            message: error.message,
+            message: res.data,
+            type: 'success'
+          })
+        }
+        else {
+          console.log(res, "error in then")
+          setNotify({
+            isOpen: true,
+            message: res.error.message,
             type: 'error'
           })
-    })
-    .finally(()=>{
-      setConfirmDialog({
-        ...confirmDialog,
-        isOpen: false
+        }
       })
-    })
-
-    // axios.post(urlDelete + row)
-    //   .then((res) => {
-    //     console.log('api delete response', res);
-    //     fetchRecords();
-    //     setNotify({
-    //       isOpen: true,
-    //       message: res.data,
-    //       type: 'success'
-    //     })
-    //   })
-    //   .catch((error) => {
-    //     console.log('api delete error', error);
-    //     setNotify({
-    //       isOpen: true,
-    //       message: error.message,
-    //       type: 'error'
-    //     })
-    //   })
-    // setConfirmDialog({
-    //   ...confirmDialog,
-    //   isOpen: false
-    // })
-
+      .catch((error) => {
+        console.log('api delete error', error);
+        setNotify({
+          isOpen: true,
+          message: error.message,
+          type: 'error'
+        })
+      })
+      .finally(() => {
+        setConfirmDialog({
+          ...confirmDialog,
+          isOpen: false
+        })
+      })
   };
 
   function CustomPagination() {
@@ -224,31 +185,33 @@ const Task = () => {
     {
       field: "object", headerName: "Object",
       headerAlign: 'center', align: 'center', flex: 1,
-    },
-
-    {
-      field: 'actions', headerName: 'Actions',
-      headerAlign: 'center', align: 'center', width: 400, flex: 1,
-      renderCell: (params) => {
-        return (
-          <>
-            {
-              !showDelete ?
-                <>
-                  {/* <IconButton style={{ padding: '20px', color: '#0080FF' }}>
+    }
+  ]
+  if (permissionValues.delete) {
+    columns.push(
+      {
+        field: 'actions', headerName: 'Actions',
+        headerAlign: 'center', align: 'center', width: 400, flex: 1,
+        renderCell: (params) => {
+          return (
+            <>
+              {
+                !showDelete ?
+                  <>
+                    {/* <IconButton style={{ padding: '20px', color: '#0080FF' }}>
                     <EditIcon onClick={(e) => handleOnCellClick(e, params.row)} />
                   </IconButton> */}
-                  <IconButton style={{ padding: '20px', color: '#FF3333' }}>
-                    <DeleteIcon onClick={(e) => onHandleDelete(e, params.row)} />
-                  </IconButton>
-                </>
-                : ''
-            }
-          </>
-        )
-      }
-    }
-  ];
+                    <IconButton style={{ padding: '20px', color: '#FF3333' }}>
+                      <DeleteIcon onClick={(e) => onHandleDelete(e, params.row)} />
+                    </IconButton>
+                  </>
+                  : ''
+              }
+            </>
+          )
+        }
+      })
+  }
 
   return (
     <>
@@ -257,6 +220,9 @@ const Task = () => {
 
 
       <Box m="20px">
+        {
+          permissionValues.read ? 
+       <>
         <Typography
           variant="h2"
           color={colors.grey[100]}
@@ -280,21 +246,31 @@ const Task = () => {
 
             {showDelete ? (
               <>
-                <Tooltip title="Delete Selected">
-                  <IconButton>
-                    <DeleteIcon
-                      sx={{ color: "#FF3333" }}
-                      onClick={(e) => onHandleDelete(e, selectedRecordIds)}
-                    />
-                  </IconButton>
-                </Tooltip>
+                {
+                  permissionValues.delete &&
+                  <>
+                    <Tooltip title="Delete Selected">
+                      <IconButton>
+                        <DeleteIcon
+                          sx={{ color: "#FF3333" }}
+                          onClick={(e) => onHandleDelete(e, selectedRecordIds)}
+                        />
+                      </IconButton>
+                    </Tooltip>
+                  </>
+                }
               </>
             ) : (
               <>
-                <Button variant="contained" color="info" onClick={handleAddRecord}>
-                  New
-                </Button>
-                <ExcelDownload data={records} filename={`EventLogRecords`} />
+                {
+                  permissionValues.create &&
+                  <>
+                    <Button variant="contained" color="info" onClick={handleAddRecord}>
+                      New
+                    </Button>
+                    <ExcelDownload data={records} filename={`EventLogRecords`} />
+                  </>
+                }
               </>
             )}
           </div>
@@ -347,21 +323,6 @@ const Task = () => {
             },
           }}
         >
-          {/* <div className='btn-test'>
-            {
-              showDelete ?
-                <>
-                  <Tooltip title="Delete Selected">
-                    <IconButton> <DeleteIcon sx={{ color: '#FF3333' }} onClick={(e) => onHandleDelete(e, selectedRecordIds)} /> </IconButton>
-                  </Tooltip>
-                </>
-                :
-                <Button variant="contained" color="info" onClick={handleAddRecord}>
-                  New
-                </Button>
-            }
-          </div> */}
-
           <DataGrid
             rows={records}
             columns={columns}
@@ -392,6 +353,8 @@ const Task = () => {
             onRowClick={(e) => handleOnCellClick(e)}
           />
         </Box>
+        </> :<NoAccess/>
+}
       </Box>
     </>
   )
@@ -658,7 +621,7 @@ export default Task;
 //         >
 //          <div className='btn-test'>
 //           {
-//               showDelete ? 
+//               showDelete ?
 //               <>
 //               <Tooltip title="Delete Selected">
 //                   <IconButton> <DeleteIcon sx={{ color: '#FF3333' }} onClick={(e) => onHandleDelete(e,selectedRecordIds)} /> </IconButton>

@@ -14,6 +14,8 @@ import ToastNotification from '../toast/ToastNotification';
 import DeleteConfirmDialog from "../toast/DeleteConfirmDialog";
 import '../recordDetailPage/Form.css'
 import { RequestServer } from "../api/HttpReq";
+import { getPermissions } from "../Auth/getPermission";
+import NoAccess from "../Errors/NoAccess";
 
 
 const LeadRelatedItems = ({ item }) => {
@@ -42,13 +44,21 @@ const LeadRelatedItems = ({ item }) => {
   const [opportunityPerPage, setOpportunityPerPage] = useState(1);
   const [opportunityNoOfPages, setOpportunityNoOfPages] = useState(0);
 
-  // const[starDateConvert,setStarDateConvert] =useState(null);
+  const [permissionValuesTask,setPermissionValuesTask]=useState({})
+  const [permissionValuesOpportunity,setPermissionValuesOpportunity]=useState({})
 
   useEffect(() => {
     console.log('inside useEffect', location.state.record.item);
     setLeadRecordId(location.state.record.item._id)
     getTasksbyLeadId(location.state.record.item._id)
     getOpportunitybyLeadId(location.state.record.item._id)
+   
+    const getTaskPermission=getPermissions("Task")
+    setPermissionValuesTask(getTaskPermission)
+
+    const getOpportunityPermission=getPermissions("Opportunity")
+    setPermissionValuesOpportunity(getOpportunityPermission)  
+
   }, [])
 
   const getTasksbyLeadId = (leadsId) => {
@@ -67,22 +77,6 @@ const LeadRelatedItems = ({ item }) => {
       .catch((err)=>{
         console.log('error task fetch', err)
       })
-
-    // axios.post(urlTask + leadsId)
-    //   .then((res) => {
-    //     console.log('response task fetch', res.data);
-    //     if (res.data.length > 0) {
-    //       setRelatedTask(res.data);
-    //       setTaskNoOfPages(Math.ceil(res.data.length / taskItemsPerPage));
-    //       setTaskPerPage(1)
-    //     }
-    //     else {
-    //       setRelatedTask([]);
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.log('error task fetch', error)
-    //   })
   }
 
   const getOpportunitybyLeadId = (leadsId) => {
@@ -99,21 +93,6 @@ const LeadRelatedItems = ({ item }) => {
     .catch((err)=>{
       console.log('error opportunity fetch', err)
     })
-    // axios.post(urlOppbyLeadId + leadsId)
-    //   .then((res) => {
-    //     console.log('response opportunity fetch', res.data);
-    //     if (res.data.length > 0) {
-    //       setRelatedOpportunity(res.data);
-    //       setOpportunityNoOfPages(Math.ceil(res.data.length / opportunityItemsPerPage));
-    //       setOpportunityPerPage(1)
-    //     }
-    //     else {
-    //       setRelatedOpportunity([]);
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.log('error opportunity fetch', error)
-    //   })
   }
 
   const handleTaskModalOpen = () => {
@@ -186,34 +165,7 @@ const LeadRelatedItems = ({ item }) => {
         ...confirmDialog,
         isOpen: false
       })
-    })
-    // axios.post(taskDeleteURL + row._id)
-    //   .then((res) => {
-    //     console.log('api delete response', res);
-    //     console.log('inside delete response leadRecordId', leadRecordId)
-    //     setNotify({
-    //       isOpen: true,
-    //       message: res.data,
-    //       type: 'success'
-    //     })
-    //     setMenuOpen(false)
-    //     setTimeout(
-    //       getTasksbyLeadId(leadRecordId)
-    //     )
-    //   }
-    //   )
-    //   .catch((error) => {
-    //     console.log('api delete error', error);
-    //     setNotify({
-    //       isOpen: true,
-    //       message: error.message,
-    //       type: 'error'
-    //     })
-    //   })
-    // setConfirmDialog({
-    //   ...confirmDialog,
-    //   isOpen: false
-    // })
+    })    
   };
 
   const handleOpportunityCardEdit = (row) => {
@@ -273,37 +225,8 @@ const LeadRelatedItems = ({ item }) => {
         ...confirmDialog,
         isOpen: false
       })
-    })
-    // axios.post(opportunityDeleteURL + row._id)
-    //   .then((res) => {
-    //     console.log('api delete response', res);
-    //     console.log('inside delete response leadRecordId', leadRecordId)
-
-    //     setNotify({
-    //       isOpen: true,
-    //       message: res.data,
-    //       type: 'success'
-    //     })
-    //     setOppMenuOpen(false)
-    //     setTimeout(() => {
-    //       getOpportunitybyLeadId(leadRecordId)
-    //     })
-    //   })
-    //   .catch((error) => {
-    //     console.log('api delete error', error);
-    //     setNotify({
-    //       isOpen: true,
-    //       message: error.message,
-    //       type: 'error'
-    //     })
-    //   })
-    // setConfirmDialog({
-    //   ...confirmDialog,
-    //   isOpen: false
-    // })
-
+    })    
   }
-
 
   const handleChangeTaskPage = (event, value) => {
     setTaskPerPage(value);
@@ -311,7 +234,6 @@ const LeadRelatedItems = ({ item }) => {
   const handleChangeOpportunityPage = (event, value) => {
     setOpportunityPerPage(value);
   };
-
 
   // menu dropdown strart //menu pass rec
   const [anchorEl, setAnchorEl] = useState(null);
@@ -373,6 +295,9 @@ const LeadRelatedItems = ({ item }) => {
         </AccordionSummary>
         <AccordionDetails>
           <Typography>
+            {
+              permissionValuesTask.read ?<>
+             
             <div style={{ textAlign: "end", marginBottom: "5px" }}>
               <Button variant="contained" color="info" onClick={() => handleTaskModalOpen()} >New Event</Button>
             </div>
@@ -419,9 +344,19 @@ const LeadRelatedItems = ({ item }) => {
                                         horizontal: 'left',
                                       }}
                                     >
-                                      <MenuItem onClick={() => handleTaskCardEdit(menuSelectRec)}>Edit</MenuItem>
-                                      <MenuItem onClick={(e) => handleReqTaskCardDelete(e, menuSelectRec)}>Delete</MenuItem>
-                                    </Menu>
+                                      {
+                                        permissionValuesTask.edit ?
+                                        <MenuItem onClick={() => handleTaskCardEdit(menuSelectRec)}>Edit</MenuItem>
+                                      
+                                        :
+                                        <MenuItem onClick={() => handleTaskCardEdit(menuSelectRec)}>View</MenuItem>
+                                      
+                                      }
+                                      {
+                                        permissionValuesTask.delete &&
+                                        <MenuItem onClick={(e) => handleReqTaskCardDelete(e, menuSelectRec)}>Delete</MenuItem>
+                                      }
+                                        </Menu>
                                   </IconButton>
                                 </Grid>
                               </Grid>
@@ -450,7 +385,9 @@ const LeadRelatedItems = ({ item }) => {
                 />
               </Box>
             }
-
+ 
+ </> :"No Access"
+            }
           </Typography>
         </AccordionDetails>
       </Accordion>
@@ -465,6 +402,9 @@ const LeadRelatedItems = ({ item }) => {
         </AccordionSummary>
         <AccordionDetails>
           <Typography>
+            {
+              permissionValuesOpportunity.read ?
+              <>
             <div style={{ textAlign: "end", marginBottom: "5px" }}>
               <Button variant="contained" color="info" onClick={() => handleOpportunityModalOpen()} >New Deal</Button>
             </div>
@@ -506,9 +446,19 @@ const LeadRelatedItems = ({ item }) => {
                                         horizontal: 'left',
                                       }}
                                     >
-                                      <MenuItem onClick={() => handleOpportunityCardEdit(oppMenuSelectRec)}>Edit</MenuItem>
-                                      <MenuItem onClick={(e) => handleReqOpportunityCardDelete(e, oppMenuSelectRec)}>Delete</MenuItem>
-                                    </Menu>
+                                      {
+                                        permissionValuesOpportunity.edit ?
+                                        <MenuItem onClick={() => handleOpportunityCardEdit(oppMenuSelectRec)}>Edit</MenuItem>
+                                      :
+                                      <MenuItem onClick={() => handleOpportunityCardEdit(oppMenuSelectRec)}>View</MenuItem>
+                                      
+                                      }
+                                      {
+                                        permissionValuesOpportunity.delete &&
+                                        <MenuItem onClick={(e) => handleReqOpportunityCardDelete(e, oppMenuSelectRec)}>Delete</MenuItem>
+                                   
+                                      }
+                                       </Menu>
                                   </IconButton>
                                 </Grid>
                               </Grid>
@@ -536,6 +486,10 @@ const LeadRelatedItems = ({ item }) => {
                   showLastButton
                 />
               </Box>
+            }
+            
+            </>
+            :"No Access"
             }
           </Typography>
         </AccordionDetails>

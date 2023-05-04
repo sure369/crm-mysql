@@ -6,8 +6,10 @@ import { Grid, Button, DialogActions, InputAdornment, IconButton, Paper,Avatar,T
 import axios from 'axios'
 import '../recordDetailPage/Form.css'
 import Cdlogo from '../assets/cdlogo.jpg';
+import { RequestServer } from "../api/HttpReq";
 
 const loginUrl = `${process.env.REACT_APP_SERVER_URL}/signin`;
+const urlPermission =`${process.env.REACT_APP_SERVER_URL}/sendRolePermission`
 
 // const loginUrl ='http://localhost:80/api/signin';
 
@@ -48,6 +50,7 @@ export default function LoginIndex({onAuthentication}) {
             .required('Required')
         ,
     })
+
     const formSubmission = async (values, { resetForm }) => {
         console.log('inside form Submission', values);
         axios.post(loginUrl,values)
@@ -67,7 +70,9 @@ export default function LoginIndex({onAuthentication}) {
                 }
                 sessionStorage.setItem('token',res.data.content)
                 sessionStorage.setItem('loggedInUser',JSON.stringify(obj))
-                onAuthentication()
+                getPermissions()
+                // onAuthentication()
+                // navigate("/test")
                
             }
             else if (res.data.status==='failure'){
@@ -81,6 +86,27 @@ export default function LoginIndex({onAuthentication}) {
             console.log(error,"error")
         })       
     }
+
+    const getPermissions=()=>{
+        console.log("inside getPermissions login")
+        RequestServer("post", urlPermission, null, {})
+        .then((res) => {
+          console.log("urlPermission INDEX page", res)
+          if (res.success) {
+            console.log(JSON.parse(res.data[0].permissionSets),"url permissions")
+            sessionStorage.setItem('userPermissions',(res.data[0].permissionSets))
+            onAuthentication()
+          }
+          else {
+            
+            console.log(res.error.message)
+          }
+        })
+        .catch((err) => {
+          console.log(err.message,"ERROR")
+        })
+    }
+
     return(
         <Grid>
             <Paper elevation={10} style={paperStyle}>

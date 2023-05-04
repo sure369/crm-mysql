@@ -62,7 +62,8 @@ function AppNavbar() {
 
   const handleUserLogout = () => {
     console.log("handleUserLogout")
-    sessionStorage.removeItem('token')
+    // sessionStorage.removeItem('token')
+    sessionStorage.clear();
     navigate('/')
   }
 

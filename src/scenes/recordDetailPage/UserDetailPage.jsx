@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom';
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field, ErrorMessage,FieldArray } from "formik";
 import * as Yup from "yup";
 import {
     Grid, Button, Forminput, DialogActions, MenuItem,
-    TextField, Autocomplete, Select,
+    AccordionDetails,Typography,TextField, 
+    Autocomplete, Select,Accordion,AccordionSummary,
 } from "@mui/material";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useParams, useNavigate } from "react-router-dom"
 import axios from 'axios'
 // import "../formik/FormStyles.css"
@@ -60,9 +62,9 @@ const UserDetailPage = ({ item }) => {
         departmentName: Yup
             .string()
             .required('Required'),
-        access: Yup
-            .string()
-            .required('Required'),
+        // access: Yup
+        //     .string()
+        //     .required('Required'),
     })
 
     const sendInviteEmail=(values)=>{
@@ -119,8 +121,6 @@ const UserDetailPage = ({ item }) => {
         console.log('form submission value', values);
         let dateSeconds = new Date().getTime();
         let createDateSec = new Date(values.createdDate).getTime()
-
-
         if (showNew) {
             values.modifiedDate = dateSeconds;
             values.createdDate = dateSeconds;
@@ -137,7 +137,7 @@ const UserDetailPage = ({ item }) => {
             values.fullName = values.firstName + ' ' + values.lastName;
             values.createdBy = singleUser.createdBy;
             values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
-           
+            values.roleDetails=JSON.stringify(values.roleDetails)
         }
         console.log('after change form submission value', values);
 
@@ -259,7 +259,7 @@ const UserDetailPage = ({ item }) => {
                                                 <ErrorMessage name="username" />
                                             </div>
                                         </Grid>
-                                        <Grid item xs={6} md={6}>
+                                        {/* <Grid item xs={6} md={6}>
                                             <label htmlFor="access">Access <span className="text-danger">*</span> </label>
                                             <Field name="access" component={CustomizedSelectForFormik}>
                                                 <MenuItem value=""><em>None</em></MenuItem>
@@ -272,7 +272,7 @@ const UserDetailPage = ({ item }) => {
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="access" />
                                             </div>
-                                        </Grid>
+                                        </Grid> */}
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="departmentName">Department <span className="text-danger">*</span> </label>
                                             <Field name="departmentName" component={CustomizedSelectForFormik}
@@ -336,6 +336,118 @@ const UserDetailPage = ({ item }) => {
                                                 <ErrorMessage name="phone" />
                                             </div>
                                         </Grid>
+                                        {/* <Grid item xs={12} md={12}>
+                                            <Accordion>
+                                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                                    <Typography variant='h4' className="accordion-Header">Access Settings</Typography>
+                                                </AccordionSummary>
+                                                <AccordionDetails>
+
+                                                    <FieldArray name="access">
+                                                        {({ remove, push }) => (
+                                                            <>
+                                                                {values.access && values.access.length > 0 &&
+                                                                    values.access.map((obj, index) => (
+                                                                        <div key={index} style={{ margin: '5px' }}>
+                                                                            <Grid container spacing={2} alignItems="center">
+                                                                                <Grid item xs={4} md={4}>
+                                                                                    <h3>{obj.object}</h3>
+                                                                                </Grid>
+                                                                                <Grid item xs={8} md={8}>
+                                                                                    <Grid container spacing={2} alignItems="center">
+                                                                                        <Grid item xs={3} md={3}>
+                                                                                            <label htmlFor={`permissionSets.${index}.permissions.read`} className="checkbox-label">
+                                                                                                Read
+                                                                                            </label>
+                                                                                            <Field
+                                                                                                type="checkbox"
+                                                                                                id={`permissionSets.${index}.permissions.read`}
+                                                                                                name={`permissionSets.${index}.permissions.read`}
+                                                                                                onChange={(e) => {
+                                                                                                    if (e.target.checked) {
+                                                                                                        console.log(e.target.checked, "if")
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.read`, e.target.value)
+                                                                                                    } else {
+                                                                                                        console.log(e.target.checked, "else")
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.read`, !e.target.value)
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.create`, !e.target.value)
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.edit`, !e.target.value)
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.delete`, !e.target.value)
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
+                                                                                        </Grid>
+                                                                                        <Grid item xs={3} md={3}>
+                                                                                            <label htmlFor={`permissionSets.${index}.permissions.create`} className="checkbox-label">
+                                                                                                Create
+                                                                                            </label>
+                                                                                            <Field
+                                                                                                type="checkbox"
+                                                                                                id={`permissionSets.${index}.permissions.create`}
+                                                                                                name={`permissionSets.${index}.permissions.create`}
+                                                                                                onChange={(e) => {
+                                                                                                    if (e.target.checked) {
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.create`, e.target.checked);
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.read`, e.target.checked);
+                                                                                                    } else {
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.create`, e.target.checked);
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
+                                                                                        </Grid>
+
+                                                                                        <Grid item xs={3} md={3}>
+                                                                                            <label htmlFor={`permissionSets.${index}.permissions.edit`} className="checkbox-label">
+                                                                                                Edit
+                                                                                            </label>
+                                                                                            <Field
+                                                                                                type="checkbox"
+                                                                                                id={`permissionSets.${index}.permissions.edit`}
+                                                                                                name={`permissionSets.${index}.permissions.edit`}
+                                                                                                onChange={(e) => {
+                                                                                                    if (e.target.checked) {
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.read`, e.target.checked);
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.edit`, e.target.checked);
+                                                                                                    } else {
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.edit`, e.target.checked);
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.delete`, e.target.checked)
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
+                                                                                        </Grid>
+                                                                                        <Grid item xs={3} md={3}>
+                                                                                            <label htmlFor={`permissionSets.${index}.permissions.delete`} className="checkbox-label">
+                                                                                                Delete
+                                                                                            </label>
+                                                                                            <Field
+                                                                                                type="checkbox"
+                                                                                                id={`permissionSets.${index}.permissions.delete`}
+                                                                                                name={`permissionSets.${index}.permissions.delete`}
+                                                                                                onChange={(e) => {
+                                                                                                    console.log(e.target.checked, "checkbox")
+                                                                                                    if (e.target.checked) {
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.read`, e.target.checked);
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.edit`, e.target.checked);
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.delete`, e.target.checked);
+                                                                                                    }
+                                                                                                    else {
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.delete`, e.target.checked);
+                                                                                                    }
+                                                                                                }}
+                                                                                            />
+                                                                                        </Grid>
+                                                                                    </Grid>
+                                                                                </Grid>
+                                                                            </Grid>
+                                                                        </div>
+                                                                    ))}
+                                                            </>
+                                                        )}
+                                                    </FieldArray>
+
+                                                </AccordionDetails>
+                                            </Accordion>
+                                        </Grid> */}
                                         {!showNew && (
                                             <>
                                                 <Grid item xs={6} md={6}>
