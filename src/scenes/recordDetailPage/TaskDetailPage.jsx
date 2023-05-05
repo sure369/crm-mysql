@@ -413,7 +413,7 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
                                             <Grid item xs={6} md={6}>
                                                 <label htmlFor="modifiedDate" >Modified Date</label>
                                                 <Field name='modifiedDate' type="text" class="form-input"
-                                                    value={values.modifiedBy.userFullName + " , " + values.createdDate} disabled />
+                                                    value={values.modifiedBy.userFullName + " , " + values.modifiedDate} disabled />
                                             </Grid>
                                         </>
                                     )}

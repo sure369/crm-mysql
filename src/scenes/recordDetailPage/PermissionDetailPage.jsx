@@ -247,7 +247,7 @@ const PermissiionSetForm = ({ item }) => {
                                                         {({ remove, push }) => (
                                                             <>
                                                                 {
-                                                                values.permissionSets && values.permissionSets.length > 0 &&
+                                                               Array.isArray(values.permissionSets) && values.permissionSets.length > 0 &&
                                                                     values.permissionSets.map((obj, index) => (
                                                                         <div key={index} style={{ margin: '5px' }}>
                                                                             <Grid container spacing={2} alignItems="center">

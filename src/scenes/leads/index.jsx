@@ -1,27 +1,10 @@
 import React, { useState, useEffect } from "react";
-import {
-  useTheme,
-  Box,
-  Button,
-  IconButton,
-  Pagination,
-  Tooltip,
-  Grid,
-  Modal,
-  Typography,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Select,
+import {  useTheme, Box, Button,IconButton, Pagination,
+          Tooltip,Grid, Modal,Typography,
+          MenuItem, FormControl, InputLabel, Select,
 } from "@mui/material";
-import {
-  DataGrid,
-  GridToolbar,
-  gridPageCountSelector,
-  gridPageSelector,
-  useGridApiContext,
-  useGridSelector,
-} from "@mui/x-data-grid";
+import { DataGrid,GridToolbar,gridPageCountSelector, gridPageSelector, 
+        useGridApiContext,useGridSelector,} from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import { useNavigate } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -38,7 +21,7 @@ import { RequestServer } from "../api/HttpReq";
 import "../recordDetailPage/Form.css";
 import { LeadMonthPicklist } from "../../data/pickLists";
 import { getPermissions } from "../Auth/getPermission";
-import NoAccess from "../Errors/NoAccess";
+import NoAccess from "../NoAccess/NoAccess";
 
 
 const Leads = () => {

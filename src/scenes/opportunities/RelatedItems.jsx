@@ -18,8 +18,7 @@ import DeleteConfirmDialog from "../toast/DeleteConfirmDialog";
 import '../recordDetailPage/Form.css'
 import { RequestServer } from "../api/HttpReq";
 import { getPermissions } from "../Auth/getPermission";
-import NoAccess from "../Errors/NoAccess";
-import NoAccessCard from "../Errors/NoAccessCard";
+import NoAccessCard from "../NoAccess/NoAccessCard";
 
 
 const OpportunityRelatedItems = ({ item }) => {

@@ -17,7 +17,7 @@ import DeleteConfirmDialog from '../toast/DeleteConfirmDialog';
 // import ExcelDownload from '../Excel';
 import { RequestServer } from '../api/HttpReq';
 import { getPermissions } from '../Auth/getPermission';
-import NoAccess from '../Errors/NoAccess';
+import NoAccess from '../NoAccess/NoAccess';
 
 const Inventories = () => {
 

@@ -32,7 +32,7 @@ function LoginLayoutIndex() {
     <>
       <AppNavbar />
       <Routes>
-        <Route path="/" exact element={<ResponsiveAccounts />} />
+        <Route path="/" exact element={<ResponsiveInventories />} />
         <Route path="/accounts" element={<ResponsiveAccounts />} />
         <Route path="/contacts" element={<ResponsiveContacts />} />
         <Route path="/deals" element={<ResponsiveOpportunities />} />

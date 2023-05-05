@@ -15,7 +15,8 @@ import DeleteConfirmDialog from "../toast/DeleteConfirmDialog";
 import '../recordDetailPage/Form.css'
 import { RequestServer } from "../api/HttpReq";
 import { getPermissions } from "../Auth/getPermission";
-import NoAccess from "../Errors/NoAccess";
+import NoAccess from "../NoAccess/NoAccess";
+import NoAccessCard from "../NoAccess/NoAccessCard";
 
 
 const LeadRelatedItems = ({ item }) => {
@@ -296,11 +297,14 @@ const LeadRelatedItems = ({ item }) => {
         <AccordionDetails>
           <Typography>
             {
-              permissionValuesTask.read ?<>
-             
+              permissionValuesTask.read ?<>             
             <div style={{ textAlign: "end", marginBottom: "5px" }}>
-              <Button variant="contained" color="info" onClick={() => handleTaskModalOpen()} >New Event</Button>
-            </div>
+              
+              {
+                permissionValuesTask.create &&
+                <Button variant="contained" color="info" onClick={() => handleTaskModalOpen()} >New Event</Button>
+              }
+                </div>
             <Card dense compoent="span" >
 
               {
@@ -386,7 +390,7 @@ const LeadRelatedItems = ({ item }) => {
               </Box>
             }
  
- </> :"No Access"
+ </> :<NoAccessCard/>
             }
           </Typography>
         </AccordionDetails>
@@ -406,19 +410,19 @@ const LeadRelatedItems = ({ item }) => {
               permissionValuesOpportunity.read ?
               <>
             <div style={{ textAlign: "end", marginBottom: "5px" }}>
+            {
+              permissionValuesOpportunity.create &&
               <Button variant="contained" color="info" onClick={() => handleOpportunityModalOpen()} >New Deal</Button>
+            } 
             </div>
             <Card dense compoent="span" >
-
               {
                 relatedOpportunity.length > 0 ?
                   relatedOpportunity
                     .slice((opportunityPerPage - 1) * opportunityItemsPerPage, opportunityPerPage * opportunityItemsPerPage)
                     .map((item) => {
-
                       return (
                         <div >
-
                           <CardContent sx={{ bgcolor: "aliceblue", m: "15px" }}>
                             <div
                               key={item._id}
@@ -489,7 +493,7 @@ const LeadRelatedItems = ({ item }) => {
             }
             
             </>
-            :"No Access"
+            :<NoAccessCard/>
             }
           </Typography>
         </AccordionDetails>

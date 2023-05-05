@@ -63,7 +63,7 @@ const ModalInventoryAccount = ({ item,handleModal }) => {
         accountName: Yup
             .string()
             .required('Required')
-            .matches(/^[A-Za-z ]*$/, 'Numeric characters not accepted')
+            // .matches(/^[A-Za-z ]*$/, 'Numeric characters not accepted')
             .max(30, 'lastName must be less than 30 characters'),
         rating: Yup
             .string()

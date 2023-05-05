@@ -54,14 +54,14 @@ const ModalConAccount = ({ item, handleModal }) => {
     const validationSchema = Yup.object({
         firstName: Yup
             .string()
-            .matches(/^[A-Za-z ]*$/, 'Numeric characters not accepted')
-            .max(15, 'lastName must be less than 15 characters'),
+            // .matches(/^[A-Za-z ]*$/, 'Numeric characters not accepted')
+            .max(30, 'lastName must be less than 15 characters'),
         lastName: Yup
             .string()
             .required('Required')
-            .matches(/^[A-Za-z ]*$/, 'Numeric characters not accepted')
+            // .matches(/^[A-Za-z ]*$/, 'Numeric characters not accepted')
             .min(3, 'lastName must be more than 3 characters')
-            .max(15, 'lastName must be less than 15 characters'),
+            .max(30, 'lastName must be less than 15 characters'),
         phone: Yup
             .string()
             .matches(phoneRegExp, 'Phone number is not valid')

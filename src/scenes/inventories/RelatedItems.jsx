@@ -13,8 +13,7 @@ import ModalInventoryAccount from "../accounts/ModalAccountInventory";
 import '../recordDetailPage/Form.css'
 import { RequestServer } from "../api/HttpReq";
 import { getPermissions } from "../Auth/getPermission";
-import NoAccess from "../Errors/NoAccess";
-import NoAccessCard from "../Errors/NoAccessCard";
+import NoAccessCard from "../NoAccess/NoAccessCard";
 
 const InventoryRelatedItems = ({ item }) => {
 
