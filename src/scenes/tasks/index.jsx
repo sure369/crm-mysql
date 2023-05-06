@@ -18,8 +18,8 @@ import NoAccess from '../NoAccess/NoAccess';
 
 const Task = () => {
 
-  const urlDelete = `${process.env.REACT_APP_SERVER_URL}/deleteTask?code=`;
-  const urlTask = `${process.env.REACT_APP_SERVER_URL}/Task`;
+  const urlDelete = `/deleteTask?code=`;
+  const urlTask = `/Task`;
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -46,7 +46,7 @@ const Task = () => {
   );
 
   const fetchRecords = () => {
-    RequestServer("post", urlTask, null, {})
+    RequestServer(urlTask)
       .then((res) => {
         console.log(res, "index page res")
         if (res.success) {
@@ -101,7 +101,7 @@ const Task = () => {
 
   const onebyoneDelete = (row) => {
     console.log('onebyoneDelete rec id', row)
-    RequestServer("post", urlDelete + row)
+    RequestServer(urlDelete + row)
       .then((res) => {
         if (res.success) {
           fetchRecords()

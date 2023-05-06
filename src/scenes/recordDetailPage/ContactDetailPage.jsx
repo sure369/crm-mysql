@@ -7,7 +7,7 @@ import {
     Modal, Box, Autocomplete, TextField, IconButton, MenuItem
 } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom"
-import axios from 'axios'
+
 // import "../formik/FormStyles.css"
 import EmailModalPage from './EmailModalPage';
 import ToastNotification from '../toast/ToastNotification';
@@ -22,9 +22,10 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import './Form.css'
 import { ContactInitialValues, ContactSavedValues } from '../formik/InitialValues/formValues';
 import { getPermissions } from '../Auth/getPermission';
+import { RequestServer } from '../api/HttpReq';
 
-const url = `${process.env.REACT_APP_SERVER_URL}/UpsertContact`;
-const fetchAccountsbyName = `${process.env.REACT_APP_SERVER_URL}/accountsname`;
+const url = `/UpsertContact`;
+const fetchAccountsbyName = `/accountsname?searchKey=`;
 
 const ContactDetailPage = ({ item }) => {
 
@@ -114,17 +115,31 @@ const ContactDetailPage = ({ item }) => {
         }
         console.log('after change form submission value', values);
 
-        axios.post(url, values)
+       RequestServer(url, values)
             .then((res) => {
                 console.log('upsert record  response', res);
-                setNotify({
-                    isOpen: true,
-                    message: res.data,
-                    type: 'success'
-                })
-                setTimeout(() => {
-                    navigate(-1);
-                }, 2000)
+                if (res.success) {
+                    console.log("res success", res)
+                    setNotify({
+                        isOpen: true,
+                        message: res.data,
+                        type: 'success'
+                    })
+                    setTimeout(() => {
+                        navigate(-1);
+                    }, 2000)
+                }
+                else {
+                    console.log("res else success", res)
+                    setNotify({
+                        isOpen: true,
+                        message: res.error.message,
+                        type: 'error'
+                    })
+                    setTimeout(() => {
+                        navigate(-1);
+                    }, 1000)
+                }               
             })
             .catch((error) => {
                 console.log('upsert record error', error);
@@ -133,21 +148,35 @@ const ContactDetailPage = ({ item }) => {
                     message: error.message,
                     type: 'error'
                 })
+                setTimeout(() => {
+                    navigate(-1);
+                }, 1000)
             })
     }
 
     const FetchAccountsbyName = (newInputValue) => {
 
-        axios.post(`${fetchAccountsbyName}?searchKey=${newInputValue}`)
-            .then((res) => {
-                console.log('res fetchAccountsbyName', res.data)
-                if (typeof (res.data) === "object") {
-                    setAccNames(res.data)
-                }
-            })
-            .catch((error) => {
-                console.log('error fetchAccountsbyName', error);
-            })
+        RequestServer(fetchAccountsbyName+newInputValue)
+        .then(res=>{
+            if(res.success){
+                setAccNames(res.data)
+            }else{
+                console.log("status error",res.error.message)
+            }
+        })
+        .catch((error)=>{
+            console.log("error fetchAccountsbyName",error)
+        })
+        // axios.post(`${fetchAccountsbyName}?searchKey=${newInputValue}`)
+        //     .then((res) => {
+        //         console.log('res fetchAccountsbyName', res.data)
+        //         if (typeof (res.data) === "object") {
+        //             setAccNames(res.data)
+        //         }
+        //     })
+        //     .catch((error) => {
+        //         console.log('error fetchAccountsbyName', error);
+        //     })
     }
 
     const handleFormClose = () => {

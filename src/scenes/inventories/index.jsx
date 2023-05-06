@@ -21,8 +21,8 @@ import NoAccess from '../NoAccess/NoAccess';
 
 const Inventories = () => {
 
-  const urlDelete = `${process.env.REACT_APP_SERVER_URL}/deleteInventory?code=`;
-  const urlInventory = `${process.env.REACT_APP_SERVER_URL}/inventories`;
+  const urlDelete = `/deleteInventory?code=`;
+  const urlInventory = `/inventories`;
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -48,7 +48,7 @@ const Inventories = () => {
   }, []);
 
   const fetchRecords = () => {
-    RequestServer("post", urlInventory, null, {},'inventories')
+    RequestServer(urlInventory)
       .then((res) => {
         console.log("index page", res)
         if (res.success) {
@@ -108,7 +108,7 @@ const Inventories = () => {
 
     console.log('one by one Delete row', row)
 
-    RequestServer("post", urlDelete + row, {}, null)
+    RequestServer(urlDelete + row)
       .then((res) => {
         if (res.success) {
           fetchRecords();

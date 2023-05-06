@@ -18,9 +18,9 @@ import NoAccess from '../NoAccess/NoAccess';
 
 
 const Opportunities = () => {
-  const urlOpportunity = `${process.env.REACT_APP_SERVER_URL}/opportunities`;
-  const urlFilterOpportunity = `${process.env.REACT_APP_SERVER_URL}/opportunitiesFilter?code=`;
-  const urlDelete = `${process.env.REACT_APP_SERVER_URL}/deleteOpportunity?code=`;
+  const urlOpportunity = `/opportunities`;
+  const urlFilterOpportunity = `/opportunitiesFilter?code=`;
+  const urlDelete = `/deleteOpportunity?code=`;
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -28,17 +28,9 @@ const Opportunities = () => {
   const [records, setRecords] = useState([]);
   const [fetchLoading, setFetchLoading] = useState(true);
   const [fetchError,setFetchError]=useState()
-  const [notify, setNotify] = useState({
-    isOpen: false,
-    message: "",
-    type: "",
-  });
+  const [notify, setNotify] = useState({isOpen: false, message: "", type: "", });
   //dialog
-  const [confirmDialog, setConfirmDialog] = useState({
-    isOpen: false,
-    title: "",
-    subTitle: "",
-  });
+  const [confirmDialog, setConfirmDialog] = useState({isOpen: false,title: "",subTitle: "",});
 
   const [showDelete, setShowDelete] = useState(false);
   const [selectedRecordIds, setSelectedRecordIds] = useState();
@@ -57,7 +49,7 @@ const Opportunities = () => {
   }, []);
 
   const fetchRecords = () => {
-    RequestServer("post",urlOpportunity,null,{})
+    RequestServer(urlOpportunity)
     .then((res)=>{
       console.log(res,"index page res")
       if(res.success){
@@ -114,7 +106,7 @@ const Opportunities = () => {
   const onebyoneDelete = (row) => {
     console.log("onebyoneDelete rec id", row);
 
-    RequestServer("post",urlDelete+row)
+    RequestServer(urlDelete+row)
     .then((res)=>{
       if(res.success){
         fetchRecords()

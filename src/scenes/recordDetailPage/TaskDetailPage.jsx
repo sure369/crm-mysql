@@ -3,7 +3,6 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Grid, Button, DialogActions, Autocomplete, TextField, MenuItem } from "@mui/material";
-import axios from 'axios'
 import "../formik/FormStyles.css"
 import PreviewFile from "../formik/PreviewFile";
 import ToastNotification from "../toast/ToastNotification";
@@ -16,12 +15,13 @@ import CustomizedSelectDisableForFormik from "../formik/CustomizedSelectDisableF
 import './Form.css'
 import { TaskInitialValues, TaskSavedValues } from "../formik/InitialValues/formValues";
 import { getPermissions } from '../Auth/getPermission';
+import { RequestServer } from "../api/HttpReq";
 
 
-const UpsertUrl = `${process.env.REACT_APP_SERVER_URL}/UpsertTask`;
-const fetchAccountUrl = `${process.env.REACT_APP_SERVER_URL}/accountsname`;
-const fetchLeadUrl = `${process.env.REACT_APP_SERVER_URL}/LeadsbyName`;
-const fetchOpportunityUrl = `${process.env.REACT_APP_SERVER_URL}/opportunitiesbyName`;
+const UpsertUrl = `/UpsertTask`;
+const fetchAccountUrl = `/accountsname?searchKey=`;
+const fetchLeadUrl = `/LeadsbyName?searchKey=`;
+const fetchOpportunityUrl = `/opportunitiesbyName?searchKey=`;
 
 const TaskDetailPage = ({ item, handleModal, showModel }) => {
 
@@ -160,17 +160,30 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
         }
         console.log('after change form submission value', values);
 
-        await axios.post(UpsertUrl, values)
+        await RequestServer(UpsertUrl, values)
             .then((res) => {
                 console.log('task form Submission  response', res);
-                setNotify({
-                    isOpen: true,
-                    message: res.data,
-                    type: 'success'
-                })
-                setTimeout(() => {
-                    navigate(-1);
-                }, 2000)
+                if (res.success) {
+                    console.log("res success", res)
+                    setNotify({
+                        isOpen: true,
+                        message: res.data,
+                        type: 'success'
+                    })
+                    setTimeout(() => {
+                        navigate(-1);
+                    }, 2000)
+                } else {
+                    console.log("res else success", res)
+                    setNotify({
+                        isOpen: true,
+                        message: res.error.message,
+                        type: 'error'
+                    })
+                    setTimeout(() => {
+                        navigate(-1);
+                    }, 2000)
+                }
             })
             .catch((error) => {
                 console.log('task form Submission  error', error);
@@ -179,6 +192,9 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
                     message: error.message,
                     type: 'error'
                 })
+                setTimeout(() => {
+                    navigate(-1);
+                }, 1000)
             })
     }
 
@@ -200,11 +216,13 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
 
         console.log('passed url', url)
         console.log('new Input  value', newInputValue)
-        axios.post(`${url}?searchKey=${newInputValue}`)
+        RequestServer(url + newInputValue)
             .then((res) => {
                 console.log('res Fetch Objects byName', res.data)
-                if (typeof (res.data) === "object") {
+                if (res.success) {
                     setRelatedRecNames(res.data)
+                } else {
+                    console.log("res status error", res.error.message)
                 }
             })
             .catch((error) => {
@@ -231,7 +249,7 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
                 onSubmit={(values, { resetForm }) => formSubmission(values, { resetForm })}
             >
                 {(props) => {
-                    const {values,dirty,isSubmitting,handleChange,handleSubmit, handleReset,setFieldValue,} = props;
+                    const { values, dirty, isSubmitting, handleChange, handleSubmit, handleReset, setFieldValue, } = props;
 
                     return (
                         <>
@@ -422,9 +440,9 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
                                     <DialogActions sx={{ justifyContent: "space-between" }}>
                                         {
                                             showNew ?
-                                                <Button type='success' variant="contained" color="secondary" disabled={isSubmitting ||!dirty}>Save</Button>
+                                                <Button type='success' variant="contained" color="secondary" disabled={isSubmitting || !dirty}>Save</Button>
                                                 :
-                                                <Button type='success' variant="contained" color="secondary" disabled={isSubmitting||!dirty}>Update</Button>
+                                                <Button type='success' variant="contained" color="secondary" disabled={isSubmitting || !dirty}>Update</Button>
                                         }
                                         <Button type="reset" variant="contained" onClick={handleClosePage}  >Cancel</Button>
                                     </DialogActions>

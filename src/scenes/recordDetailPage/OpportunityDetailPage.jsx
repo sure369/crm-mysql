@@ -4,7 +4,6 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Grid, Button, Forminput, DialogActions, TextField, Autocomplete, MenuItem } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom"
-import axios from 'axios'
 import "../formik/FormStyles.css"
 import ToastNotification from '../toast/ToastNotification';
 import { LeadSourcePickList, OppStagePicklist, OppTypePicklist } from '../../data/pickLists';
@@ -15,10 +14,11 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import './Form.css'
 import { OpportunityInitialValues, OpportunitySavedValues } from '../formik/InitialValues/formValues';
 import { getPermissions } from '../Auth/getPermission';
+import { RequestServer } from '../api/HttpReq';
 
-const url = `${process.env.REACT_APP_SERVER_URL}/UpsertOpportunity`;
-const fetchLeadsbyName = `${process.env.REACT_APP_SERVER_URL}/LeadsbyName`;
-const fetchInventoriesbyName = `${process.env.REACT_APP_SERVER_URL}/InventoryName`;
+const url = `/UpsertOpportunity`;
+const fetchLeadsbyName = `/LeadsbyName?searchKey=`;
+const fetchInventoriesbyName = `/InventoryName?searchKey=`;
 
 
 const OpportunityDetailPage = ({ item }) => {
@@ -120,17 +120,30 @@ const OpportunityDetailPage = ({ item }) => {
         }
         console.log('after change form submission value', values);
 
-        axios.post(url, values)
+        RequestServer(url, values)
             .then((res) => {
                 console.log('post response', res);
-                setNotify({
-                    isOpen: true,
-                    message: res.data,
-                    type: 'success'
-                })
-                setTimeout(() => {
-                    navigate(-1);
-                }, 2000)
+                if(res.success){
+                    console.log("res success", res)
+                    setNotify({
+                        isOpen: true,
+                        message: res.data,
+                        type: 'success'
+                    })
+                    setTimeout(() => {
+                        navigate(-1);
+                    }, 2000)
+                }else {
+                    console.log("res else success", res)
+                    setNotify({
+                        isOpen: true,
+                        message: res.error.message,
+                        type: 'error'
+                    })
+                    setTimeout(() => {
+                        navigate(-1);
+                    }, 1000)
+                }
             })
             .catch((error) => {
                 console.log('error', error);
@@ -139,17 +152,22 @@ const OpportunityDetailPage = ({ item }) => {
                     message: error.message,
                     type: 'error'
                 })
+                setTimeout(() => {
+                    navigate(-1);
+                }, 1000)
             })
     }
 
     const FetchLeadsbyName = (newInputValue) => {
         console.log('inside FetchLeadsbyName fn');
         console.log('newInputValue', newInputValue)
-        axios.post(`${fetchLeadsbyName}?searchKey=${newInputValue}`)
+        RequestServer(fetchLeadsbyName +newInputValue)
             .then((res) => {
                 console.log('res fetchLeadsbyName', res.data)
-                if (typeof (res.data) === "object") {
+                if (res.success) {
                     setLeadsRecords(res.data)
+                }else{
+                    console.log("fetchLeadsbyName status error",res.error.message)
                 }
             })
             .catch((error) => {
@@ -158,11 +176,13 @@ const OpportunityDetailPage = ({ item }) => {
     }
 
     const FetchInventoriesbyName = (newInputValue) => {
-        axios.post(`${fetchInventoriesbyName}?searchKey=${newInputValue}`)
+        RequestServer(fetchInventoriesbyName+newInputValue)
             .then((res) => {
-                console.log('res fetch Inventoriesby Name', res.data)
-                if (typeof (res.data) === "object") {
+                console.log('res fetchInventoriesbyName', res.data)
+                if (res.success) {
                     setInventoriesRecord(res.data)
+                }else{
+                    console.log("FetchInventoriesbyName status error",res.error.message)
                 }
             })
             .catch((error) => {

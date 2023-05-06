@@ -4,18 +4,18 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Grid, Button, DialogActions, Box, TextField, Autocomplete, MenuItem, Select } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom"
-import axios from 'axios'
 import "./Form.css";
 import { IndustryPickList, AccRatingPickList, AccTypePickList, AccCitiesPickList, AccCountryPickList } from '../../data/pickLists'
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 import ToastNotification from '../toast/ToastNotification';
 import { AccountInitialValues, AccountSavedValues } from '../formik/InitialValues/formValues';
 import { getPermissions } from '../Auth/getPermission';
+import {RequestServer} from "../api/HttpReq"
 
-const url = `${process.env.REACT_APP_SERVER_URL}/UpsertAccount`;
-const fetchInventoriesbyName = `${process.env.REACT_APP_SERVER_URL}/InventoryName`;
-const getCountryPicklists = `${process.env.REACT_APP_SERVER_URL}/getpicklistcountry`;
-const getCityPicklists = `${process.env.REACT_APP_SERVER_URL}/getpickliststate?country=`;
+const url = `/UpsertAccount`;
+const fetchInventoriesbyName = `/InventoryName?searchKey=`;
+const getCountryPicklists = `/getpicklistcountry`;
+const getCityPicklists = `/getpickliststate?country=`;
 
 const AccountDetailPage = ({ item }) => {
 
@@ -24,9 +24,7 @@ const AccountDetailPage = ({ item }) => {
     const navigate = useNavigate();
     const [showNew, setshowNew] = useState()
     const [inventoriesRecord, setInventoriesRecord] = useState([]);
-    // notification
     const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
-    //const city
     const [countryPicklist, setCountriesPicklist] = useState([])
     const [cityPicklist, setCitiesPicklist] = useState([])
     const [permissionValues,setPermissionValues]=useState({})
@@ -79,22 +77,29 @@ const AccountDetailPage = ({ item }) => {
 
 
     const getCountriesPicklist = () => {
-        axios.post(getCountryPicklists)
-            .then((res) => {
-                console.log('get country res', res.data)
+
+        RequestServer(getCountryPicklists)
+        .then(res=>{
+            if(res.success){
                 setCountriesPicklist(res.data)
-            })
-            .catch((error) => {
-                console.log('get country error', error)
-            })
+            }else{
+                console.log("getCountry status error",res.error.message)
+            }
+        })
+        .catch(error=>{
+            console.log('get country error',error)
+        })
     }
 
     const getCitiesPicklist = (country) => {
         console.log('selected country', country)
-        axios.post(`${getCityPicklists}${country}&table=Account`)
-            .then((res) => {
-                console.log('get city res', res.data)
-                setCitiesPicklist(res.data)
+        RequestServer(`${getCityPicklists}${country}&table=Account`)
+            .then(res => {
+                if (res.success) {
+                    setCitiesPicklist(res.data)
+                } else {
+                    console.log("getCities status error", res.error.message)
+                }
             })
             .catch((error) => {
                 console.log('get city error', error)
@@ -110,7 +115,6 @@ const AccountDetailPage = ({ item }) => {
         let createDateSec = new Date(values.createdDate).getTime()
 
         if (showNew) {
-
             values.modifiedDate = dateSeconds;
             values.createdDate = dateSeconds;
             values.createdBy = (sessionStorage.getItem("loggedInUser"));
@@ -130,42 +134,60 @@ const AccountDetailPage = ({ item }) => {
         }
 
         console.log('after change form submission value', values);
-
-        axios.post(url, values)
-            .then((res) => {
-                console.log('upsert record  response', res);
+        
+        RequestServer(url,values)
+            .then(res => {
+                console.log(res, "detailPage res")
+                if (res.success) {
+                    console.log("res success", res)
+                    setNotify({
+                        isOpen: true,
+                        message: res.data,
+                        type: 'success'
+                    })
+                    setTimeout(() => {
+                        navigate(-1);
+                    }, 2000)
+                }
+                else {
+                    console.log("res else success", res)
+                    setNotify({
+                        isOpen: true,
+                        message: res.error.message,
+                        type: 'error'
+                    })
+                    setTimeout(() => {
+                        navigate(-1);
+                    }, 1000)
+                }
+            })
+            .catch(err => {
+                console.log("detailPage err", err)
                 setNotify({
                     isOpen: true,
-                    message: res.data,
-                    type: 'success'
+                    message: err.message,
+                    type: 'error'
                 })
                 setTimeout(() => {
                     navigate(-1);
-                }, 2000)
-            })
-            .catch((error) => {
-                console.log('upsert record  error', error);
-                setNotify({
-                    isOpen: true,
-                    message: error.message,
-                    type: 'error'
-                })
+                }, 1000)
             })
     }
 
     const FetchInventoriesbyName = (newInputValue) => {
-        axios.post(`${fetchInventoriesbyName}?searchKey=${newInputValue}`)
-            .then((res) => {
-                console.log('res fetchInventoriesbyName', res.data)
-                if (typeof (res.data) === "object") {
-                    setInventoriesRecord(res.data)
-                }
-            })
-            .catch((error) => {
-                console.log('error fetchInventoriesbyName', error);
-            })
+       
+        RequestServer(fetchInventoriesbyName+newInputValue)
+        .then((res)=>{
+            if(res.success){
+                setInventoriesRecord(res.data)
+            }else{
+                console.log("status error",res.error.message)
+            }
+        })
+        .catch((error)=>{
+            console.log("error fetchInventoriesbyName",error)
+        })
     }
-
     const handleFormClose = () => {
         navigate(-1)
     }

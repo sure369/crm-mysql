@@ -7,7 +7,7 @@ const  CustomizedSelectForFormik = ({ children, form, field,...props }) => {
 
     //  console.log('form',form);
     //  console.log('field',field);
-     console.log('props',props)
+    //  console.log('props',props)
     
 
   const { name, value } = field;

@@ -5,16 +5,16 @@ import * as Yup from "yup";
 import { Grid, Button, DialogActions,MenuItem } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom"
 import './Form.css'
-import axios from 'axios';
 import ToastNotification from '../toast/ToastNotification';
 import { InvCitiesPickList,InvCountryPickList, InvStatusPicklist, InvTypePicklist } from '../../data/pickLists';
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 import { InventoryInitialValues, InventorySavedValues } from '../formik/InitialValues/formValues';
 import { getPermissions } from '../Auth/getPermission';
+import { RequestServer } from '../api/HttpReq';
 
-const url = `${process.env.REACT_APP_SERVER_URL}/UpsertInventory`;
-const getCountryPicklists= `${process.env.REACT_APP_SERVER_URL}/getpicklistcountry`;
-const getCityPicklists = `${process.env.REACT_APP_SERVER_URL}/getpickliststate?country=`;
+const url = `/UpsertInventory`;
+const getCountryPicklists= `/getpicklistcountry`;
+const getCityPicklists = `$/getpickliststate?country=`;
 
 const InventoryDetailPage = ({ item }) => {
 
@@ -46,10 +46,14 @@ const InventoryDetailPage = ({ item }) => {
     const savedValues=InventorySavedValues(singleInventory)
 
     const getCountriesPicklist=()=>{
-        axios.post(getCountryPicklists)
+        RequestServer(getCountryPicklists)
         .then((res)=>{
-            console.log('get country res',res.data)
-            setCountriesPicklist(res.data)
+            console.log('get country res',res)
+            if(res.success){               
+                setCountriesPicklist(res.data)
+            }else{
+                console.log("getCountry status error",res.error.message)
+            }
         })
         .catch((error)=>{
             console.log('get country error',error)
@@ -58,10 +62,14 @@ const InventoryDetailPage = ({ item }) => {
 
     const getCitiesPicklist=(country)=>{
         console.log('selected country',country)
-        axios.post(`${getCityPicklists}${country}&table=Account`)
+        RequestServer(`${getCityPicklists}${country}&table=Account`)
         .then((res)=>{
             console.log('get city res',res.data)
-            setCitiesPicklist(res.data)
+            if(res.success){
+                setCitiesPicklist(res.data)
+            }else{
+                console.log("get city status error",res.error.message)
+            }           
         })    
         .catch((error)=>{
             console.log('get city error',error)
@@ -105,17 +113,30 @@ const InventoryDetailPage = ({ item }) => {
 
         console.log('after change form submission value', values);
 
-        axios.post(url, values)
+        RequestServer(url, values)
             .then((res) => {
                 console.log('upsert record  response', res);
-                setNotify({
-                    isOpen: true,
-                    message: res.data,
-                    type: 'success'
-                })
-                setTimeout(() => {
-                    navigate(-1);
-                }, 2000)
+                if(res.success){
+                    console.log("res success",res)
+                    setNotify({
+                        isOpen: true,
+                        message: res.data,
+                        type: 'success'
+                    })
+                    setTimeout(() => {
+                        navigate(-1);
+                    }, 2000)
+                }else{
+                    console.log("res else success", res)
+                    setNotify({
+                        isOpen: true,
+                        message: res.error.message,
+                        type: 'error'
+                    })
+                    setTimeout(() => {
+                        navigate(-1);
+                    }, 1000)
+                }                
             })
             .catch((error) => {
                 console.log('upsert record  error', error);
@@ -124,6 +145,9 @@ const InventoryDetailPage = ({ item }) => {
                     message: error.message,
                     type: 'error'
                 })
+                setTimeout(() => {
+                    navigate(-1);
+                }, 1000)
             })
     }
 
@@ -148,15 +172,7 @@ const InventoryDetailPage = ({ item }) => {
                     onSubmit={(values) => { formSubmission(values) }}
                 >
                     {(props) => {
-                        const {
-                            values,
-                            dirty,
-                            isSubmitting,
-                            handleChange,
-                            handleSubmit,
-                            handleReset,
-                            setFieldValue,
-                        } = props;
+                        const {values,dirty, isSubmitting, handleChange,handleSubmit,handleReset,setFieldValue,errors,touched,} = props;
 
                         return (
                             <>

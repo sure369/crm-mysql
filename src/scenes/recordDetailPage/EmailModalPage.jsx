@@ -3,16 +3,15 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Grid, Button, DialogActions, } from "@mui/material";
-import axios from 'axios'
 // import "../formik/FormStyles.css"
 import ToastNotification from "../toast/ToastNotification";
 import { convert } from "html-to-text";
 import CustomizedRichTextField from "../formik/CustomizedRichTextField";
  import '../recordDetailPage/Form.css'
 import {EmailInitialValues} from '../formik/InitialValues/formValues';
+import { RequestServer } from "../api/HttpReq";
 
-
-const urlSendEmailbulk = `${process.env.REACT_APP_SERVER_URL}/bulkemail`
+const urlSendEmailbulk = `/bulkemail`
 
 const EmailModalPage = ({ data, handleModal, bulkMail }) => {
 
@@ -35,13 +34,6 @@ const EmailModalPage = ({ data, handleModal, bulkMail }) => {
 
     const initialValues =EmailInitialValues
 
-    // const initialValues = {
-    //     subject: '',
-    //     htmlBody: '',
-    //     recordsData: '',
-    //     attachments: ''
-    // }
-
     const validationSchema = Yup.object({
         subject: Yup
             .string()
@@ -59,13 +51,6 @@ const EmailModalPage = ({ data, handleModal, bulkMail }) => {
 
         const convertText = convert(values.htmlBody, HTMLbodyOptions);
         console.log('convertText',convertText)
-//         var p= values.htmlBody
-//         var parser = new DOMParser();
-// var htmlDoc = parser.parseFromString(p, 'text/html');
-// console.log('html body',htmlDoc.body.getElementsByTagName("P")[0].innerText);
-
-
-
         let mergeBody = `Hai ${element.fullName},`+ '\n'+"\n"+ convertText
 
         let formData = new FormData();
@@ -75,26 +60,28 @@ const EmailModalPage = ({ data, handleModal, bulkMail }) => {
         // formData.append('recordsData', JSON.stringify(element));
         formData.append('file', values.attachments);
 
-        axios.post(urlSendEmailbulk, formData)
+        RequestServer(urlSendEmailbulk, formData)
             .then((res) => {
                 console.log('email send res', res)
-                if(res.data){
+                if(res.success){
                     setNotify({
                         isOpen: true,
                         message: res.data,
                         type: 'success'
                     })
+                    setTimeout(() => {
+                        handleModal(false)
+                    }, 2000)
                 }else{
                     setNotify({
                         isOpen: true,
-                        message: "Mail sent Succesfully",
-                        type: 'success'
+                        message: res.error.message,
+                        type: 'error'
                     })
-                }
-               
-                setTimeout(() => {
-                    handleModal(false)
-                }, 2000)
+                    setTimeout(() => {
+                        handleModal(false)
+                    }, 2000)
+                }                  
             })
             .catch((error) => {
                 console.log('email send error', error);
@@ -103,6 +90,9 @@ const EmailModalPage = ({ data, handleModal, bulkMail }) => {
                     message: error.message,
                     type: 'error'
                 })
+                setTimeout(() => {
+                    handleModal(false)
+                }, 2000)
             })
        
     }
@@ -136,10 +126,8 @@ const EmailModalPage = ({ data, handleModal, bulkMail }) => {
                     validationSchema={validationSchema}
                     onSubmit={(values, { resetForm }) => formSubmission(values, { resetForm })}
                 >
-                    {(props) => {
-                        const {
-                            isSubmitting, setFieldValue,dirty,isValid
-                        } = props;
+                   {(props) => {
+                        const {values,dirty, isSubmitting, handleChange,handleSubmit,handleReset,setFieldValue,errors,touched,} = props;
 
                         return (
                             <>

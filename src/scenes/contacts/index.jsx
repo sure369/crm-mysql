@@ -6,7 +6,6 @@ import {
   useGridApiContext, useGridSelector
 } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -23,8 +22,8 @@ import NoAccess from '../NoAccess/NoAccess';
 
 const Contacts = () => {
 
-  const urlContact = `${process.env.REACT_APP_SERVER_URL}/contacts`;
-  const urlDelete = `${process.env.REACT_APP_SERVER_URL}/deleteContact?code=`;
+  const urlContact = `/contacts`;
+  const urlDelete = `/deleteContact?code=`;
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -51,7 +50,7 @@ const Contacts = () => {
   }, []);
 
   const fetchRecords = () => {
-    RequestServer("post", urlContact, null, {})
+    RequestServer(urlContact)
       .then((res) => {
         console.log(res, "index page res")
         if (res.success) {
@@ -108,7 +107,7 @@ const Contacts = () => {
   const onebyoneDelete = (row) => {
     console.log('one by on delete', row)
 
-    RequestServer("post", urlDelete + row)
+    RequestServer(urlDelete + row)
       .then((res) => {
         if (res.success) {
           fetchRecords()

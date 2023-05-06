@@ -14,10 +14,10 @@ import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 import { RolesCategories, RolesDepartment, UserAccessPicklist, UserRolePicklist } from '../../data/pickLists';
 import './Form.css'
 import { RoleInitialValues, RoleSavedValues } from '../formik/InitialValues/formValues';
+import { RequestServer } from '../api/HttpReq';
 
-
-const url = `${process.env.REACT_APP_SERVER_URL}/upsertRole`;
-const urlSendEmailbulk = `${process.env.REACT_APP_SERVER_URL}/bulkemail`
+const url = `/upsertRole`;
+const urlSendEmailbulk = `/bulkemail`
 
 
 const RoleDetailPage = ({ item }) => {
@@ -29,13 +29,13 @@ const RoleDetailPage = ({ item }) => {
     const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
 
     useEffect(() => {
-        console.log('passed record', location.state.record.item);   
-        setsingleRole( location.state?.record?.item ?? {});
+        console.log('passed record', location.state.record.item);
+        setsingleRole(location.state?.record?.item ?? {});
         setshowNew(!location.state.record.item)
     }, [])
 
     const initialValues = RoleInitialValues
-    const savedValues =RoleSavedValues(singleRole)
+    const savedValues = RoleSavedValues(singleRole)
 
     const validationSchema = Yup.object({
         roleName: Yup
@@ -46,7 +46,7 @@ const RoleDetailPage = ({ item }) => {
             .required('Required'),
     })
 
-  
+
     const formSubmission = (values) => {
 
         console.log('form submission value', values);
@@ -58,30 +58,40 @@ const RoleDetailPage = ({ item }) => {
             values.modifiedDate = dateSeconds;
             values.createdDate = dateSeconds;
             values.createdBy = (sessionStorage.getItem("loggedInUser"));
-            values.modifiedBy = (sessionStorage.getItem("loggedInUser"));       
-           
+            values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
+
         }
         else if (!showNew) {
             values.modifiedDate = dateSeconds;
             values.createdDate = createDateSec;
             values.createdBy = singleRole.createdBy;
             values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
-           
+
         }
         console.log('after change form submission value', values);
 
-        axios.post(url, values)
+        RequestServer(url, values)
             .then((res) => {
                 console.log('upsert record  response', res);
-                setNotify({
-                    isOpen: true,
-                    message: res.data,
-                    type: 'success'
-                })
-                setTimeout(() => {
-                    navigate(-1);
-                }, 2000)
-
+                if (res.success) {
+                    setNotify({
+                        isOpen: true,
+                        message: res.data,
+                        type: 'success'
+                    })
+                    setTimeout(() => {
+                        navigate(-1);
+                    }, 2000)
+                } else {
+                    setNotify({
+                        isOpen: true,
+                        message: res.error.message,
+                        type: 'error'
+                    })
+                    setTimeout(() => {
+                        navigate(-1);
+                    }, 2000)
+                }
             })
             .catch((error) => {
                 console.log('upsert record  error', error);
@@ -90,6 +100,9 @@ const RoleDetailPage = ({ item }) => {
                     message: error.message,
                     type: 'error'
                 })
+                setTimeout(() => {
+                    navigate(-1);
+                }, 2000)
             })
     }
 
@@ -112,15 +125,7 @@ const RoleDetailPage = ({ item }) => {
                     onSubmit={(values) => { formSubmission(values) }}
                 >
                     {(props) => {
-                        const {
-                            values,
-                            dirty,
-                            isSubmitting,
-                            handleChange,
-                            handleSubmit,
-                            handleReset,
-                            setFieldValue,
-                        } = props;
+                        const { values, dirty, isSubmitting, handleChange, handleSubmit, handleReset, setFieldValue, errors, touched, } = props;
 
                         return (
                             <>

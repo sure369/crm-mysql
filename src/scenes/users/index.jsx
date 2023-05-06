@@ -16,8 +16,8 @@ import { RequestServer } from '../api/HttpReq';
 
 const Users = () => {
 
-  const urlDelete = `${process.env.REACT_APP_SERVER_URL}/delete?code=`;
-  const urlUsers = `${process.env.REACT_APP_SERVER_URL}/Users`;
+  const urlDelete = `/delete?code=`;
+  const urlUsers = `/Users`;
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -42,7 +42,7 @@ const Users = () => {
   );
 
   const fetchRecords = () => {
-    RequestServer("post",urlUsers,null,{})
+    RequestServer(urlUsers)
     .then((res)=>{
       console.log(res,"index page res")
       if(res.success){
@@ -122,7 +122,7 @@ const Users = () => {
   const onebyoneDelete = (row) => {
     console.log('onebyoneDelete rec id', row)
 
-    RequestServer("post",urlDelete+row)
+    RequestServer(urlDelete+row)
     .then((res)=>{
       if(res.success){
         fetchRecords()

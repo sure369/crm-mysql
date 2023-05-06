@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom';
-import { Formik, Form, Field, ErrorMessage,FieldArray } from "formik";
+import { Formik, Form, Field, ErrorMessage, FieldArray } from "formik";
 import * as Yup from "yup";
 import {
     Grid, Button, Forminput, DialogActions, MenuItem,
-    AccordionDetails,Typography,TextField, 
-    Autocomplete, Select,Accordion,AccordionSummary,
+    AccordionDetails, Typography, TextField,
+    Autocomplete, Select, Accordion, AccordionSummary,
 } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useParams, useNavigate } from "react-router-dom"
@@ -16,11 +16,11 @@ import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 import { RolesDepartment, UserAccessPicklist, UserRolePicklist } from '../../data/pickLists';
 import './Form.css'
 import { UserInitialValues, UserSavedValues } from '../formik/InitialValues/formValues';
+import { RequestServer } from '../api/HttpReq';
 
-
-const url = `${process.env.REACT_APP_SERVER_URL}/UpsertUser`;
-const urlgetRolesByDept=`${process.env.REACT_APP_SERVER_URL}/roles`;
-const urlSendEmailbulk = `${process.env.REACT_APP_SERVER_URL}/bulkemail`
+const url = `/UpsertUser`;
+const urlgetRolesByDept = `/roles`;
+const urlSendEmailbulk = `/bulkemail`
 
 
 const UserDetailPage = ({ item }) => {
@@ -32,17 +32,17 @@ const UserDetailPage = ({ item }) => {
     const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
 
     const [usersRecord, setUsersRecord] = useState([])
-    const [roleRecords,setRoleRecords]=useState([])
+    const [roleRecords, setRoleRecords] = useState([])
 
     useEffect(() => {
         console.log('passed record', location.state.record.item);
-       
-        setsingleUser( location.state?.record?.item ?? {});
+
+        setsingleUser(location.state?.record?.item ?? {});
         setshowNew(!location.state.record.item)
     }, [])
 
     const initialValues = UserInitialValues
-    const savedValues =UserSavedValues(singleUser)
+    const savedValues = UserSavedValues(singleUser)
 
     const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
@@ -67,52 +67,52 @@ const UserDetailPage = ({ item }) => {
         //     .required('Required'),
     })
 
-    const sendInviteEmail=(values)=>{
+    const sendInviteEmail = (values) => {
 
-        const obj ={
-            emailId:`${values.email}`,
-            subject:'Welcome to CloudDesk CRM',
-            htmlBody: ` Dear ${values.fullName}, `+'\n'+'\n'+
-            `Welcome to Clouddesk CRM you can access.`  +'\n'+'\n'+
+        const obj = {
+            emailId: `${values.email}`,
+            subject: 'Welcome to CloudDesk CRM',
+            htmlBody: ` Dear ${values.fullName}, ` + '\n' + '\n' +
+                `Welcome to Clouddesk CRM you can access.` + '\n' + '\n' +
 
-            `Your UserName is ${values.userName}` +'\n'+'\n'+
-            
-            `To generate your ClouDesk-CRM password, click here ${process.env.REACT_APP_FORGOT_EMAIL_LINK} `  + '\n'+'\n'+
-            
-            `Note this Link will expire in 4 days.` +'\n'+'\n'+
+                `Your UserName is ${values.userName}` + '\n' + '\n' +
 
-            `if you have any trouble logging in, write to us at ${process.env.REACT_APP_ADMIN_EMAIL_ID}`+ '\n'+'\n'+
+                `To generate your ClouDesk-CRM password, click here ${process.env.REACT_APP_FORGOT_EMAIL_LINK} ` + '\n' + '\n' +
 
-            `Thanks and Regards, `+ '\n'+
-            `Clouddesk.`
+                `Note this Link will expire in 4 days.` + '\n' + '\n' +
+
+                `if you have any trouble logging in, write to us at ${process.env.REACT_APP_ADMIN_EMAIL_ID}` + '\n' + '\n' +
+
+                `Thanks and Regards, ` + '\n' +
+                `Clouddesk.`
         }
-        console.log(obj,"sendInviteEmail")
+        console.log(obj, "sendInviteEmail")
 
-        axios.post(urlSendEmailbulk,obj)
-        .then((res)=>{
-            console.log("eamil res",res.data)
-            if(res.data){
-                setNotify({
-                    isOpen: true,
-                    message: res.data,
-                    type: 'success'
-                })
-            }else{
-                setNotify({
-                    isOpen: true,
-                    message: "Mail sent Succesfully",
-                    type: 'success'
-                })
-            }
-        })
-        .catch((error) => {
-            console.log('email send error', error);
-            setNotify({
-                isOpen: true,
-                message: error.message,
-                type: 'error'
+        RequestServer(urlSendEmailbulk, obj)
+            .then((res) => {
+                console.log("eamil res", res.data)
+                if (res.success) {
+                    setNotify({
+                        isOpen: true,
+                        message: "Mail sent Succesfully",
+                        type: 'success'
+                    })
+                } else {
+                    setNotify({
+                        isOpen: true,
+                        message: res.error.message,
+                        type: 'error'
+                    })
+                }
             })
-        })  
+            .catch((error) => {
+                console.log('email send error', error);
+                setNotify({
+                    isOpen: true,
+                    message: error.message,
+                    type: 'error'
+                })
+            })
     }
 
 
@@ -125,36 +125,47 @@ const UserDetailPage = ({ item }) => {
             values.modifiedDate = dateSeconds;
             values.createdDate = dateSeconds;
             values.fullName = values.firstName + ' ' + values.lastName;
-            values.userName=values.email
+            values.userName = values.email
             values.createdBy = (sessionStorage.getItem("loggedInUser"));
-            values.modifiedBy = (sessionStorage.getItem("loggedInUser"));    
-            values.roleDetails=JSON.stringify(values.roleDetails)
+            values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
+            values.roleDetails = JSON.stringify(values.roleDetails)
         }
         else if (!showNew) {
             values.modifiedDate = dateSeconds;
             values.createdDate = createDateSec;
-            values.userName=values.email
+            values.userName = values.email
             values.fullName = values.firstName + ' ' + values.lastName;
             values.createdBy = singleUser.createdBy;
             values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
-            values.roleDetails=JSON.stringify(values.roleDetails)
+            values.roleDetails = JSON.stringify(values.roleDetails)
         }
         console.log('after change form submission value', values);
 
-        axios.post(url, values)
+        RequestServer(url, values)
             .then((res) => {
                 console.log('upsert record  response', res);
-                setNotify({
-                    isOpen: true,
-                    message: res.data,
-                    type: 'success'
-                })
-                if(showNew){
-                    sendInviteEmail(values)
+                if (res.success) {
+                    setNotify({
+                        isOpen: true,
+                        message: res.data,
+                        type: 'success'
+                    })
+                    if (showNew) {
+                        sendInviteEmail(values)
+                    }
+                    setTimeout(() => {
+                        navigate(-1);
+                    }, 2000)
+                } else {
+                    setNotify({
+                        isOpen: true,
+                        message: res.error.message,
+                        type: 'error'
+                    })
+                    setTimeout(() => {
+                        navigate(-1);
+                    }, 2000)
                 }
-                setTimeout(() => {
-                    navigate(-1);
-                }, 2000)
 
             })
             .catch((error) => {
@@ -171,19 +182,21 @@ const UserDetailPage = ({ item }) => {
         navigate(-1)
     }
 
-    const FetchRolesbyName=(dpt,newInputValue)=>{
-        
+    const FetchRolesbyName = (dpt, newInputValue) => {
+
         console.log(dpt, "dpt")
         console.log(newInputValue, 'role inputValue')
         let payloadObj = { departmentName: dpt, role: newInputValue }
 
 
         // axios.post(`${urlgetRolesByDept}?searchKey=${newInputValue}`)
-        axios.post(urlgetRolesByDept, payloadObj)
+        RequestServer(urlgetRolesByDept, payloadObj)
             .then((res) => {
                 console.log('res FetchRolesbyName', res.data)
-                if (res.status === 200) {                  
+                if (res.success) {
                     setRoleRecords(res.data)
+                } else {
+                    console.log("FetchRolesbyName status error", res.error.message)
                 }
             })
             .catch((error) => {
@@ -208,15 +221,7 @@ const UserDetailPage = ({ item }) => {
                     onSubmit={(values) => { formSubmission(values) }}
                 >
                     {(props) => {
-                        const {
-                            values,
-                            dirty,
-                            isSubmitting,
-                            handleChange,
-                            handleSubmit,
-                            handleReset,
-                            setFieldValue,
-                        } = props;
+                        const { values, dirty, isSubmitting, handleChange, handleSubmit, handleReset, setFieldValue, errors, touched, } = props;
 
                         return (
                             <>
@@ -276,14 +281,14 @@ const UserDetailPage = ({ item }) => {
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="departmentName">Department <span className="text-danger">*</span> </label>
                                             <Field name="departmentName" component={CustomizedSelectForFormik}
-                                            onChange={e=>{
-                                                let dpt=e.target.value
-                                                if(dpt.length>0){
-                                                    FetchRolesbyName(dpt,null)
-                                                }else{
-                                                    setRoleRecords([])
-                                                }
-                                               }}>
+                                                onChange={e => {
+                                                    let dpt = e.target.value
+                                                    if (dpt.length > 0) {
+                                                        FetchRolesbyName(dpt, null)
+                                                    } else {
+                                                        setRoleRecords([])
+                                                    }
+                                                }}>
                                                 <MenuItem value=""><em>None</em></MenuItem>
                                                 {
                                                     RolesDepartment.map((i) => {

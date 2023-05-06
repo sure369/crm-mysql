@@ -1,34 +1,40 @@
-import axios from "axios";
+import api from "./api";
 
-export const RequestServer = (method,endpoint,headers,payload,obj)=>{
+export const RequestServer = (endpoint,payload)=>{
 
-        let token = sessionStorage.getItem('token');
-        let loggedInUser =JSON.parse(sessionStorage.getItem('loggedInUser'))
-        let userRole=JSON.parse(loggedInUser.userRole).roleName;
-        let userDepartment=loggedInUser.userDepartment;
-
-        headers = headers||{};
-        headers.token = token;
-        headers.departmentName=userDepartment;
-        headers.role=userRole;
-        headers.object=obj;
-        headers['Content-Type'] = 'application/json';
+        // let token = sessionStorage.getItem('token');
+        // let loggedInUser =JSON.parse(sessionStorage.getItem('loggedInUser'))
+        // let userRole=JSON.parse(loggedInUser.userRole).roleName;
+        // let userDepartment=loggedInUser.userDepartment;
+      
+        // headers = headers||{};
+        // headers.token = token;
+        // headers.departmentName=userDepartment;
+        // headers.role=userRole;
+        // headers.object=obj;
+        // headers['Content-Type'] = 'application/json';
         
-        return  axios({
-            method : method,
-            url: endpoint,
-            headers : headers,
-            body:payload
+        
+        // return  axios({
+        //     method : method,
+        //     url: endpoint,
+        //     headers : headers,
+        //     payload:payload
 
-        })
+        // })
+        console.log(payload,"payload")
+        console.log(endpoint,"endpoint")
+        return  api.post(endpoint,payload)
         .then((res)=>{
             console.log('inside HttpReq res ',res)
             if(res.status ===200){
+                console.log("status success ",res.data)
                 return {
                     success:true,data:res.data
                 }
             }
             else{
+                console.log("error-status success ")
                 return{
                     success:false,
                     error:{

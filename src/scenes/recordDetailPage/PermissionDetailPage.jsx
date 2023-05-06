@@ -15,11 +15,10 @@ import './Form.css'
 import { PermissionSavedValues, PermissionSetInitialValues } from '../formik/InitialValues/formValues';
 import { RolesDepartment } from '../../data/pickLists';
 import { RequestServer } from '../api/HttpReq';
-import axios from 'axios';
 
-const upsertUrl = `${process.env.REACT_APP_SERVER_URL}/upsertPermission`;
-const urlgetUsersByName = `${process.env.REACT_APP_SERVER_URL}/getUsers`;
-const urlgetRolesByDept = `${process.env.REACT_APP_SERVER_URL}/roles`
+const upsertUrl = `/upsertPermission`;
+const urlgetUsersByName = `/getUsers`;
+const urlgetRolesByDept = `/roles`
 
 const PermissiionSetForm = ({ item }) => {
 
@@ -94,9 +93,10 @@ const PermissiionSetForm = ({ item }) => {
         console.log('after change form submission value', values);
 
 
-        axios.post(upsertUrl, values)
+        RequestServer(upsertUrl, values)
             .then((res) => {
                 console.log(res, "res")
+                if(res.success){
                     setNotify({
                         isOpen: true,
                         message: res.data,
@@ -104,7 +104,17 @@ const PermissiionSetForm = ({ item }) => {
                     })
                     setTimeout(() => {
                         navigate(-1);
-                    }, 2000)                
+                    }, 2000) 
+                }else{
+                    setNotify({
+                        isOpen: true,
+                        message: res.error.message,
+                        type: 'error'
+                    })
+                    setTimeout(() => {
+                        navigate(-1);
+                    }, 2000) 
+                }                                   
             })
             .catch((err) => {
                 console.log(err, "err")
@@ -113,6 +123,9 @@ const PermissiionSetForm = ({ item }) => {
                     message: err.message,
                     type: 'error'
                 })
+                setTimeout(() => {
+                    navigate(-1);
+                }, 2000) 
             })
     }
 
@@ -125,13 +138,17 @@ const PermissiionSetForm = ({ item }) => {
         console.log(inputValue, 'inputValue')
         let payloadObj = { departmentName: dpt, role: inputValue }
 
-        axios.post(urlgetRolesByDept, payloadObj)
+        RequestServer(urlgetRolesByDept, payloadObj)
             .then((res) => {
-                console.log(res, "res")
-                setRoleRecordsByDept(res.data)
+                console.log(res, "urlgetRolesByDept res")
+                if(res.success){
+                    setRoleRecordsByDept(res.data)
+                }else{
+                    console.log("urlgetRolesByDept status error",res.error.message)
+                }                
             })
             .catch((error) => {
-                console.log(error, "error")
+                console.log("error urlgetRolesByDept",error)
             })
 
         // let payloadObj ={department:dpt,value:inputValue}
@@ -163,16 +180,8 @@ const PermissiionSetForm = ({ item }) => {
                     validationSchema={validationSchema}
                     onSubmit={(values) => { formSubmission(values) }}
                 >
-                    {(props) => {
-                        const {
-                            values,
-                            dirty,
-                            isSubmitting,
-                            handleChange,
-                            handleSubmit,
-                            handleReset,
-                            setFieldValue,
-                        } = props;
+                   {(props) => {
+                        const {values,dirty, isSubmitting, handleChange,handleSubmit,handleReset,setFieldValue,errors,touched,} = props;
 
                         return (
                             <>

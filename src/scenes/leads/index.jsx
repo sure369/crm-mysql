@@ -25,9 +25,9 @@ import NoAccess from "../NoAccess/NoAccess";
 
 
 const Leads = () => {
-  const urlLead = `${process.env.REACT_APP_SERVER_URL}/leads`;
-  const urlSearchLead = `${process.env.REACT_APP_SERVER_URL}/leads?`;
-  const urlDelete = `${process.env.REACT_APP_SERVER_URL}/deleteLead?code=`;
+  const urlLead = `/leads`;
+  const urlSearchLead = `/leads?`;
+  const urlDelete = `/deleteLead?code=`;
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -37,17 +37,9 @@ const Leads = () => {
   const [fetchError, setFetchError] = useState();
   const [fetchLoading, setFetchLoading] = useState(true);
   // notification
-  const [notify, setNotify] = useState({
-    isOpen: false,
-    message: "",
-    type: "",
-  });
+  const [notify, setNotify] = useState({isOpen: false, message: "",type: "",});
   //dialog
-  const [confirmDialog, setConfirmDialog] = useState({
-    isOpen: false,
-    title: "",
-    subTitle: "",
-  });
+  const [confirmDialog, setConfirmDialog] = useState({isOpen: false, title: "",subTitle: "",});
 
   const [showDelete, setShowDelete] = useState(false);
   const [selectedRecordIds, setSelectedRecordIds] = useState();
@@ -67,7 +59,7 @@ const Leads = () => {
   }, []);
 
   const fetchRecords = () => {
-    RequestServer("post", urlLead, null, {})
+    RequestServer(urlLead)
       .then((res) => {
         console.log(res, "index page res");
         if (res.success) {
@@ -123,7 +115,7 @@ const Leads = () => {
 
   const onebyoneDelete = (row) => {
     console.log("onebyoneDelete rec id", row);
-    RequestServer("post", urlDelete + row)
+    RequestServer(urlDelete + row)
       .then((res) => {
         if (res.success) {
           fetchRecords();
@@ -205,7 +197,7 @@ const Leads = () => {
     if (e.target.value === null) {
       fetchRecords();
     } else {
-      RequestServer("post", `${urlSearchLead}${label}=${value}`)
+      RequestServer(`${urlSearchLead}${label}=${value}`)
         .then((res) => {
           console.log("Searched Month ", res);
           if (res.success) {

@@ -22,8 +22,8 @@ import NoAccess from '../NoAccess/NoAccess';
 
 const Accounts = () => {
 
-  const urlDelete = `${process.env.REACT_APP_SERVER_URL}/deleteAccount?code=`;
-  const urlAccount = `${process.env.REACT_APP_SERVER_URL}/accounts`;
+  const urlDelete = `/deleteAccount?code=`;
+  const urlAccount = `/accounts`;
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -48,7 +48,7 @@ const Accounts = () => {
 
   const fetchRecords = () => {
 
-    RequestServer("post",urlAccount,null,{})
+    RequestServer(urlAccount)
     .then((res)=>{
       console.log(res,"index page res")
       if(res.success){
@@ -106,7 +106,7 @@ const Accounts = () => {
   const onebyoneDelete = (row) => {
     console.log('onebyoneDelete rec id', row)
 
-    RequestServer("post",urlDelete+row ,{}, null)
+    RequestServer(urlDelete + row)
     .then((res)=>{
       if(res.success){
         fetchRecords()

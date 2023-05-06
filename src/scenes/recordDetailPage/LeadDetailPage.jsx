@@ -4,7 +4,6 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Grid, Button, TextField, Forminput, Autocomplete, DialogActions, MenuItem } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom"
-import axios from 'axios'
 // import "../formik/FormStyles.css"
 import ToastNotification from '../toast/ToastNotification';
 import { NameSalutionPickList, LeadSourcePickList, IndustryPickList, LeadStatusPicklist ,LeadsDemoPicklist,LeadMonthPicklist } from '../../data/pickLists';
@@ -15,9 +14,10 @@ import { DatePicker } from '@mui/x-date-pickers';
 import './Form.css'
 import { LeadInitialValues, LeadSavedValues } from '../formik/InitialValues/formValues';
 import { getPermissions } from '../Auth/getPermission';
+import { RequestServer } from '../api/HttpReq';
 
-const url = `${process.env.REACT_APP_SERVER_URL}/UpsertLead`;
-const fetchUsersbyName = `${process.env.REACT_APP_SERVER_URL}/usersbyName`;
+const url = `/UpsertLead`;
+const fetchUsersbyName = `/usersbyName`;
 
 const LeadDetailPage = ({ item }) => {
 
@@ -106,18 +106,30 @@ const LeadDetailPage = ({ item }) => {
         }
         console.log('after change form submission value', values);
 
-        axios.post(url, values)
+        RequestServer(url, values)
             .then((res) => {
                 console.log('upsert record  response', res);
-                setNotify({
-                    isOpen: true,
-                    message: res.data,
-                    type: 'success'
-                })
-                setTimeout(() => {
-                    navigate(-1);
-                }, 2000)
-
+                if(res.success){
+                    setNotify({
+                        isOpen: true,
+                        message: res.data,
+                        type: 'success'
+                    })
+                    setTimeout(() => {
+                        navigate(-1);
+                    }, 2000)
+    
+                }else{
+                    setNotify({
+                        isOpen: true,
+                        message: res.error.message,
+                        type: 'error'
+                    })
+                    setTimeout(() => {
+                        navigate(-1);
+                    }, 1000)    
+                }
+                
             })
             .catch((error) => {
                 console.log('upsert record error', error);
@@ -126,6 +138,9 @@ const LeadDetailPage = ({ item }) => {
                     message: error.message,
                     type: 'error'
                 })
+                setTimeout(() => {
+                    navigate(-1);
+                }, 1000)
             })
     }
     const handleFormClose = () => {
@@ -151,15 +166,7 @@ const LeadDetailPage = ({ item }) => {
                     onSubmit={(values) => { formSubmission(values) }}
                 >
                     {(props) => {
-                        const {
-                            values,
-                            dirty,
-                            isSubmitting,
-                            handleChange,
-                            handleSubmit,
-                            handleReset,
-                            setFieldValue,
-                        } = props;
+                        const {values,dirty, isSubmitting, handleChange,handleSubmit,handleReset,setFieldValue,errors,touched,} = props;
 
                         return (
                             <>

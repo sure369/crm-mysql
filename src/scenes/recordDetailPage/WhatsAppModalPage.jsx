@@ -6,8 +6,9 @@ import { Grid, Button, DialogActions } from "@mui/material";
 import axios from 'axios'
 import "../formik/FormStyles.css"
 import ToastNotification from '../toast/ToastNotification';
+import { RequestServer } from "../api/HttpReq";
 
-const urlSendWhatsAppbulk = `${process.env.REACT_APP_SERVER_URL}/bulkewhatsapp`
+const urlSendWhatsAppbulk = `/bulkewhatsapp`
 
 const WhatAppModalPage = ({ data, handleModal, bulkMail }) => {
 
@@ -68,9 +69,10 @@ const WhatAppModalPage = ({ data, handleModal, bulkMail }) => {
         // formData.append('recordsData', JSON.stringify(RecordConvert));
         formData.append('file', element.attachments);
 
-        axios.post(urlSendWhatsAppbulk, formData)
+        RequestServer(urlSendWhatsAppbulk, formData)
             .then((res) => {
                 console.log('email send res', res)
+               if(res.success){
                 setNotify({
                     isOpen: true,
                     message: res.data,
@@ -79,6 +81,17 @@ const WhatAppModalPage = ({ data, handleModal, bulkMail }) => {
                 setTimeout(() => {
                     handleModal(false)
                 }, 2000)
+               }else{
+                setNotify({
+                    isOpen: true,
+                    message: res.error.message,
+                    type: 'success'
+                })
+                setTimeout(() => {
+                    handleModal(false)
+                }, 2000)
+               }
+                
             })
             .catch((error) => {
                 console.log('email send error', error);
@@ -87,6 +100,9 @@ const WhatAppModalPage = ({ data, handleModal, bulkMail }) => {
                     message: error.message,
                     type: 'error'
                 })
+                setTimeout(() => {
+                    handleModal(false)
+                }, 2000)
             })
     }
 
@@ -103,9 +119,7 @@ const WhatAppModalPage = ({ data, handleModal, bulkMail }) => {
                     onSubmit={(values, { resetForm }) => formSubmission(values, { resetForm })}
                 >
                     {(props) => {
-                        const {
-                            isSubmitting, setFieldValue
-                        } = props;
+                        const {isSubmitting, setFieldValue} = props;
 
                         return (
                             <>
