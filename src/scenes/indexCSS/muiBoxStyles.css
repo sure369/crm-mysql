@@ -1,0 +1,68 @@
+.MuiDataGrid-root {
+    border: none;
+  }  
+  .MuiDataGrid-cell {
+    border-bottom: none;
+  }  
+  .name-column--cell {
+    /* color: #66bb6a; */
+    color: #1e5245!important
+  }
+  
+  .MuiDataGrid-columnHeaders {
+    background-color: #a4a9fc;
+    border-bottom: none;
+  }
+  
+  .MuiDataGrid-columnHeaderTitle {
+    font-weight: bold !important;
+    overflow: visible !important;
+  }
+  
+  .MuiDataGrid-virtualScroller {
+    /* background-color: #9575cd; */
+  }
+  
+  .MuiDataGrid-footerContainer {
+    border-bottom: none;
+    /* border-bottom-style:{{sx:r}}; */
+    background-color: #a4a9fc;
+  }
+  
+  .MuiCheckbox-root {
+    /* color: #81c784 !important; */
+    color: #1e5245!important 
+  }
+  
+  .MuiDataGrid-toolbarContainer .MuiButton-text {
+    color: #fafafa !important;
+  }
+  
+  .MuiDataGrid-row:hover {
+    background-color: #CECEF0;
+    cursor: pointer;
+  }
+  
+  .C-MuiDataGrid-row-even {
+    background-color: #D7ECFF;
+  }
+  
+  .C-MuiDataGrid-row-odd {
+    background-color: #F0F8FF;
+  }
+  .inventory-status-avail-green {
+    background-color: #008000;
+    color: "white";
+  }
+  .inventory-status-booked-pink{
+    background-color: #FF00FF;
+    color: "white";
+  }
+  .inventory-status-sold-red{
+    background-color: #B22222;
+    color: "white";
+  }
+  .inventory-status-process-yellow {
+    background-color: #FFD700;
+    color: "white";
+  }

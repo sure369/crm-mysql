@@ -19,6 +19,7 @@ import ExcelDownload from '../Excel';
 import { RequestServer } from '../api/HttpReq';
 import { getPermissions } from '../Auth/getPermission';
 import NoAccess from '../NoAccess/NoAccess';
+import '../indexCSS/muiBoxStyles.css'
 
 const Contacts = () => {
 
@@ -309,49 +310,7 @@ const Contacts = () => {
               <Box
                 m="15px 0 0 0"
                 height="380px"
-                sx={{
-                  "& .MuiDataGrid-root": {
-                    border: "none",
-                  },
-                  "& .MuiDataGrid-cell": {
-                    borderBottom: "none",
-                  },
-                  "& .name-column--cell": {
-                    color: colors.greenAccent[300],
-                  },
-                  "& .MuiDataGrid-columnHeaders": {
-                    backgroundColor: colors.blueAccent[700],
-                    borderBottom: "none",
-                  },
-                  "& .MuiDataGrid-columnHeaderTitle": {
-                    fontWeight: 'bold !important',
-                    overflow: 'visible !important'
-                  },
-                  "& .MuiDataGrid-virtualScroller": {
-                    // backgroundColor: colors.primary[400],
-                  },
-                  "& .MuiDataGrid-footerContainer": {
-                    // borderTop: "none",
-                    backgroundColor: colors.blueAccent[700],
-                    borderBottom: "none",
-                  },
-                  "& .MuiCheckbox-root": {
-                    color: `${colors.greenAccent[200]} !important`,
-                  },
-                  "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-                    color: `${colors.grey[100]} !important`,
-                  },
-                  "& .MuiDataGrid-row:hover": {
-                    backgroundColor: "#CECEF0",
-                    cursor: 'pointer'
-                  },
-                  "& .C-MuiDataGrid-row-even": {
-                    backgroundColor: "#D7ECFF",
-                  },
-                  "& .C-MuiDataGrid-row-odd": {
-                    backgroundColor: "#F0F8FF",
-                  },
-                }}
+                className="my-mui-styles"
               >
                 <DataGrid
                   rows={records}

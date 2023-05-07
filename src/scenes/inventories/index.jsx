@@ -18,6 +18,7 @@ import DeleteConfirmDialog from '../toast/DeleteConfirmDialog';
 import { RequestServer } from '../api/HttpReq';
 import { getPermissions } from '../Auth/getPermission';
 import NoAccess from '../NoAccess/NoAccess';
+import '../indexCSS/muiBoxStyles.css'
 
 const Inventories = () => {
 
@@ -179,10 +180,16 @@ const Inventories = () => {
       field: "status", headerName: "Status",
       headerAlign: 'center', align: 'center', flex: 1,
       cellClassName: (params) => {
-        const statusClassName = (params.row.status === 'Available') ? 'green' :
-          (params.row.status === 'Booked') ? 'pink' :
-            (params.row.status === 'Sold') ? 'red' :
-              (params.row.status === 'Processed') ? 'yellow' : ''
+        const statusClassName =
+          params.row.status === "Available"
+            ? "inventory-status-avail-green"
+            : params.row.status === "Booked"
+            ? "inventory-status-booked-pink"
+            : params.row.status === "Sold"
+            ? "inventory-status-sold-red"
+            : params.row.status === "Processed"
+            ? "inventory-status-process-yellow"
+            : "";
         return statusClassName;
       }
     }]
@@ -275,69 +282,7 @@ const Inventories = () => {
         <Box
           m="15px 0 0 0"
           height="380px"
-          sx={{
-            "& .MuiDataGrid-root": {
-              border: "none",
-            },
-            "& .MuiDataGrid-cell": {
-              borderBottom: "none",
-            },
-            "& .name-column--cell": {
-              color: colors.greenAccent[300],
-            },
-            "& .MuiDataGrid-columnHeaders": {
-              // backgroundColor:'#6AB187',
-              backgroundColor: colors.blueAccent[700],
-              borderBottom: "none",
-            },
-            "& .MuiDataGrid-columnHeaderTitle": {
-              fontWeight: 'bold !important',
-              overflow: 'visible !important'
-            },
-            "& .MuiDataGrid-virtualScroller": {
-              // table bgcolor& selected row color
-              // backgroundColor: colors.primary[400],
-              // backgroundColor:'#CCFFE5'
-
-            },
-            "& .MuiDataGrid-footerContainer": {
-              borderBottom: "none",
-              // backgroundColor:'#6AB187',
-              backgroundColor: colors.blueAccent[700],
-            },
-            "& .MuiCheckbox-root": {
-              color: `${colors.greenAccent[200]} !important`,
-            },
-            "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-              color: `${colors.grey[100]} !important`,
-            },
-            "& .MuiDataGrid-row:hover": {
-              backgroundColor: "#CECEF0",
-              cursor: 'pointer'
-            },
-            "& .C-MuiDataGrid-row-even": {
-              backgroundColor: "#D7ECFF",
-            },
-            "& .C-MuiDataGrid-row-odd": {
-              backgroundColor: "#F0F8FF",
-            },
-            '& .green': {
-              backgroundColor: '#008000',
-              color: 'white'
-            },
-            '& .pink': {
-              backgroundColor: '#FF00FF',
-              color: 'white'
-            },
-            '& .red': {
-              backgroundColor: '#B22222',
-              color: 'white'
-            },
-            '& .yellow': {
-              backgroundColor: '#FFD700',
-              color: 'white'
-            },
-          }}
+          className="my-mui-styles" 
         >
           <DataGrid
             rows={records}
