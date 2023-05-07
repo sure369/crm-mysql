@@ -13,8 +13,8 @@ import { RequestServer } from '../api/HttpReq';
 
 const LeadsMobile = () => {
 
-  const urlLead = `${process.env.REACT_APP_SERVER_URL}/leads`;
-  const urlDelete = `${process.env.REACT_APP_SERVER_URL}/deleteLead?code=`;
+  const urlLead = `/leads`;
+  const urlDelete = `/deleteLead?code=`;
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -40,7 +40,7 @@ const LeadsMobile = () => {
   }, []);
 
   const fetchRecords = () => {
-    RequestServer("post",urlLead,null,{})
+    RequestServer(urlLead)
     .then((res)=>{
       console.log(res,"index page res")
       if(res.success){
@@ -115,7 +115,7 @@ const LeadsMobile = () => {
 
   const onebyoneDelete = (row) => {
     console.log('onebyoneDelete rec id', row)
-    RequestServer("post",urlDelete+row ,{}, null)
+    RequestServer(urlDelete + row )
     .then((res)=>{
       if(res.success){
         fetchRecords()
@@ -311,8 +311,8 @@ export default LeadsMobile;
 
 // const LeadsMobile = () => {
 
-//   const urlLead = `${process.env.REACT_APP_SERVER_URL}/leads`;
-//   const urlDelete = `${process.env.REACT_APP_SERVER_URL}/deleteLead?code=`;
+//   const urlLead = `/leads`;
+//   const urlDelete = `/deleteLead?code=`;
 
 //   const theme = useTheme();
 //   const colors = tokens(theme.palette.mode);

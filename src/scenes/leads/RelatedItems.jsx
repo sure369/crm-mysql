@@ -21,10 +21,10 @@ import NoAccessCard from "../NoAccess/NoAccessCard";
 
 const LeadRelatedItems = ({ item }) => {
 
-  const taskDeleteURL = `${process.env.REACT_APP_SERVER_URL}/deleteTask?code=`;
-  const opportunityDeleteURL = `${process.env.REACT_APP_SERVER_URL}/deleteOpportunity?code=`;
-  const urlTaskbyLeadId = `${process.env.REACT_APP_SERVER_URL}/getTaskbyLeadId?searchId=`;
-  const urlOppbyLeadId = `${process.env.REACT_APP_SERVER_URL}/getLeadsbyOppid?searchId=`;
+  const taskDeleteURL = `/deleteTask?code=`;
+  const opportunityDeleteURL = `/deleteOpportunity?code=`;
+  const urlTaskbyLeadId = `/getTaskbyLeadId?searchId=`;
+  const urlOppbyLeadId = `/getLeadsbyOppid?searchId=`;
  
   const navigate = useNavigate();
   const location = useLocation();
@@ -65,7 +65,7 @@ const LeadRelatedItems = ({ item }) => {
   const getTasksbyLeadId = (leadsId) => {
 
     console.log('lead id', leadsId);
-    RequestServer("post", urlTaskbyLeadId + leadsId, null, {})
+    RequestServer( urlTaskbyLeadId + leadsId)
       .then((res) => {
         if (res.success) {
           setRelatedTask(res.data);
@@ -81,7 +81,7 @@ const LeadRelatedItems = ({ item }) => {
   }
 
   const getOpportunitybyLeadId = (leadsId) => {
-    RequestServer("post", urlOppbyLeadId + leadsId, null, {})
+    RequestServer( urlOppbyLeadId + leadsId)
     .then((res) => {
       if (res.success) {
         setRelatedOpportunity(res.data);
@@ -131,7 +131,7 @@ const LeadRelatedItems = ({ item }) => {
 
   const onConfirmTaskCardDelete = (row) => {
     console.log('req delete rec', row);
-    RequestServer("post",taskDeleteURL+row._id)
+    RequestServer(taskDeleteURL+row._id)
     .then((res)=>{
       if(res.success){        
         getTasksbyLeadId(leadRecordId)
@@ -191,7 +191,7 @@ const LeadRelatedItems = ({ item }) => {
   const onConfirmOpportunityCardDelete = (row) => {
 
     console.log('req opp delete rec', row)
-    RequestServer("post",opportunityDeleteURL+row._id)
+    RequestServer(opportunityDeleteURL+row._id)
     .then((res)=>{
       if(res.success){        
         getOpportunitybyLeadId(leadRecordId)
@@ -561,8 +561,8 @@ export default LeadRelatedItems
 
 // const LeadRelatedItems = ({ item }) => {
 
-//   const taskDeleteURL = `${process.env.REACT_APP_SERVER_URL}/deleteTask?code=`;
-//   const opportunityDeleteURL = `${process.env.REACT_APP_SERVER_URL}/deleteOpportunity?code=`;
+//   const taskDeleteURL = `/deleteTask?code=`;
+//   const opportunityDeleteURL = `/deleteOpportunity?code=`;
 
 
 //   const navigate = useNavigate();
@@ -596,7 +596,7 @@ export default LeadRelatedItems
 //   const getTasksbyLeadId = (leadsId) => {
     
 //     console.log('lead id',leadsId);
-//     const urlTask = `${process.env.REACT_APP_SERVER_URL}/getTaskbyLeadId?searchId=`;
+//     const urlTask = `/getTaskbyLeadId?searchId=`;
 //     axios.post(urlTask + leadsId)
 //       .then((res) => {
 //         console.log('response task fetch', res.data);
@@ -616,7 +616,7 @@ export default LeadRelatedItems
 
 //   const getOpportunitybyLeadId =(leadsId) =>{
 
-//     const urlOpp = `${process.env.REACT_APP_SERVER_URL}/getLeadsbyOppid?searchId=`;
+//     const urlOpp = `/getLeadsbyOppid?searchId=`;
 //     axios.post(urlOpp + leadsId)
 //       .then((res) => {
 //         console.log('response opportunity fetch', res.data);

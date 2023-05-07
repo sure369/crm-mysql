@@ -13,8 +13,8 @@ import { RequestServer } from '../api/HttpReq';
 
 const UsersMobile = () => {
 
-  const urlDelete = `${process.env.REACT_APP_SERVER_URL}/delete?code=`;
-  const urlUsers = `${process.env.REACT_APP_SERVER_URL}/Users`;
+  const urlDelete = `/delete?code=`;
+  const urlUsers = `/Users`;
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -37,7 +37,7 @@ const UsersMobile = () => {
   );
 
   const fetchRecords = () => {
-    RequestServer("post",urlUsers,null,{})
+    RequestServer(urlUsers)
     .then((res)=>{
       console.log(res,"index page res")
       if(res.success){
@@ -113,7 +113,7 @@ const UsersMobile = () => {
     console.log('onebyoneDelete rec id', row)
 
     
-    RequestServer("post",urlDelete+row ,{}, null)
+    RequestServer(urlDelete + row )
     .then((res)=>{
       if(res.success){
         fetchRecords()
@@ -312,8 +312,8 @@ export default UsersMobile;
 
 // const UsersMobile = () => {
 
-//   const urlDelete = `${process.env.REACT_APP_SERVER_URL}/delete?code=`;
-//   const urlUsers = `${process.env.REACT_APP_SERVER_URL}/Users`;
+//   const urlDelete = `/delete?code=`;
+//   const urlUsers = `/Users`;
 
 //   const theme = useTheme();
 //   const colors = tokens(theme.palette.mode);

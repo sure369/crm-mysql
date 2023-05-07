@@ -3,7 +3,6 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useLocation, useNavigate,Link, Navigate } from 'react-router-dom';
 import { Grid, Button, DialogActions, InputAdornment, IconButton, Paper,Avatar,Typography,TextField, colors} from "@mui/material";
-import axios from 'axios'
 import '../recordDetailPage/Form.css'
 import Cdlogo from '../assets/cdlogo.jpg';
 import { RequestServer } from "../api/HttpReq";

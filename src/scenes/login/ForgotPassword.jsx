@@ -4,11 +4,11 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useLocation, useNavigate,Link, Navigate } from 'react-router-dom';
 import { Grid, Button, DialogActions, InputAdornment, IconButton, Paper,Avatar,Typography,TextField} from "@mui/material";
-import axios from 'axios'
 import '../recordDetailPage/Form.css'
 import Cdlogo from '../assets/cdlogo.jpg';
+import { RequestServer } from "../api/HttpReq";
 
-const confirmEmailURL = `${process.env.REACT_APP_SERVER_URL}/checkSignUpUser`
+const confirmEmailURL = `/checkSignUpUser`
 
 export default function ForgotPasswordIndex() {
 
@@ -39,7 +39,7 @@ export default function ForgotPasswordIndex() {
     const formSubmission = async (values, { resetForm }) => {
         console.log('inside form Submission', values);
       
-        axios.post(confirmEmailURL,values)
+        RequestServer(confirmEmailURL,values)
         .then((res)=>{
             console.log(res.data,"api res")
             if(res.data.status==="failure"){

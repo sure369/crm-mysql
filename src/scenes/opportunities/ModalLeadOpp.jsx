@@ -7,8 +7,8 @@ import {
     MenuItem, TextField, Autocomplete
 } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom"
-import axios from 'axios'
-import "../formik/FormStyles.css"
+// import axios from 'axios'
+// import "../formik/FormStyles.css"
 import ToastNotification from '../toast/ToastNotification';
 import { LeadSourcePickList, OppStagePicklist, OppTypePicklist } from '../../data/pickLists';
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
@@ -16,9 +16,11 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import "../recordDetailPage/Form.css"
+import { RequestServer } from "../api/HttpReq";
+import { OpportunityInitialValues } from "../formik/InitialValues/formValues";
 
-const url = `${process.env.REACT_APP_SERVER_URL}/UpsertOpportunity`;
-const fetchInventoriesbyName = `${process.env.REACT_APP_SERVER_URL}/InventoryName`;
+const url = `/UpsertOpportunity`;
+const fetchInventoriesbyName = `/InventoryName?searchKey=`;
 
 
 const ModalLeadOpportunity = ({ item, handleModal }) => {
@@ -36,24 +38,25 @@ const ModalLeadOpportunity = ({ item, handleModal }) => {
         FetchInventoriesbyName('')
     }, [])
 
+const initialValues=OpportunityInitialValues;
 
-    const initialValues = {
-        LeadId: '',
-        InventoryId: '',
-        opportunityName: '',
-        type: '',
-        leadSource: '',
-        amount: '',
-        closeDate: '',
-        stage: '',
-        description: '',
-        createdbyId: '',        
-        createdBy:"",
-        modifiedBy:"",
-        createdDate: '',
-        modifiedDate: '',
-        inventoryDetails: '',
-    }
+    // const initialValues = {
+    //     LeadId: '',
+    //     InventoryId: '',
+    //     opportunityName: '',
+    //     type: '',
+    //     leadSource: '',
+    //     amount: '',
+    //     closeDate: '',
+    //     stage: '',
+    //     description: '',
+    //     createdbyId: '',        
+    //     createdBy:"",
+    //     modifiedBy:"",
+    //     createdDate: '',
+    //     modifiedDate: '',
+    //     inventoryDetails: '',
+    // }
 
     const validationSchema = Yup.object({
         opportunityName: Yup
@@ -98,7 +101,7 @@ const ModalLeadOpportunity = ({ item, handleModal }) => {
 
         console.log('after change form submission value', values);
 
-        axios.post(url, values)
+        RequestServer(url, values)
             .then((res) => {
                 console.log('post response', res);
                 setNotify({
@@ -106,9 +109,6 @@ const ModalLeadOpportunity = ({ item, handleModal }) => {
                     message: res.data,
                     type: 'success'
                 })
-                setTimeout(() => {
-                    handleModal()
-                }, 1000)
             })
             .catch((error) => {
                 console.log('error', error);
@@ -117,19 +117,28 @@ const ModalLeadOpportunity = ({ item, handleModal }) => {
                     message: error.message,
                     type: 'error'
                 })
+            })
+            .finally(()=>{                
                 setTimeout(() => {
                     handleModal()
                 }, 1000)
             })
+
     }
 
     const FetchInventoriesbyName = (newInputValue) => {
-        axios.post(`${fetchInventoriesbyName}?searchKey=${newInputValue}`)
+        RequestServer(fetchInventoriesbyName + newInputValue)
             .then((res) => {
                 console.log('res fetch Inventoriesby Name', res.data)
-                if (typeof (res.data) === "object") {
-                    setInventoriesRecord(res.data)
-                }
+                if(res.success){
+                    if (typeof (res.data) === "object") {
+                        setInventoriesRecord(res.data)
+                    }else{
+                        setInventoriesRecord([])
+                    }
+                }else{
+                    setInventoriesRecord([])
+                }                
             })
             .catch((error) => {
                 console.log('error fetchInventoriesbyName', error);
@@ -148,16 +157,8 @@ const ModalLeadOpportunity = ({ item, handleModal }) => {
                     validationSchema={validationSchema}
                     onSubmit={(values, { resetForm }) => { formSubmission(values) }}
                 >
-                    {(props) => {
-                        const {
-                            values,
-                            dirty,
-                            isSubmitting,
-                            handleChange,
-                            handleSubmit,
-                            handleReset,
-                            setFieldValue,
-                        } = props;
+                     {(props) => {
+                        const {values,dirty, isSubmitting, handleChange,handleSubmit,handleReset,setFieldValue,errors,touched,} = props;
 
                         return (
                             <>
@@ -269,7 +270,7 @@ const ModalLeadOpportunity = ({ item, handleModal }) => {
                                     <div className='action-buttons'>
                                         <DialogActions sx={{ justifyContent: "space-between" }}>
 
-                                            <Button type='success' variant="contained" color="secondary" disabled={isSubmitting}>Save</Button>
+                                            <Button type='success' variant="contained" color="secondary" disabled={isSubmitting || !dirty}>Save</Button>
 
                                             <Button type="reset" variant="contained" onClick={handleModal}  >Cancel</Button>
                                         </DialogActions>

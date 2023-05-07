@@ -6,8 +6,6 @@ import {
     Grid, Button, FormControl, Stack, Alert, DialogActions,
     Autocomplete, TextField ,MenuItem
 } from "@mui/material";
-import axios from 'axios'
-// import "../formik/FormStyles.css"
 import ToastNotification from "../toast/ToastNotification";
 import { LeadSourcePickList, NameSalutionPickList} from '../../data/pickLists'
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
@@ -15,8 +13,10 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import '../recordDetailPage/Form.css'
+import { RequestServer } from "../api/HttpReq";
+import { ContactInitialValues } from "../formik/InitialValues/formValues";
 
-const UpsertUrl = `${process.env.REACT_APP_SERVER_URL}/UpsertContact`;
+const UpsertUrl = `/UpsertContact`;
 
 const ModalConAccount = ({ item, handleModal }) => {
 
@@ -32,23 +32,25 @@ const ModalConAccount = ({ item, handleModal }) => {
 
     }, [])
 
-    const initialValues = {
-        AccountId: "",
-        salutation: '',
-        firstName: '',
-        lastName: '',
-        fullName: '',
-        dob: '',
-        phone: '',
-        department: '',
-        leadSource: '',
-        email: '',
-        fullAddress: '',
-        description: '',
-        createdbyId: '',
-        createdDate: '',
-        modifiedDate: '',
-    }
+    const initialValues=ContactInitialValues;
+
+    // const initialValues = {
+    //     AccountId: "",
+    //     salutation: '',
+    //     firstName: '',
+    //     lastName: '',
+    //     fullName: '',
+    //     dob: '',
+    //     phone: '',
+    //     department: '',
+    //     leadSource: '',
+    //     email: '',
+    //     fullAddress: '',
+    //     description: '',
+    //     createdbyId: '',
+    //     createdDate: '',
+    //     modifiedDate: '',
+    // }
     const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
     const validationSchema = Yup.object({
@@ -95,15 +97,23 @@ const ModalConAccount = ({ item, handleModal }) => {
             values.dob = dobSec;
         }
 
-        await axios.post(UpsertUrl, values)
+        await RequestServer(UpsertUrl, values)
 
             .then((res) => {
                 console.log('task form Submission  response', res);
-                setNotify({
-                    isOpen:true,
-                    message:res.data,
-                    type:'success'
-                  })
+                if(res.success){
+                    setNotify({
+                        isOpen:true,
+                        message:res.data,
+                        type:'success'
+                      })
+                }else{
+                    setNotify({
+                        isOpen:true,
+                        message:res.error.message,
+                        type:'error'
+                      })
+                }                
                 setTimeout(() => {
                     handleModal()
                 }, 1000)
@@ -115,6 +125,11 @@ const ModalConAccount = ({ item, handleModal }) => {
                     message:error.message,
                     type:'error'          
                   })
+            })
+            .finally(()=>{
+                setTimeout(() => {
+                    handleModal()
+                }, 1000)
             })
     }
 
@@ -131,15 +146,7 @@ const ModalConAccount = ({ item, handleModal }) => {
                 onSubmit={(values, { resetForm }) => formSubmission(values, { resetForm })}
             >
                 {(props) => {
-                    const {
-                        values,
-                        dirty,
-                        isSubmitting,
-                        handleChange,
-                        handleSubmit,
-                        handleReset,
-                        setFieldValue,
-                    } = props;
+                        const {values,dirty, isSubmitting, handleChange,handleSubmit,handleReset,setFieldValue,errors,touched,} = props;
 
                     return (
                         <>

@@ -4,12 +4,12 @@ import {
     Grid, Button, DialogActions, InputAdornment, IconButton,
     Box, Paper, Avatar, Typography, TextField
 } from "@mui/material";
-import axios from 'axios'
 import '../recordDetailPage/Form.css'
 import Cdlogo from '../assets/cdlogo.jpg';
 import OtpInput from 'react-otp-input';
+import { RequestServer } from "../api/HttpReq";
 
-const generateotpUrl = `${process.env.REACT_APP_SERVER_URL}/generateOTP`
+const generateotpUrl = `/generateOTP`
 
 export default function OTPVerification() {
     const paperStyle = { padding: 20, height: '100%', width: 280, margin: "20px auto" }
@@ -50,7 +50,7 @@ export default function OTPVerification() {
     },[])
 
     const handleSendEmailId = () => {
-        axios.post(generateotpUrl, { emailId: location.state.record.item[0].email })
+        RequestServer(generateotpUrl, { emailId: location.state.record.item[0].email })
             .then((res) => {
                 console.log(res.data, "otp email res")
                 
@@ -61,7 +61,7 @@ export default function OTPVerification() {
     }
 
     const handleSendOtp =()=>{
-        axios.post(generateotpUrl, {otp: otp})
+        RequestServer(generateotpUrl, {otp: otp})
         .then((res) => {
             console.log(res.data, "otp RES")
             if(res.data.status==='success'){

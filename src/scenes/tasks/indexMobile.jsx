@@ -5,7 +5,8 @@ import {
 } from "@mui/material";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
-import axios from 'axios';
+// import axios from 'axios';
+import { RequestServer } from '../api/HttpReq';
 import { useNavigate } from "react-router-dom";
 import ToastNotification from '../toast/ToastNotification';
 import DeleteConfirmDialog from '../toast/DeleteConfirmDialog';
@@ -13,8 +14,8 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 const TaskMobile = () => {
 
-  const urlDelete = `${process.env.REACT_APP_SERVER_URL}/deleteTask?code=`;
-  const urlTask = `${process.env.REACT_APP_SERVER_URL}/Task`;
+  const urlDelete = `/deleteTask?code=`;
+  const urlTask = `/Task`;
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -42,12 +43,11 @@ const TaskMobile = () => {
 
   const fetchRecords = () => {
     console.log('urlTask', urlTask);
-    axios.post(urlTask)
+    RequestServer(urlTask)
       .then(
         (res) => {
           console.log("res task records", res);
-
-          if (res.data.length > 0 && (typeof (res.data) !== 'string')) {
+          if(res.success){         
             setRecords(res.data);
             setFetchLoading(false)
             setNoOfPages(Math.ceil(res.data.length / itemsPerPage));
@@ -100,7 +100,7 @@ const TaskMobile = () => {
   const onebyoneDelete = (row) => {
     console.log('onebyoneDelete rec id', row)
 
-    axios.post(urlDelete + row)
+    RequestServer(urlDelete + row)
       .then((res) => {
         console.log('api delete response', res);
         setNotify({

@@ -6,7 +6,6 @@ import {
 } from "@mui/material";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
-import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import EmailModalPage from '../recordDetailPage/EmailModalPage';
 import WhatAppModalPage from '../recordDetailPage/WhatsAppModalPage';
@@ -19,8 +18,8 @@ import { RequestServer } from '../api/HttpReq';
 
 const ContactsMobile = () => {
 
-  const urlContact = `${process.env.REACT_APP_SERVER_URL}/contacts`;
-  const urlDelete = `${process.env.REACT_APP_SERVER_URL}/deleteContact?code=`;
+  const urlContact = `/contacts`;
+  const urlDelete = `/deleteContact?code=`;
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -48,7 +47,7 @@ const ContactsMobile = () => {
   }, []);
 
   const fetchRecords = () => {
-    RequestServer("post",urlContact,null,{})
+    RequestServer(urlContact)
     .then((res)=>{
       console.log(res,"index page res")
       if(res.success){
@@ -125,7 +124,7 @@ const ContactsMobile = () => {
   const onebyoneDelete = (row) => {
     console.log('one by on delete', row)
 
-    RequestServer("post",urlDelete+row ,{}, null)
+    RequestServer(urlDelete + row)
     .then((res)=>{
       if(res.success){
         fetchRecords()
@@ -378,8 +377,8 @@ export default ContactsMobile;
 
 // const ContactsMobile = () => {
 
-//   const urlContact = `${process.env.REACT_APP_SERVER_URL}/contacts`;
-//   const urlDelete = `${process.env.REACT_APP_SERVER_URL}/deleteContact?code=`;
+//   const urlContact = `/contacts`;
+//   const urlDelete = `/deleteContact?code=`;
 
 //   const theme = useTheme();
 //   const colors = tokens(theme.palette.mode);

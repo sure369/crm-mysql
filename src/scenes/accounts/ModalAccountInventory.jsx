@@ -4,17 +4,16 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Grid, Button, Forminput, DialogActions, MenuItem } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom"
-import axios from 'axios'
-import "../formik/FormStyles.css"
 import ToastNotification from '../toast/ToastNotification';
 import {IndustryPickList, AccRatingPickList,AccTypePickList,AccCitiesPickList, AccCountryPickList} from '../../data/pickLists'
 import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 import { RequestServer } from '../api/HttpReq';
 import "../recordDetailPage/Form.css"
+import { AccountInitialValues } from '../formik/InitialValues/formValues';
 
-const url = `${process.env.REACT_APP_SERVER_URL}/UpsertAccount`;
-const getCountryPicklists= `${process.env.REACT_APP_SERVER_URL}/getpicklistcountry`;
-const getCityPicklists = `${process.env.REACT_APP_SERVER_URL}/getpickliststate?country=`;
+const url = `/UpsertAccount`;
+const getCountryPicklists= `/getpicklistcountry`;
+const getCityPicklists = `/getpickliststate?country=`;
 
 
 const ModalInventoryAccount = ({ item,handleModal }) => {
@@ -34,26 +33,28 @@ const ModalInventoryAccount = ({ item,handleModal }) => {
         getCountriesPicklist()
     }, [])
 
-    const initialValues = {
-        accountName: '',
-        accountNumber: '',
-        InventoryId: '',
-        annualRevenue: '',
-        rating: '',
-        type: '',
-        phone: '',
-        industry: '',
-        billingAddress: '',
-        billingCountry: '',
-        billingCity: '',
-        createdbyId: '',	
-        createdBy: "",
-        modifiedBy: "",
-        // modifiedBy: '',
-        createdDate:'',
-        modifiedDate: '',
-        // inventoryDetails:'',
-    }
+    const initialValues=AccountInitialValues;
+
+    // const initialValues = {
+    //     accountName: '',
+    //     accountNumber: '',
+    //     InventoryId: '',
+    //     annualRevenue: '',
+    //     rating: '',
+    //     type: '',
+    //     phone: '',
+    //     industry: '',
+    //     billingAddress: '',
+    //     billingCountry: '',
+    //     billingCity: '',
+    //     createdbyId: '',	
+    //     createdBy: "",
+    //     modifiedBy: "",
+    //     // modifiedBy: '',
+    //     createdDate:'',
+    //     modifiedDate: '',
+    //     // inventoryDetails:'',
+    // }
 
 
    
@@ -86,37 +87,32 @@ const ModalInventoryAccount = ({ item,handleModal }) => {
         let dateSeconds = new Date().getTime();
         let createDateSec = new Date(values.createdDate).getTime()
 
-        	
-       // values.createdBy = JSON.parse(sessionStorage.getItem('loggedInUser'))	
-        //values.modifiedBy = JSON.parse(sessionStorage.getItem('loggedInUser'))
-
             values.modifiedDate = dateSeconds;
             values.createdDate = dateSeconds;
             values.InventoryId=inventoryParentRecord._id;
             values.InventoryName=inventoryParentRecord.propertyName;
             values.createdBy = (sessionStorage.getItem("loggedInUser"));
             values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
-           
-            // values.InventoryDetails={
-            //     propertyName:inventoryParentRecord.propertyName,
-            //     id:inventoryParentRecord._id
-            // }
-
        
+
         console.log('after change form submission value',values);
         
-        axios.post(url, values)
+        RequestServer(url, values)
         .then((res) => {
             console.log('upsert record  response', res);
-            setNotify({
-                isOpen:true,
-                message:res.data,
-                type:'success'
-      
-              })
-            setTimeout(() => {
-                handleModal();
-            }, 1000)
+            if(res.success){
+                setNotify({
+                    isOpen:true,
+                    message:res.data,
+                    type:'success',          
+                  })
+            }else{
+                setNotify({
+                    isOpen:true,
+                    message:res.error.message,
+                    type:'error',
+                  })
+            }
         })
         .catch((error) => {
             console.log('upsert record  error', error);
@@ -125,14 +121,16 @@ const ModalInventoryAccount = ({ item,handleModal }) => {
                 message:error.message,
                 type:'error'
               })
-              setTimeout(() => {
+        })
+        .finally(()=>{           
+            setTimeout(() => {
                 handleModal();
-            }, 1000)
+            }, 2000)
         })
     }
 
     const getCountriesPicklist=()=>{
-        RequestServer("post",getCountryPicklists,null,{})
+        RequestServer(getCountryPicklists)
         .then((res)=>{
             console.log(res,"getCountryPicklists res")
             if(res.success){
@@ -147,7 +145,7 @@ const ModalInventoryAccount = ({ item,handleModal }) => {
     }
     const getCitiesPicklist=(country)=>{
         console.log('selected country',country)
-        RequestServer("post",`${getCityPicklists}${country}&table=Account`,null,{})
+        RequestServer(`${getCityPicklists}${country}&table=Account`)
         .then((res)=>{
             console.log(res,"getCityPicklists res")
             if(res.success){
@@ -174,19 +172,10 @@ const ModalInventoryAccount = ({ item,handleModal }) => {
                     onSubmit={(values) => { formSubmission(values) }}
                 >
                     {(props) => {
-                        const {
-                            values,
-                            dirty,
-                            isSubmitting,
-                            handleChange,
-                            handleSubmit,
-                            handleReset,
-                            setFieldValue,
-                        } = props;
+                        const {values,dirty, isSubmitting, handleChange,handleSubmit,handleReset,setFieldValue,errors,touched,} = props;
 
                         return (
-                            <>
-                                
+                            <>                                
                                 <ToastNotification notify={notify} setNotify={setNotify}/>
 
                                 <Form className='my-form'>

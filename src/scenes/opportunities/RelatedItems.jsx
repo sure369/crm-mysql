@@ -12,7 +12,6 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import ModalOppInventory from "../OppInventory/ModalOppInventory";
 import ToastNotification from "../toast/ToastNotification";
 import DeleteConfirmDialog from "../toast/DeleteConfirmDialog";
 import '../recordDetailPage/Form.css'
@@ -23,8 +22,9 @@ import NoAccessCard from "../NoAccess/NoAccessCard";
 
 const OpportunityRelatedItems = ({ item }) => {
 
-  const taskDeleteURL = `${process.env.REACT_APP_SERVER_URL}/deleteTask?code=`;
-  const urlTaskbyOppId = `${process.env.REACT_APP_SERVER_URL}/getTaskbyOpportunityId?searchId=`;
+  const taskDeleteURL = `/deleteTask?code=`;
+  const urlTaskbyOppId = `/getTaskbyOpportunityId?searchId=`;
+  
   const navigate = useNavigate();
   const location = useLocation();
   const [relatedTask, setRelatedTask] = useState([]);
@@ -52,7 +52,7 @@ const OpportunityRelatedItems = ({ item }) => {
 
   const getTasksbyOppId = (recId) => {
 
-    RequestServer("post", urlTaskbyOppId + recId, null, {})
+    RequestServer( urlTaskbyOppId + recId)
       .then((res) => {
         if (res.success) {
           setRelatedTask(res.data);
@@ -98,10 +98,9 @@ const OpportunityRelatedItems = ({ item }) => {
 
     console.log('req delete rec', row);
     console.log('req delete rec id', row._id);
-    RequestServer("post", taskDeleteURL + row._id)
+    RequestServer(taskDeleteURL + row._id)
       .then((res) => {
         if (res.success) {
-
           getTasksbyOppId(opportunityRecordId)
           setMenuOpen(false)
           setNotify({
@@ -344,7 +343,7 @@ export default OpportunityRelatedItems
 
 // const OpportunityRelatedItems = ({ item }) => {
   
-//   const taskDeleteURL = `${process.env.REACT_APP_SERVER_URL}/deleteTask?code=`;
+//   const taskDeleteURL = `/deleteTask?code=`;
 
 //   const navigate = useNavigate();
 //   const location = useLocation();
@@ -366,7 +365,7 @@ export default OpportunityRelatedItems
 //   }, [])
 
 //   const getTasksbyOppId = (recId) => {
-//     const urlTask = `${process.env.REACT_APP_SERVER_URL}/getTaskbyOpportunityId?searchId=`;
+//     const urlTask = `/getTaskbyOpportunityId?searchId=`;
 //     axios.post(urlTask + recId)
 //       .then((res) => {
 //         console.log('response getTasksbyOppId fetch', res);
@@ -632,8 +631,8 @@ export default OpportunityRelatedItems
 // // const OpportunityRelatedItems = ({ item }) => {
 
   
-// //   const taskDeleteURL = `${process.env.REACT_APP_SERVER_URL}/deleteTask?code=`;
-// //   const inventoryDeleteURL = `${process.env.REACT_APP_SERVER_URL}/deleteInventory?code=`;
+// //   const taskDeleteURL = `/deleteTask?code=`;
+// //   const inventoryDeleteURL = `/deleteInventory?code=`;
 
 
 
@@ -668,7 +667,7 @@ export default OpportunityRelatedItems
 // //   }, [])
 
 // //   const getTasksbyOppId = (recId) => {
-// //     const urlTask = `${process.env.REACT_APP_SERVER_URL}/getTaskbyOpportunityId?searchId=`;
+// //     const urlTask = `/getTaskbyOpportunityId?searchId=`;
 // //     axios.post(urlTask + recId)
 // //       .then((res) => {
 // //         console.log('response getTasksbyOppId fetch', res);
@@ -689,7 +688,7 @@ export default OpportunityRelatedItems
 
 // //   const getInventorybyOppId =(oppId) =>{
 
-// //     const urlOpp = `${process.env.REACT_APP_SERVER_URL}/getInventoriesbyOppid?searchId=`;
+// //     const urlOpp = `/getInventoriesbyOppid?searchId=`;
 // //     axios.post(urlOpp + oppId)
 // //       .then((res) => {
 // //         console.log('response getInventorybyOppId ', res.data);

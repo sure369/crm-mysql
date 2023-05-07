@@ -16,8 +16,8 @@ import { RequestServer } from '../api/HttpReq';
 
 const RoleIndex = () => {
 
-  const urlDelete = `${process.env.REACT_APP_SERVER_URL}/delete?code=`;
-  const urlRoles = `${process.env.REACT_APP_SERVER_URL}/roles`;
+  const urlDelete = `/delete?code=`;
+  const urlRoles = `/roles`;
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -42,7 +42,7 @@ const RoleIndex = () => {
   );
 
   const fetchRecords = () => {
-    RequestServer("post",urlRoles,null,{})
+    RequestServer(urlRoles)
     .then((res)=>{
       console.log(res,"index page res")
       if(res.success){
@@ -99,7 +99,7 @@ const RoleIndex = () => {
   const onebyoneDelete = (row) => {
     console.log('onebyoneDelete rec id', row)
 
-    RequestServer("post",urlDelete+row)
+    RequestServer(urlDelete + row)
     .then((res)=>{
       if(res.success){
         fetchRecords()

@@ -13,8 +13,8 @@ import { RequestServer } from '../api/HttpReq';
 
 const OpportunitiesMobile = () => {
 
-  const urlOpportunity = `${process.env.REACT_APP_SERVER_URL}/opportunities`;
-  const urlDelete = `${process.env.REACT_APP_SERVER_URL}/deleteOpportunity?code=`;
+  const urlOpportunity = `/opportunities`;
+  const urlDelete = `/deleteOpportunity?code=`;
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -41,7 +41,7 @@ const OpportunitiesMobile = () => {
   );
 
   const fetchRecords = () => {
-    RequestServer("post",urlOpportunity,null,{})
+    RequestServer(urlOpportunity)
     .then((res)=>{
       console.log(res,"index page res")
       if(res.success){
@@ -97,7 +97,7 @@ const OpportunitiesMobile = () => {
   const onebyoneDelete = (row) => {
     console.log('onebyoneDelete rec id', row)
 
-    RequestServer("post",urlDelete+row ,{}, null)
+    RequestServer(urlDelete + row )
     .then((res)=>{
       if(res.success){
         fetchRecords()
@@ -267,8 +267,8 @@ export default OpportunitiesMobile;
 
 // const OpportunitiesMobile = () => {
 
-//   const urlOpportunity = `${process.env.REACT_APP_SERVER_URL}/opportunities`;
-//   const urlDelete = `${process.env.REACT_APP_SERVER_URL}/deleteOpportunity?code=`;
+//   const urlOpportunity = `/opportunities`;
+//   const urlDelete = `/deleteOpportunity?code=`;
 
 //   const theme = useTheme();
 //   const colors = tokens(theme.palette.mode);

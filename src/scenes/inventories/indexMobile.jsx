@@ -13,8 +13,8 @@ import { RequestServer } from '../api/HttpReq';
 
 const InventoriesMobile = () => {
 
-  const urlDelete = `${process.env.REACT_APP_SERVER_URL}/deleteInventory?code=`;
-  const urlInventory = `${process.env.REACT_APP_SERVER_URL}/inventories`;
+  const urlDelete = `/deleteInventory?code=`;
+  const urlInventory = `/inventories`;
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -44,7 +44,7 @@ const InventoriesMobile = () => {
 
   const fetchRecords = () => {
 
-    RequestServer("post",urlInventory,null,{})
+    RequestServer(urlInventory)
     .then((res)=>{
       console.log(res,"api res index page")
       if(res.success){
@@ -123,7 +123,7 @@ const InventoriesMobile = () => {
 
     console.log('one by one Delete row', row)
 
-    RequestServer("post",urlDelete+row,{},null)
+    RequestServer(urlDelete + row)
     .then((res)=>{
       if(res.success){
         fetchRecords()
@@ -322,8 +322,8 @@ export default InventoriesMobile;
 
 // const InventoriesMobile = () => {
 
-//   const urlDelete = `${process.env.REACT_APP_SERVER_URL}/deleteInventory?code=`;
-//   const urlInventory = `${process.env.REACT_APP_SERVER_URL}/inventories`;
+//   const urlDelete = `/deleteInventory?code=`;
+//   const urlInventory = `/inventories`;
 
 //   const theme = useTheme();
 //   const colors = tokens(theme.palette.mode);

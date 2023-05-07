@@ -13,8 +13,8 @@ import { RequestServer } from '../api/HttpReq';
 
 const AccountsMobile = () => {
 
-  const urlDelete = `${process.env.REACT_APP_SERVER_URL}/deleteAccount?code=`;
-  const urlAccount = `${process.env.REACT_APP_SERVER_URL}/accounts`;
+  const urlDelete = `/deleteAccount?code=`;
+  const urlAccount = `/accounts`;
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -39,7 +39,7 @@ const AccountsMobile = () => {
   );
 
   const fetchRecords = () => {
-    RequestServer("post",urlAccount,null,{})
+    RequestServer(urlAccount)
     .then((res)=>{
       console.log(res,"index page res")
       if(res.success){
@@ -58,26 +58,6 @@ const AccountsMobile = () => {
       setFetchError(err.message)
       setFetchLoading(false)
     })
-
-    // axios.post(urlAccount)
-    //   .then(
-    //     (res) => {
-    //       console.log("res Account records", res.data);
-    //       if (res.data.length > 0 && (typeof (res.data) !== 'string')) {
-    //         setRecords(res.data);
-    //         setFetchLoading(false)
-    //         setNoOfPages(Math.ceil(res.data.length / itemsPerPage));
-    //       }
-    //       else {
-    //         setRecords([]);
-    //         setFetchLoading(false)
-    //       }
-    //     }
-    //   )
-    //   .catch((error) => {
-    //     console.log('res Account error', error);
-    //     setFetchLoading(false)
-    //   })
   }
   const handleAddRecord = () => {
     navigate("/new-accounts", { state: { record: {} } })
@@ -115,7 +95,7 @@ const AccountsMobile = () => {
   const onebyoneDelete = (row) => {
     console.log('onebyoneDelete rec id', row)
 
-    RequestServer("post",urlDelete+row ,{}, null)
+    RequestServer(urlDelete + row)
     .then((res)=>{
       if(res.success){
         fetchRecords()
@@ -285,8 +265,8 @@ export default AccountsMobile;
 
 // const AccountsMobile = () => {
 
-//   const urlDelete = `${process.env.REACT_APP_SERVER_URL}/deleteAccount?code=`;
-//   const urlAccount = `${process.env.REACT_APP_SERVER_URL}/accounts`;
+//   const urlDelete = `/deleteAccount?code=`;
+//   const urlAccount = `/accounts`;
 
 //   const theme = useTheme();
 //   const colors = tokens(theme.palette.mode);

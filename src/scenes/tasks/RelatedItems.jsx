@@ -7,12 +7,12 @@ import {
   , IconButton, Grid, Accordion, AccordionSummary, AccordionDetails, Pagination, Menu, MenuItem
 } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import axios from 'axios'
 import ModalLeadTask from "../tasks/ModalLeadTask";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 import PreviewFile from "../formik/PreviewFile";
 import { string } from "yup/lib/locale";
+import { RequestServer } from "../api/HttpReq";
 
 const style = {
   position: 'absolute',
@@ -27,7 +27,7 @@ const style = {
 
 const TaskRelatedItems = ({ item }) => {
 
-  const urlDelete =`${process.env.REACT_APP_SERVER_URL}/deleteTask?code=`;
+  const urlDelete =`deleteTask?code=`;
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -57,9 +57,9 @@ const TaskRelatedItems = ({ item }) => {
 
 
   const getFiles =()=>{
-    const urll =`${process.env.REACT_APP_SERVER_URL}/files`
+    const urll =`/files`
 
-    axios.post(urll)
+    RequestServer(urll)
     .then((res)=>{
         console.log('files response',res)
         setResFiles(res.data[1].files)

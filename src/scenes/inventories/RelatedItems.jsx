@@ -17,10 +17,10 @@ import NoAccessCard from "../NoAccess/NoAccessCard";
 
 const InventoryRelatedItems = ({ item }) => {
 
-  const opportunityDeleteURL = `${process.env.REACT_APP_SERVER_URL}/deleteOpportunity?code=`;
-  const accountDeleteURL = `${process.env.REACT_APP_SERVER_URL}/deleteAccount?code=`;
-  const urlgetOpportunitiesbyInvid = `${process.env.REACT_APP_SERVER_URL}/getOpportunitiesbyInvid?searchId=`;
-  const urlgetAccountsbyInvid = `${process.env.REACT_APP_SERVER_URL}/getAccountbyInventory?searchId=`;
+  const opportunityDeleteURL = `/deleteOpportunity?code=`;
+  const accountDeleteURL = `/deleteAccount?code=`;
+  const urlgetOpportunitiesbyInvid = `/getOpportunitiesbyInvid?searchId=`;
+  const urlgetAccountsbyInvid = `/getAccountbyInventory?searchId=`;
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -64,7 +64,7 @@ const InventoryRelatedItems = ({ item }) => {
   }, [])
 
   const getOpportunitiesbyInvId = (recId) => {
-    RequestServer("post", urlgetOpportunitiesbyInvid + recId)
+    RequestServer(urlgetOpportunitiesbyInvid + recId)
       .then((res) => {
         if (res.success) {
           setRealtedOpportunity(res.data);
@@ -80,7 +80,7 @@ const InventoryRelatedItems = ({ item }) => {
   }
 
   const getAccountsbyInvId = (InventoryId) => {
-    RequestServer("post", urlgetAccountsbyInvid + InventoryId)
+    RequestServer( urlgetAccountsbyInvid + InventoryId)
     .then((res) => {
       if (res.success) {
         setRelatedAccount(res.data);
@@ -118,7 +118,7 @@ const InventoryRelatedItems = ({ item }) => {
   const onConfirmOpportunityCardDelete = (row) => {
     console.log('req delete rec id', row._id);
 
-    RequestServer("post",opportunityDeleteURL+row._id)
+    RequestServer(opportunityDeleteURL + row._id)
     .then((res)=>{
       if(res.success){
         setOppMenuOpen(false)
@@ -177,7 +177,7 @@ const InventoryRelatedItems = ({ item }) => {
 
   const onConfirmAccountCardDelete = (row) => {
     console.log('req delete rec', row);
-    RequestServer("post",accountDeleteURL+row._id)
+    RequestServer(accountDeleteURL + row._id)
     .then((res)=>{
       if(res.success){
         setAccountMenuOpen(false)
@@ -565,10 +565,10 @@ export default InventoryRelatedItems
 
 // const InventoryRelatedItems = ({ item }) => {
 
-//   const opportunityDeleteURL = `${process.env.REACT_APP_SERVER_URL}/deleteOpportunity?code=`;
-//   const accountDeleteURL = `${process.env.REACT_APP_SERVER_URL}/deleteAccount?code=`;
-//   const urlgetOpportunitiesbyInvid =`${process.env.REACT_APP_SERVER_URL}/getOpportunitiesbyInvid?searchId=`;
-//   const urlgetAccountsbyInvid = `${process.env.REACT_APP_SERVER_URL}/getAccountbyInventory?searchId=`;
+//   const opportunityDeleteURL = `/deleteOpportunity?code=`;
+//   const accountDeleteURL = `/deleteAccount?code=`;
+//   const urlgetOpportunitiesbyInvid =`/getOpportunitiesbyInvid?searchId=`;
+//   const urlgetAccountsbyInvid = `/getAccountbyInventory?searchId=`;
 
 //     const navigate = useNavigate();
 //     const location = useLocation();

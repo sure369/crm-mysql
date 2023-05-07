@@ -14,20 +14,11 @@ import { OppIndexFilterPicklist } from "../../data/pickLists";
 import ExcelDownload from '../Excel';
 import { RequestServer } from "../api/HttpReq";
 
-const ModalStyle = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 600,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-};
+
 
 const PermissionSets = () => {
-  const urlPermissionSets = `${process.env.REACT_APP_SERVER_URL}/getPermissions`;
-  const urlDelete = `${process.env.REACT_APP_SERVER_URL}/deletePermission?code=`;
+  const urlPermissionSets = `/getPermissions`;
+  const urlDelete = `/deletePermission?code=`;
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -58,7 +49,7 @@ const PermissionSets = () => {
   }, []);
 
   const fetchRecords = () => {
-    RequestServer("post",urlPermissionSets,null,{})
+    RequestServer(urlPermissionSets)
     .then((res)=>{
       console.log(res,"index page res")
       if(res.success){
@@ -115,7 +106,7 @@ const PermissionSets = () => {
   const onebyoneDelete = (row) => {
     console.log("onebyoneDelete rec id", row);
 
-    RequestServer("post",urlDelete+row)
+    RequestServer(urlDelete+row)
     .then((res)=>{
       if(res.success){
         fetchRecords()
