@@ -25,7 +25,7 @@ import RoleDetailPage from '../recordDetailPage/RoleDetailPage';
 import RoleIndex from '../Roles';
 import PermissionDetailPage from '../recordDetailPage/PermissionDetailPage';
 import PermissionSets from '../permissionSets';
-
+import {GetTableIndex} from '../getTables';
 
 function LoginLayoutIndex() {
   return (
@@ -33,15 +33,15 @@ function LoginLayoutIndex() {
       <AppNavbar />
       <Routes>
         <Route path="/" exact element={<ResponsiveInventories />} />
-        <Route path="/accounts" element={<ResponsiveAccounts />} />
-        <Route path="/contacts" element={<ResponsiveContacts />} />
-        <Route path="/deals" element={<ResponsiveOpportunities />} />
-        <Route path="/enquiries" element={<ResponsiveLeads />} />
-        <Route path="/inventories" element={<ResponsiveInventories />} />
-        <Route path="/task" element={<ResponsiveTasks />} />
-        <Route path="/users" element={<ResponsiveUsers />} />
-        <Route path="/roles" element={<RoleIndex/>}/>
-        <Route path="/permissions" element={<PermissionSets/>}/>
+        <Route path="/list/account" element={<ResponsiveAccounts />} />
+        <Route path="/list/contact" element={<ResponsiveContacts />} />
+        <Route path="/list/deals" element={<ResponsiveOpportunities />} />
+        <Route path="/list/enquiry" element={<ResponsiveLeads />} />
+        <Route path="/list/inventory" element={<ResponsiveInventories />} />
+        <Route path="/list/task" element={<ResponsiveTasks />} />
+        <Route path="/list/user" element={<ResponsiveUsers />} />
+        <Route path="/list/role" element={<RoleIndex/>}/>
+        <Route path="/list/permissions" element={<PermissionSets/>}/>
 
 
         <Route path="/new-contacts" element={<ContactDetailPage />} />
@@ -64,7 +64,8 @@ function LoginLayoutIndex() {
         <Route path="/roleDetailPage/:id" element={<RoleDetailPage/>}/>
         <Route path="/permissionDetailPage/:id" element={<PermissionDetailPage/>}/>
 
-        <Route path="/file" element={<FileUploadUpdated />} />
+        <Route path="/file" element={<FileUploadUpdated />} />        
+        <Route path ='/test' element={<GetTableIndex/>} />
 
         {/* <Route path="/leadDetailPage/:Id" element={<LeadDetailPage/>} /> */}
         {/* <Route path="/accountDetailPage/:id" element={<FlexAccounts/>} /> */}

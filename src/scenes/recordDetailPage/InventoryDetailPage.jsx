@@ -14,7 +14,7 @@ import { RequestServer } from '../api/HttpReq';
 
 const url = `/UpsertInventory`;
 const getCountryPicklists= `/getpicklistcountry`;
-const getCityPicklists = `$/getpickliststate?country=`;
+const getCityPicklists = `/getpickliststate?country=`;
 
 const InventoryDetailPage = ({ item }) => {
 
@@ -62,6 +62,7 @@ const InventoryDetailPage = ({ item }) => {
 
     const getCitiesPicklist=(country)=>{
         console.log('selected country',country)
+        console.log(`${getCityPicklists}${country}&table=Account`,"sssssssss")
         RequestServer(`${getCityPicklists}${country}&table=Account`)
         .then((res)=>{
             console.log('get city res',res.data)

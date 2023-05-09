@@ -20,11 +20,17 @@ import { RequestServer } from '../api/HttpReq';
 import { getPermissions } from '../Auth/getPermission';
 import NoAccess from '../NoAccess/NoAccess';
 import '../indexCSS/muiBoxStyles.css'
+import { GetTableIndex } from '../getTables';
 
 const Accounts = () => {
 
+  const userDetails = JSON.parse(sessionStorage.getItem("loggedInUser"))
+   const userRoleDpt ={loginUserRole:JSON.parse(userDetails.userRole).roleName,loginUserDepartmentName:userDetails.userDepartment}
   const urlDelete = `/deleteAccount?code=`;
   const urlAccount = `/accounts`;
+
+  
+
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -41,7 +47,10 @@ const Accounts = () => {
   const [permissionValues,setPermissionValues]=useState({})
 
   useEffect(() => {
+    console.log(userRoleDpt,"userRoleDptuserRoleDpt")
     fetchRecords();
+    const acc= GetTableIndex;
+    console.log(acc,"GetTableIndex")
     const getPermission=getPermissions("Account")
     setPermissionValues(getPermission)
   }, []
@@ -49,7 +58,7 @@ const Accounts = () => {
 
   const fetchRecords = () => {
 
-    RequestServer(urlAccount)
+    RequestServer(urlAccount,userRoleDpt)
     .then((res)=>{
       console.log(res,"index page res")
       if(res.success){
@@ -68,6 +77,8 @@ const Accounts = () => {
       setFetchLoading(false)
     })
   }
+
+
 
   const handleAddRecord = () => {
     navigate("/new-accounts", { state: { record: {} } })

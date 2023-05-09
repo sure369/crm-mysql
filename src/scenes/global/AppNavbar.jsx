@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import {
   AppBar, Box, Toolbar, Typography, IconButton, Menu, 
   Container, Avatar,  Tooltip, MenuItem, Button,Popover,Dialog,
@@ -9,6 +9,8 @@ import { Link, NavLink, useNavigate } from "react-router-dom"
 import mainLogo from '../assets/user image.png';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import './AppNavbar.css'
+import { RequestServer } from '../api/HttpReq';
+
 
 const pages = [
   { title: 'Inventories', toNav: '/inventories' },
@@ -28,17 +30,45 @@ const pages = [
 
 const settings = ['Logout'];
 
+
+const getTableUrl = `/getObject`;
 function AppNavbar() {
+
+
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [selected, setSelected] = useState("Inventories");
   const [dialogOpen, setDialogOpen] = useState(false);
-
+  const navigate = useNavigate();  
+  const [tableNamearr, settableNameArr] = useState([]);
   const loggedInUserData= JSON.parse(sessionStorage.getItem('loggedInUser'))
 
   console.log(loggedInUserData,"loggedInUserData")
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    fetchTables()
+  }, []);
+
+  const fetchTables = () => {
+    RequestServer(getTableUrl)
+      .then((res) => {
+        if (res.success) {
+          console.log(res, "res getTableUrl");
+          const arr = res.data.map(i => {
+            const CapLetter = i.Tables_in_crm.charAt(0).toUpperCase() + i.Tables_in_crm.slice(1);
+            return { title: CapLetter, toNav: `list/${i.Tables_in_crm}` };
+          });
+          settableNameArr(arr);
+          console.log(arr,"arr")
+        } else {
+          console.log("then error", res.error);
+        }
+      })
+      .catch((err) => {
+        console.log('api error', err);
+      });
+  };
+
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -127,7 +157,7 @@ function AppNavbar() {
                 display: { xs: 'block', md: 'none' }
               }}
             >
-              {pages.map((page, index) => (
+              { tableNamearr && tableNamearr.map((page, index) => (
                 <MenuItem key={page.title}
                   onClick={() => handleMenuItemClick(page.title)}
                   active={selected === page.title}
@@ -169,7 +199,7 @@ function AppNavbar() {
             justifyContent:'space-evenly'
             ,
           }}>
-            {pages.map((page, index) => (
+            {tableNamearr && tableNamearr.map((page, index) => (
               <MenuItem key={page.title}
                 onClick={() => handleMenuItemClick(page.title)}
                 active={selected === page.title}

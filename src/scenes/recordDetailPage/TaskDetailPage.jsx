@@ -133,12 +133,16 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
             if (values.object === 'Account') {
                 delete values.OpportunityId;
                 delete values.LeadId;
+                delete values.leadDetails
+                delete values.opportunityDetails
                 values.accountId = values.accountDetails.id;
                 values.accountName = values.accountDetails.accountName;
 
             } else if (values.object === 'Opportunity') {
                 delete values.AccountId;
-                delete values.LeadId;
+                delete values.LeadId;                
+                delete values.leadDetails
+                delete values.accountDetails
                 values.opportunityId = values.opportunityDetails.id;
                 values.opportunityName = values.opportunityDetails.opportunityName
             } else if (values.object === 'Lead') {
@@ -203,6 +207,7 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
     const callEvent = (e) => {
 
         console.log('inside call event', initialValues.object)
+        console.log("call event",e)
         let url1 = e === 'Account' ? fetchAccountUrl : e === 'Lead' ? fetchLeadUrl : e === 'Opportunity' ? fetchOpportunityUrl : null
         setUrl(url1)
         FetchObjectsbyName('', url1);
@@ -216,12 +221,14 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
 
         console.log('passed url', url)
         console.log('new Input  value', newInputValue)
+        console.log("passed value url", url +newInputValue)
         RequestServer(url + newInputValue)
             .then((res) => {
                 console.log('res Fetch Objects byName', res.data)
                 if (res.success) {
                     setRelatedRecNames(res.data)
                 } else {
+                    setRelatedRecNames([])
                     console.log("res status error", res.error.message)
                 }
             })
@@ -301,9 +308,10 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
                                             options={relatedRecNames}
                                             value={values.accountDetails || values.opportunityDetails || values.leadDetails}
                                             getOptionLabel={option => option.leadName || option.accountName || option.opportunityName || ''}
-                                            isOptionEqualToValue={(option, value) =>
-                                                option.id === value
-                                            }
+
+                                            // isOptionEqualToValue={(option, value) =>
+                                            //     option.id === value
+                                            // }
                                             onChange={(e, value) => {
                                                 console.log('inside onchange values', value);
                                                 if (!value) {
@@ -320,12 +328,13 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
                                                     }
                                                 }
                                                 else {
-                                                    console.log('value', value);
+                                                    console.log('inside else value', value);
                                                     if (values.object === 'Account') {
                                                         // setFieldValue('AccountId', value.id)
                                                         setFieldValue('accountDetails', value)
                                                     } else if (values.object === 'Opportunity') {
-                                                        // setFieldValue('OpportunityId', value.id)
+                                                        setFieldValue('opportunityId', value.id)
+                                                        setFieldValue('opportunityName', value.opportunityName)
                                                         setFieldValue('opportunityDetails', value)
                                                     } else if (values.object === 'Lead') {
                                                         // setFieldValue('LeadId', value.id)

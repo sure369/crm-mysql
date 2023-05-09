@@ -474,68 +474,68 @@ export const RoleSavedValues = (singleRole) => {
 export const PermissionSetInitialValues = {
   permissionName: "",
   userDetails: "",
-  permissionSets: [
-    {
-      object: "Account",
-      permissions: {
-        read: false,
-        create: false,
-        edit: false,
-        delete: false,
-      },
-      permissionLevel: 0,
-    },
-    {
-      object: "Contact",
-      permissions: {
-        read: false,
-        create: false,
-        edit: false,
-        delete: false,
-      },
-      permissionLevel: 0,
-    },
-    {
-      object: "Opportunity",
-      permissions: {
-        read: false,
-        create: false,
-        edit: false,
-        delete: false,
-      },
-      permissionLevel: 0,
-    },
-    {
-      object: "Lead",
-      permissions: {
-        read: false,
-        create: false,
-        edit: false,
-        delete: false,
-      },
-      permissionLevel: 0,
-    },
-    {
-      object: "Inventory",
-      permissions: {
-        read: false,
-        create: false,
-        edit: false,
-        delete: false,
-      },
-      permissionLevel: 0,
-    },
-    {
-      object: "Task",
-      permissions: {
-        read: false,
-        create: false,
-        edit: false,
-        delete: false,
-      },
-      permissionLevel: 0,
-    },
-  ],
+  // permissionSets: [
+  //   {
+  //     object: "Account",
+  //     permissions: {
+  //       read: false,
+  //       create: false,
+  //       edit: false,
+  //       delete: false,
+  //     },
+  //     permissionLevel: 0,
+  //   },
+  //   {
+  //     object: "Contact",
+  //     permissions: {
+  //       read: false,
+  //       create: false,
+  //       edit: false,
+  //       delete: false,
+  //     },
+  //     permissionLevel: 0,
+  //   },
+  //   {
+  //     object: "Opportunity",
+  //     permissions: {
+  //       read: false,
+  //       create: false,
+  //       edit: false,
+  //       delete: false,
+  //     },
+  //     permissionLevel: 0,
+  //   },
+  //   {
+  //     object: "Lead",
+  //     permissions: {
+  //       read: false,
+  //       create: false,
+  //       edit: false,
+  //       delete: false,
+  //     },
+  //     permissionLevel: 0,
+  //   },
+  //   {
+  //     object: "Inventory",
+  //     permissions: {
+  //       read: false,
+  //       create: false,
+  //       edit: false,
+  //       delete: false,
+  //     },
+  //     permissionLevel: 0,
+  //   },
+  //   {
+  //     object: "Task",
+  //     permissions: {
+  //       read: false,
+  //       create: false,
+  //       edit: false,
+  //       delete: false,
+  //     },
+  //     permissionLevel: 0,
+  //   },
+  // ],
 
   createdDate: "",
   modifiedDate: "",
