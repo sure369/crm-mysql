@@ -16,14 +16,18 @@ import './Form.css'
 import { TaskInitialValues, TaskSavedValues } from "../formik/InitialValues/formValues";
 import { getPermissions } from '../Auth/getPermission';
 import { RequestServer } from "../api/HttpReq";
+import { apiCheckPermission } from '../Auth/apiCheckPermission'
+import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
 
-const UpsertUrl = `/UpsertTask`;
-const fetchAccountUrl = `/accountsname?searchKey=`;
-const fetchLeadUrl = `/LeadsbyName?searchKey=`;
-const fetchOpportunityUrl = `/opportunitiesbyName?searchKey=`;
 
 const TaskDetailPage = ({ item, handleModal, showModel }) => {
+
+    const OBJECT_API = "Task"
+    const UpsertUrl = `/UpsertTask`;
+    const fetchAccountUrl = `/accountsname?searchKey=`;
+    const fetchLeadUrl = `/LeadsbyName?searchKey=`;
+    const fetchOpportunityUrl = `/opportunitiesbyName?searchKey=`;
 
     const [singleTask, setSingleTask] = useState();
     const [showNew, setshowNew] = useState()
@@ -39,14 +43,29 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
     const [permissionValues, setPermissionValues] = useState({})
     const [autocompleteReadOnly, setAutoCompleteReadOnly] = useState(false)
 
+    const userRoleDpt = getLoginUserRoleDept(OBJECT_API)
+    console.log(userRoleDpt, "userRoleDpt")
+
+
     useEffect(() => {
         console.log('passed record', location.state.record.item);
         setSingleTask(location.state.record.item)
         console.log('true', !location.state.record.item);
         setshowNew(!location.state.record.item)
-        const getPermission = getPermissions("Task")
-        console.log(getPermission, "getPermission")
-        setPermissionValues(getPermission)
+        if(userRoleDpt){
+            apiCheckPermission(userRoleDpt)
+            .then(res=>{
+                console.log(res,"apiCheckPermission promise res")
+                setPermissionValues(res)
+            })
+            .catch(err=>{
+                console.log(err,"res apiCheckPermission error")
+                setPermissionValues({})
+            })
+        }
+        // const getPermission = getPermissions("Task")
+        // console.log(getPermission, "getPermission")
+        // setPermissionValues(getPermission)
 
         if (location.state.record.item) {
             console.log('inside condition')
@@ -140,7 +159,7 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
 
             } else if (values.object === 'Opportunity') {
                 delete values.AccountId;
-                delete values.LeadId;                
+                delete values.LeadId;
                 delete values.leadDetails
                 delete values.accountDetails
                 values.opportunityId = values.opportunityDetails.id;
@@ -207,7 +226,7 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
     const callEvent = (e) => {
 
         console.log('inside call event', initialValues.object)
-        console.log("call event",e)
+        console.log("call event", e)
         let url1 = e === 'Account' ? fetchAccountUrl : e === 'Lead' ? fetchLeadUrl : e === 'Opportunity' ? fetchOpportunityUrl : null
         setUrl(url1)
         FetchObjectsbyName('', url1);
@@ -221,7 +240,7 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
 
         console.log('passed url', url)
         console.log('new Input  value', newInputValue)
-        console.log("passed value url", url +newInputValue)
+        console.log("passed value url", url + newInputValue)
         RequestServer(url + newInputValue)
             .then((res) => {
                 console.log('res Fetch Objects byName', res.data)

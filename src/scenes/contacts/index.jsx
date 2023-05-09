@@ -22,9 +22,11 @@ import NoAccess from '../NoAccess/NoAccess';
 import '../indexCSS/muiBoxStyles.css'
 import AppNavbar from '../global/AppNavbar';
 import { useLocation } from 'react-router-dom';
+import { apiCheckPermission } from '../Auth/apiCheckPermission';
+import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
 const Contacts = () => {
-
+  const OBJECT_API="Contact"
   const urlContact = `/contacts`;
   const urlDelete = `/deleteContact?code=`;
 
@@ -46,11 +48,22 @@ const Contacts = () => {
   const [whatsAppModalOpen, setWhatsAppModalOpen] = useState(false)
   const [permissionValues, setPermissionValues] = useState({})
 
-console.log(location,"contact location")
+
+  const userRoleDpt=getLoginUserRoleDept(OBJECT_API)
+  console.log(userRoleDpt,"userRoleDpt")
+
   useEffect(() => {
     fetchRecords();
-    const getPermission = getPermissions("Contact")
-    setPermissionValues(getPermission)
+
+    if(userRoleDpt){
+      apiCheckPermission(userRoleDpt)
+      .then(res=>{
+        setPermissionValues(res)
+      })
+      .catch(err=>{
+        setPermissionValues({})
+      })
+    }
   }, []);
 
   const fetchRecords = () => {

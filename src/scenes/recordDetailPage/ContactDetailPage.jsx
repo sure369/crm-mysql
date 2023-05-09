@@ -23,11 +23,15 @@ import './Form.css'
 import { ContactInitialValues, ContactSavedValues } from '../formik/InitialValues/formValues';
 import { getPermissions } from '../Auth/getPermission';
 import { RequestServer } from '../api/HttpReq';
+import {apiCheckPermission} from '../Auth/apiCheckPermission'
+import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
-const url = `/UpsertContact`;
-const fetchAccountsbyName = `/accountsname?searchKey=`;
 
 const ContactDetailPage = ({ item }) => {
+
+    const OBJECT_API = "Contact"
+    const url = `/UpsertContact`;
+    const fetchAccountsbyName = `/accountsname?searchKey=`;
 
     const [singleContact, setsingleContact] = useState();
     const [accNames, setAccNames] = useState([]);
@@ -39,15 +43,29 @@ const ContactDetailPage = ({ item }) => {
     const [whatsAppModalOpen, setWhatsAppModalOpen] = useState(false)
     const [permissionValues, setPermissionValues] = useState({})
 
+    const userRoleDpt= getLoginUserRoleDept(OBJECT_API)
+    console.log(userRoleDpt,"userRoleDpt")
+
 
     useEffect(() => {
         console.log('passed record', location.state.record.item);
         setsingleContact(location.state.record.item);
         setshowNew(!location.state.record.item)
         FetchAccountsbyName('');
-        const getPermission = getPermissions("Contact")
-        console.log(getPermission, "getPermission")
-        setPermissionValues(getPermission)
+        if(userRoleDpt){
+            apiCheckPermission(userRoleDpt)
+            .then(res=>{
+                console.log(res,"apiCheckPermission res")
+                setPermissionValues(res)
+            })
+            .catch(err=>{
+                console.log(err,"res apiCheckPermission error")
+                setPermissionValues({})
+            })
+        }
+        // const getPermission = getPermissions("Contact")
+        // console.log(getPermission, "getPermission")
+        // setPermissionValues(getPermission)
     }, [])
 
     const initialValues = ContactInitialValues

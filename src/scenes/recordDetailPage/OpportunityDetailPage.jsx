@@ -15,13 +15,17 @@ import './Form.css'
 import { OpportunityInitialValues, OpportunitySavedValues } from '../formik/InitialValues/formValues';
 import { getPermissions } from '../Auth/getPermission';
 import { RequestServer } from '../api/HttpReq';
-
-const url = `/UpsertOpportunity`;
-const fetchLeadsbyName = `/LeadsbyName?searchKey=`;
-const fetchInventoriesbyName = `/InventoryName?searchKey=`;
+import {apiCheckPermission} from '../Auth/apiCheckPermission'
+import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
 
 const OpportunityDetailPage = ({ item }) => {
+
+    const OBJECT_API = "Opportunity"
+    const url = `/UpsertOpportunity`;
+    const fetchLeadsbyName = `/LeadsbyName?searchKey=`;
+    const fetchInventoriesbyName = `/InventoryName?searchKey=`;
+
 
     const [singleOpportunity, setSinglOpportunity] = useState();
     const location = useLocation();
@@ -31,6 +35,9 @@ const OpportunityDetailPage = ({ item }) => {
     const [inventoriesRecord, setInventoriesRecord] = useState([]);
     const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
     const [permissionValues, setPermissionValues] = useState({})
+   
+    const userRoleDpt= getLoginUserRoleDept(OBJECT_API)
+    console.log(userRoleDpt,"userRoleDpt")
 
     useEffect(() => {
         console.log('passed record', location.state.record.item);
@@ -39,9 +46,19 @@ const OpportunityDetailPage = ({ item }) => {
         setshowNew(!location.state.record.item)
         FetchInventoriesbyName('');
         FetchLeadsbyName('');
-        const getPermission = getPermissions("Opportunity")
-        console.log(getPermission, "getPermission")
-        setPermissionValues(getPermission)
+        if(userRoleDpt){
+            apiCheckPermission(userRoleDpt)
+            .then(res=>{
+                setPermissionValues(res)
+            })
+            .catch(err=>{
+                console.log(err,"res apiCheckPermission error")
+                setPermissionValues({})
+            })
+        }
+        // const getPermission = getPermissions("Opportunity")
+        // console.log(getPermission, "getPermission")
+        // setPermissionValues(getPermission)
 
 
     }, [])

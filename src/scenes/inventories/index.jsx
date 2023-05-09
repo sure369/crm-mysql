@@ -20,13 +20,15 @@ import { getPermissions } from '../Auth/getPermission';
 import NoAccess from '../NoAccess/NoAccess';
 import '../indexCSS/muiBoxStyles.css'
 import AppNavbar from '../global/AppNavbar';
-
+import { apiCheckPermission } from '../Auth/apiCheckPermission';
+import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
 const Inventories = () => {
 
+  const OBJECT_API="Inventory"
   const urlDelete = `/deleteInventory?code=`;
   const urlInventory = `/inventories`;
-  const location = useLocation()
+ 
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -44,14 +46,25 @@ const Inventories = () => {
   const [selectedRecordDatas, setSelectedRecordDatas] = useState()
   const [permissionValues,setPermissionValues]=useState({})
 
+  const userRoleDpt =getLoginUserRoleDept(OBJECT_API)
+
   useEffect(() => {
     fetchRecords();
-    const getPermission=getPermissions("Inventory")
-    setPermissionValues(getPermission)
+    if(userRoleDpt){
+      apiCheckPermission(userRoleDpt)
+      .then(res=>{
+        console.log(res,"api res apiCheckPermission")
+        setPermissionValues(res)
+      })
+      .catch(err=>{
+        setPermissionValues({})
+      })
+    }
+    // const getPermission=getPermissions("Inventory")
+    // setPermissionValues(getPermission)
 
   }, []);
-
-  console.log(location,"inventory location")
+  
   const fetchRecords = () => {
     RequestServer(urlInventory)
       .then((res) => {

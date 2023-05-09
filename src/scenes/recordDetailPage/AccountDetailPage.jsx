@@ -10,14 +10,18 @@ import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 import ToastNotification from '../toast/ToastNotification';
 import { AccountInitialValues, AccountSavedValues } from '../formik/InitialValues/formValues';
 import { getPermissions } from '../Auth/getPermission';
-import {RequestServer} from "../api/HttpReq"
+import { RequestServer } from "../api/HttpReq"
+import {apiCheckPermission} from '../Auth/apiCheckPermission'
+import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
-const url = `/UpsertAccount`;
-const fetchInventoriesbyName = `/InventoryName?searchKey=`;
-const getCountryPicklists = `/getpicklistcountry`;
-const getCityPicklists = `/getpickliststate?country=`;
 
 const AccountDetailPage = ({ item }) => {
+
+    const OBJECT_API = "Account"
+    const url = `/UpsertAccount`;
+    const fetchInventoriesbyName = `/InventoryName?searchKey=`;
+    const getCountryPicklists = `/getpicklistcountry`;
+    const getCityPicklists = `/getpickliststate?country=`;
 
     const [singleAccount, setsingleAccount] = useState();
     const location = useLocation();
@@ -27,10 +31,12 @@ const AccountDetailPage = ({ item }) => {
     const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
     const [countryPicklist, setCountriesPicklist] = useState([])
     const [cityPicklist, setCitiesPicklist] = useState([])
-    const [permissionValues,setPermissionValues]=useState({})
+    const [permissionValues, setPermissionValues] = useState({})
 
-    console.log(permissionValues,"permissionValues")
+    const userRoleDpt= getLoginUserRoleDept(OBJECT_API)
+    console.log(userRoleDpt,"userRoleDpt")
 
+ 
     useEffect(() => {
         console.log('passed record', location.state.record.item);
         setsingleAccount(location.state.record.item);
@@ -38,13 +44,24 @@ const AccountDetailPage = ({ item }) => {
         setshowNew(!location.state.record.item)
         FetchInventoriesbyName('');
         getCountriesPicklist();
-        const getPermission=getPermissions("Account")
-        console.log(getPermission,"getPermission")
-        setPermissionValues(getPermission)
-      
+        if(userRoleDpt){
+            apiCheckPermission(userRoleDpt)
+            .then(res=>{
+                console.log(res,"apiCheckPermission promise res")
+                setPermissionValues(res)
+            })
+            .catch(err=>{
+                console.log(err,"res apiCheckPermission error")
+                setPermissionValues({})
+            })
+        }
+        // const getPermission = getPermissions("Account")
+        // console.log(getPermission, "getPermission")
+        // setPermissionValues(getPermission)
+
         if (location.state.record.item) {
             console.log('inside')
-            getCitiesPicklist(location.state.record.item.billingCountry)          
+            getCitiesPicklist(location.state.record.item.billingCountry)
         }
     }, [])
 
@@ -79,16 +96,16 @@ const AccountDetailPage = ({ item }) => {
     const getCountriesPicklist = () => {
 
         RequestServer(getCountryPicklists)
-        .then(res=>{
-            if(res.success){
-                setCountriesPicklist(res.data)
-            }else{
-                console.log("getCountry status error",res.error.message)
-            }
-        })
-        .catch(error=>{
-            console.log('get country error',error)
-        })
+            .then(res => {
+                if (res.success) {
+                    setCountriesPicklist(res.data)
+                } else {
+                    console.log("getCountry status error", res.error.message)
+                }
+            })
+            .catch(error => {
+                console.log('get country error', error)
+            })
     }
 
     const getCitiesPicklist = (country) => {
@@ -134,8 +151,8 @@ const AccountDetailPage = ({ item }) => {
         }
 
         console.log('after change form submission value', values);
-        
-        RequestServer(url,values)
+
+        RequestServer(url, values)
             .then(res => {
                 console.log(res, "detailPage res")
                 if (res.success) {
@@ -175,18 +192,18 @@ const AccountDetailPage = ({ item }) => {
     }
 
     const FetchInventoriesbyName = (newInputValue) => {
-       
-        RequestServer(fetchInventoriesbyName+newInputValue)
-        .then((res)=>{
-            if(res.success){
-                setInventoriesRecord(res.data)
-            }else{
-                console.log("status error",res.error.message)
-            }
-        })
-        .catch((error)=>{
-            console.log("error fetchInventoriesbyName",error)
-        })
+
+        RequestServer(fetchInventoriesbyName + newInputValue)
+            .then((res) => {
+                if (res.success) {
+                    setInventoriesRecord(res.data)
+                } else {
+                    console.log("status error", res.error.message)
+                }
+            })
+            .catch((error) => {
+                console.log("error fetchInventoriesbyName", error)
+            })
     }
     const handleFormClose = () => {
         navigate(-1)
@@ -208,7 +225,7 @@ const AccountDetailPage = ({ item }) => {
                     onSubmit={(values) => { formSubmission(values) }}
                 >
                     {(props) => {
-                        const {values,dirty, isSubmitting, handleChange,handleSubmit,handleReset,setFieldValue,errors,touched,} = props;
+                        const { values, dirty, isSubmitting, handleChange, handleSubmit, handleReset, setFieldValue, errors, touched, } = props;
 
                         return (
                             <>
@@ -219,7 +236,7 @@ const AccountDetailPage = ({ item }) => {
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="accountName">Account Name  <span className="text-danger">*</span></label>
                                             <Field name="accountName" type="text" class="form-input"
-                                           disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                                disabled={showNew ? !permissionValues.create : !permissionValues.edit}
                                             />
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="accountName" />
@@ -227,8 +244,8 @@ const AccountDetailPage = ({ item }) => {
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="accountNumber">Account Number </label>
-                                            <Field name="accountNumber" type="number" class="form-input" 
-                                            disabled={showNew?!permissionValues.create :!permissionValues.edit}/>
+                                            <Field name="accountNumber" type="number" class="form-input"
+                                                disabled={showNew ? !permissionValues.create : !permissionValues.edit} />
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="InventoryId">Inventory Name </label>
@@ -237,7 +254,7 @@ const AccountDetailPage = ({ item }) => {
                                                 options={inventoriesRecord}
                                                 value={values.inventoryDetails}
                                                 getOptionLabel={option => option.propertyName || ''}
-                                                
+
                                                 onChange={(e, value) => {
 
                                                     if (!value) {
@@ -262,35 +279,35 @@ const AccountDetailPage = ({ item }) => {
                                                         FetchInventoriesbyName(newInputValue);
                                                     }
                                                 }}
-                                                disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                                disabled={showNew ? !permissionValues.create : !permissionValues.edit}
                                                 renderInput={params => (
-                                                    <Field component={TextField} {...params} name="InventoryId" 
-                                                    
+                                                    <Field component={TextField} {...params} name="InventoryId"
+
                                                     />
                                                 )}
                                             />
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="annualRevenue">Annual Revenue</label>
-                                            <Field class="form-input" type="text" name="annualRevenue" 
-                                            disabled={showNew?!permissionValues.create :!permissionValues.edit}/>
+                                            <Field class="form-input" type="text" name="annualRevenue"
+                                                disabled={showNew ? !permissionValues.create : !permissionValues.edit} />
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="annualRevenue" />
                                             </div>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="phone">Phone</label>
-                                            <Field name="phone" type="phone" class="form-input" 
-                                            disabled={showNew?!permissionValues.create :!permissionValues.edit}/>
+                                            <Field name="phone" type="phone" class="form-input"
+                                                disabled={showNew ? !permissionValues.create : !permissionValues.edit} />
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="phone" />
                                             </div>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="rating"> Rating<span className="text-danger">*</span></label>
-                                            <Field name="rating" component={CustomizedSelectForFormik} 
-                                            className="form-customSelect" 
-                                            disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                            <Field name="rating" component={CustomizedSelectForFormik}
+                                                className="form-customSelect"
+                                                disabled={showNew ? !permissionValues.create : !permissionValues.edit}
                                             >
                                                 <MenuItem value=""><em>None</em></MenuItem>
                                                 {
@@ -306,8 +323,8 @@ const AccountDetailPage = ({ item }) => {
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="type">Type</label>
                                             <Field name="type" component={CustomizedSelectForFormik}
-                                           disabled={showNew?!permissionValues.create :!permissionValues.edit}
-                                           >
+                                                disabled={showNew ? !permissionValues.create : !permissionValues.edit}
+                                            >
                                                 <MenuItem value=""><em>None</em></MenuItem>
                                                 {
                                                     AccTypePickList.map((i) => {
@@ -319,7 +336,7 @@ const AccountDetailPage = ({ item }) => {
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="industry">Industry</label>
                                             <Field name="industry" component={CustomizedSelectForFormik}
-                                            disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                                disabled={showNew ? !permissionValues.create : !permissionValues.edit}
                                             >
                                                 <MenuItem value=""><em>None</em></MenuItem>
                                                 {
@@ -343,7 +360,7 @@ const AccountDetailPage = ({ item }) => {
                                                     setFieldValue("billingCity", "");
                                                     getCitiesPicklist(value)
                                                 }}
-                                                disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                                disabled={showNew ? !permissionValues.create : !permissionValues.edit}
                                             >
                                                 <MenuItem value=""><em>None</em></MenuItem>
                                                 {
@@ -362,7 +379,7 @@ const AccountDetailPage = ({ item }) => {
                                                 name="billingCity"
                                                 component={CustomizedSelectForFormik}
                                                 onChange={handleChange}
-                                                disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                                disabled={showNew ? !permissionValues.create : !permissionValues.edit}
                                             >
                                                 <MenuItem value=""><em>None</em></MenuItem>
                                                 {
@@ -380,7 +397,7 @@ const AccountDetailPage = ({ item }) => {
                                                 as="textarea"
                                                 class="form-input-textarea"
                                                 style={{ width: "100%" }}
-                                                disabled={showNew?!permissionValues.create :!permissionValues.edit}                                          
+                                                disabled={showNew ? !permissionValues.create : !permissionValues.edit}
                                             />
                                         </Grid>
                                         {!showNew && (

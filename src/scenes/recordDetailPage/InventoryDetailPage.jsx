@@ -11,12 +11,16 @@ import CustomizedSelectForFormik from '../formik/CustomizedSelectForFormik';
 import { InventoryInitialValues, InventorySavedValues } from '../formik/InitialValues/formValues';
 import { getPermissions } from '../Auth/getPermission';
 import { RequestServer } from '../api/HttpReq';
+import {apiCheckPermission} from '../Auth/apiCheckPermission'
+import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
-const url = `/UpsertInventory`;
-const getCountryPicklists= `/getpicklistcountry`;
-const getCityPicklists = `/getpickliststate?country=`;
 
 const InventoryDetailPage = ({ item }) => {
+
+    const OBJECT_API = "Inventory"
+    const url = `/UpsertInventory`;
+    const getCountryPicklists = `/getpicklistcountry`;
+    const getCityPicklists = `/getpickliststate?country=`;
 
     const [singleInventory, setsingleInventory] = useState();
     const location = useLocation();
@@ -27,14 +31,28 @@ const InventoryDetailPage = ({ item }) => {
     const[cityPicklist,setCitiesPicklist]=useState([])
     const [permissionValues,setPermissionValues]=useState({})
 
+    const userRoleDpt= getLoginUserRoleDept(OBJECT_API)
+    console.log(userRoleDpt,"userRoleDpt")
+
     useEffect(() => {
         console.log('passed record', location.state.record.item);
         setsingleInventory(location.state.record.item);
         setshowNew(!location.state.record.item)
         getCountriesPicklist();
-        const getPermission=getPermissions("Inventory")
-        console.log(getPermission,"getPermission")
-        setPermissionValues(getPermission)
+        if(userRoleDpt){
+            apiCheckPermission(userRoleDpt)
+            .then(res=>{
+                console.log(res,"apiCheckPermission promise res")
+                setPermissionValues(res)
+            })
+            .catch(err=>{
+                console.log(err,"res apiCheckPermission error")
+                setPermissionValues({})
+            })
+        }
+        // const getPermission=getPermissions("Inventory")
+        // console.log(getPermission,"getPermission")
+        // setPermissionValues(getPermission)
 
         if(location.state.record.item){
             console.log('inside')

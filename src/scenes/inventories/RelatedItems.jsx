@@ -14,9 +14,14 @@ import '../recordDetailPage/Form.css'
 import { RequestServer } from "../api/HttpReq";
 import { getPermissions } from "../Auth/getPermission";
 import NoAccessCard from "../NoAccess/NoAccessCard";
+import {apiCheckPermission} from '../Auth/apiCheckPermission'
+import { getLoginUserRoleDept } from '../Auth/userRoleDept';
+
 
 const InventoryRelatedItems = ({ item }) => {
 
+  const OBJECT_API_account="Account"
+  const OBJECT_API_opportunity="Opportunity"
   const opportunityDeleteURL = `/deleteOpportunity?code=`;
   const accountDeleteURL = `/deleteAccount?code=`;
   const urlgetOpportunitiesbyInvid = `/getOpportunitiesbyInvid?searchId=`;
@@ -46,7 +51,11 @@ const InventoryRelatedItems = ({ item }) => {
   const [permissionValuesAccount,setPermissionValuesAccount]=useState({})
   const [permissionValuesOpportunity,setPermissionValuesOpportunity]=useState({})
 
-
+  const userRoleDptAccount= getLoginUserRoleDept(OBJECT_API_account)
+  const userRoleDptOpportunity= getLoginUserRoleDept(OBJECT_API_opportunity)
+  console.log(userRoleDptAccount,"userRoleDptAccount")
+  console.log(userRoleDptOpportunity,"userRoleDptOpportunity")
+  
 
   useEffect(() => {
     console.log('related Inventories', location.state.record.item);
@@ -55,11 +64,33 @@ const InventoryRelatedItems = ({ item }) => {
     getOpportunitiesbyInvId(location.state.record.item._id)
     getAccountsbyInvId(location.state.record.item._id)
 
-    const getAccountPermission=getPermissions("Account")
-    setPermissionValuesAccount(getAccountPermission)
+    if(userRoleDptAccount){
+      apiCheckPermission(userRoleDptAccount)
+      .then(res=>{
+        console.log(res,"res task apiCheckPermission")
+        setPermissionValuesAccount(res);
+      })
+      .catch(err=>{
+        console.log(err,"res task apiCheckPermission")
+        setPermissionValuesAccount(err)
+      })
+    }
+    else if(userRoleDptOpportunity){
+      apiCheckPermission(userRoleDptOpportunity)
+      .then(res=>{
+        console.log(res,"res contact apiCheckPermission")
+        setPermissionValuesOpportunity(res);
+      })
+      .catch(err=>{
+        console.log(err,"res contact apiCheckPermission")
+        setPermissionValuesOpportunity(err)
+      })
+    }
+    // const getAccountPermission=getPermissions("Account")
+    // setPermissionValuesAccount(getAccountPermission)
 
-    const getOpportunityPermission=getPermissions("Opportunity")
-    setPermissionValuesOpportunity(getOpportunityPermission)
+    // const getOpportunityPermission=getPermissions("Opportunity")
+    // setPermissionValuesOpportunity(getOpportunityPermission)
 
   }, [])
 

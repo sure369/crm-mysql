@@ -10,8 +10,17 @@ import ToastNotification from '../toast/ToastNotification';
 import DeleteConfirmDialog from '../toast/DeleteConfirmDialog';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { RequestServer } from '../api/HttpReq';
+import { apiCheckPermission } from '../Auth/apiCheckPermission';
 
 const AccountsMobile = () => {
+
+  const OBJECT_API="Contact"
+  const userDetails = JSON.parse(sessionStorage.getItem("loggedInUser"))
+   const userRoleDpt ={
+                        loginUserRole:JSON.parse(userDetails.userRole).roleName,
+                        loginUserDepartmentName:userDetails.userDepartment,
+                        object:OBJECT_API
+                      }
 
   const urlDelete = `/deleteAccount?code=`;
   const urlAccount = `/accounts`;
@@ -32,9 +41,21 @@ const AccountsMobile = () => {
   const [itemsPerPage, setItemsPerPage] = useState(3);
   const [page, setPage] = useState(1);
   const [noOfPages, setNoOfPages] = useState(0);
+  const [permissionValues,setPermissionValues]=useState({})
+
 
   useEffect(() => {
     fetchRecords();
+    if(userRoleDpt){
+      apiCheckPermission(userRoleDpt)
+      .then(res=>{
+        console.log(res,"api resa piCheckPermission")
+        setPermissionValues(res)
+      })
+      .catch(err=>{
+        setPermissionValues({})
+      })
+    }
   }, []
   );
 

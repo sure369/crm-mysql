@@ -22,27 +22,17 @@ import NoAccess from '../NoAccess/NoAccess';
 import '../indexCSS/muiBoxStyles.css'
 import { GetTableIndex } from '../getTables';
 import AppNavbar from '../global/AppNavbar';
-
+import {apiCheckPermission} from '../Auth/apiCheckPermission'
+import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
 const Accounts = ({props}) => {
-  const location = useLocation();
 
-  console.log(props," account props")
- console.log(location,"account location");
- const OBJECT_API="Account"
-
-  const userDetails = JSON.parse(sessionStorage.getItem("loggedInUser"))
-   const userRoleDpt ={
-                        loginUserRole:JSON.parse(userDetails.userRole).roleName,
-                        loginUserDepartmentName:userDetails.userDepartment,
-                        object:OBJECT_API
-                      }
+  const OBJECT_API="Account"
   const urlDelete = `/deleteAccount?code=`;
   const urlAccount = `/accounts`;
   const urlCheckPermission=`/checkAccess`
 
   
-
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -58,14 +48,27 @@ const Accounts = ({props}) => {
   const [importModalOpen,setImportModalOpen]= useState(false)
   const [permissionValues,setPermissionValues]=useState({})
 
+  const userRoleDpt= getLoginUserRoleDept(OBJECT_API)
+  console.log(userRoleDpt,"userRoleDpt")
+
   useEffect(() => {
-    console.log(userRoleDpt,"userRoleDptuserRoleDpt")
+
     fetchRecords();
     fetchPermissions();
-    const acc= GetTableIndex;
-    console.log(acc,"GetTableIndex")
-    const getPermission=getPermissions("Account")
-    setPermissionValues(getPermission)
+    // const acc= GetTableIndex;
+    // console.log(acc,"GetTableIndex")
+    if(userRoleDpt){
+      apiCheckPermission(userRoleDpt)
+      .then(res=>{
+        console.log(res,"res apiCheckPermission")
+        setPermissionValues(res)
+      })
+      .catch(err=>{
+        console.log(err,"res apiCheckPermission")
+        setPermissionValues({})
+      })
+
+    }
   }, []
   );
 
@@ -96,6 +99,7 @@ const Accounts = ({props}) => {
     .then(res=>{
       if(res.success){
         console.log(res.data,"urlCheckPermission res")
+        setPermissionValues(res.data)
       }else{
         console.log(res.error,"urlCheckPermission error then")
       }

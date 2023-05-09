@@ -18,10 +18,13 @@ import '../recordDetailPage/Form.css'
 import { RequestServer } from "../api/HttpReq";
 import { getPermissions } from "../Auth/getPermission";
 import NoAccessCard from "../NoAccess/NoAccessCard";
+import {apiCheckPermission} from '../Auth/apiCheckPermission'
+import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
 
 const OpportunityRelatedItems = ({ item }) => {
 
+  const OBJECT_API_task="Task"
   const taskDeleteURL = `/deleteTask?code=`;
   const urlTaskbyOppId = `/getTaskbyOpportunityId?searchId=`;
   
@@ -40,13 +43,28 @@ const OpportunityRelatedItems = ({ item }) => {
 
   const [permissionValuesTask, setPermissionValuesTask] = useState({})
 
+  const userRoleDptTask= getLoginUserRoleDept(OBJECT_API_task)
+  console.log(userRoleDptTask,"userRoleDptTask")
+  
+
   useEffect(() => {
     console.log('inside useEffect', location.state.record.item);
     setOpportunityRecordId(location.state.record.item._id)
     getTasksbyOppId(location.state.record.item._id)
 
-    const getTaskPermission = getPermissions("Task")
-    setPermissionValuesTask(getTaskPermission)
+    if(userRoleDptTask){
+      apiCheckPermission(userRoleDptTask)
+      .then(res=>{
+        console.log(res,"res task apiCheckPermission")
+        setPermissionValuesTask(res);
+      })
+      .catch(err=>{
+        console.log(err,"res task apiCheckPermission")
+        setPermissionValuesTask(err)
+      })
+    }
+    // const getTaskPermission = getPermissions("Task")
+    // setPermissionValuesTask(getTaskPermission)
 
   }, [])
 

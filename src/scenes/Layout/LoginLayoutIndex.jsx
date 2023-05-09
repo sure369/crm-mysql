@@ -39,7 +39,7 @@ function LoginLayoutIndex(props) {
     <>
       <AppNavbar props={location} />
       <Routes>
-        <Route path="/" exact element={<LayoutIndex />} />
+        <Route path="/" exact element={<ResponsiveInventories />} />
         <Route path="/list/account" element={<ResponsiveAccounts />} />
         <Route path="/list/contact" element={<ResponsiveContacts />} />
         <Route path="/list/deals" element={<ResponsiveOpportunities />} />

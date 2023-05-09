@@ -23,8 +23,13 @@ import { LeadMonthPicklist } from "../../data/pickLists";
 import { getPermissions } from "../Auth/getPermission";
 import NoAccess from "../NoAccess/NoAccess";
 import '../indexCSS/muiBoxStyles.css'
+import { apiCheckPermission } from "../Auth/apiCheckPermission";
+import { getLoginUserRoleDept } from '../Auth/userRoleDept';
+
 
 const Leads = () => {
+
+  const OBJECT_API="Lead"
   const urlLead = `/leads`;
   const urlSearchLead = `/leads?`;
   const urlDelete = `/deleteLead?code=`;
@@ -52,10 +57,22 @@ const Leads = () => {
   const [filterMonth, setFilterMonth] = useState();
   const [permissionValues,setPermissionValues]=useState({})
 
+  const userRoleDpt=getLoginUserRoleDept(OBJECT_API)
+  console.log(userRoleDpt,"userRoleDpt")
+
   useEffect(() => {
-    fetchRecords();    
-    const getPermission=getPermissions("Lead")
-    setPermissionValues(getPermission)
+    fetchRecords();  
+      if(userRoleDpt){
+        apiCheckPermission(userRoleDpt)
+        .then(res=>{
+          setPermissionValues(res)
+        })
+        .catch(err=>{
+          setPermissionValues({})
+        })
+      }
+    // const getPermission=getPermissions("Lead")
+    // setPermissionValues(getPermission)
   }, []);
 
   const fetchRecords = () => {

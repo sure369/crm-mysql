@@ -16,12 +16,14 @@ import { RequestServer } from '../api/HttpReq';
 import { getPermissions } from '../Auth/getPermission';
 import NoAccess from '../NoAccess/NoAccess';
 import '../indexCSS/muiBoxStyles.css'
-
+import { apiCheckPermission } from '../Auth/apiCheckPermission';
+import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
 const Task = () => {
 
-  const urlDelete = `/deleteTask?code=`;
+  const OBJECT_API="Task" 
   const urlTask = `/Task`;
+  const urlDelete = `/deleteTask?code=`;
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -39,10 +41,23 @@ const Task = () => {
   const [selectedRecordDatas, setSelectedRecordDatas] = useState()
   const [permissionValues, setPermissionValues] = useState({})
 
+  const userRoleDpt=getLoginUserRoleDept(OBJECT_API)
+  console.log(userRoleDpt,"userRoleDpt")
+
   useEffect(() => {
     fetchRecords();
-    const getPermission = getPermissions("Task")
-    setPermissionValues(getPermission)
+    if(userRoleDpt){
+      apiCheckPermission(userRoleDpt)
+      .then(res=>{
+        console.log(res,"res")
+        setPermissionValues(res)
+      })
+      .catch(error=>{
+        setPermissionValues({})
+      })
+    }
+    // const getPermission = getPermissions("Task")
+    // setPermissionValues(getPermission)
 
   }, []
   );
@@ -284,6 +299,8 @@ const Task = () => {
           className="my-mui-styles"
         >
           <DataGrid
+            sx={{
+              boxShadow:"rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px"}}
             rows={records}
             columns={columns}
             getRowId={(row) => row._id}

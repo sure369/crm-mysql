@@ -16,9 +16,12 @@ import { RequestServer } from "../api/HttpReq";
 import { getPermissions } from '../Auth/getPermission';
 import NoAccess from '../NoAccess/NoAccess';
 import "../indexCSS/muiBoxStyles.css"
-
+import { apiCheckPermission } from "../Auth/apiCheckPermission";
+import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
 const Opportunities = () => {
+
+  const OBJECT_API="Opportunity"
   const urlOpportunity = `/opportunities`;
   const urlFilterOpportunity = `/opportunitiesFilter?code=`;
   const urlDelete = `/deleteOpportunity?code=`;
@@ -42,11 +45,23 @@ const Opportunities = () => {
   const [filteredRecords, setFilteredRecords] = useState([]);
   const [permissionValues,setPermissionValues]=useState({})
 
+  const userRoleDpt=getLoginUserRoleDept(OBJECT_API)
+  console.log(userRoleDpt,"userRoleDpt")
+
   useEffect(() => {
     fetchRecords();
+    if(userRoleDpt){
+      apiCheckPermission(userRoleDpt)
+      .then(res=>{
+        setPermissionValues(res)
+      })
+      .catch(error=>{
+        setPermissionValues({})
+      })
+    }
     // filterRecords();
-    const getPermission=getPermissions("Opportunity")
-    setPermissionValues(getPermission)
+    // const getPermission=getPermissions("Opportunity")
+    // setPermissionValues(getPermission)
   }, []);
 
   const fetchRecords = () => {

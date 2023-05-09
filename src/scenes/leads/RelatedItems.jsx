@@ -17,10 +17,14 @@ import { RequestServer } from "../api/HttpReq";
 import { getPermissions } from "../Auth/getPermission";
 import NoAccess from "../NoAccess/NoAccess";
 import NoAccessCard from "../NoAccess/NoAccessCard";
+import {apiCheckPermission} from '../Auth/apiCheckPermission'
+import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
 
 const LeadRelatedItems = ({ item }) => {
 
+  const OBJECT_API_task="Task"
+  const OBJECT_API_opportunity="Opportunity"
   const taskDeleteURL = `/deleteTask?code=`;
   const opportunityDeleteURL = `/deleteOpportunity?code=`;
   const urlTaskbyLeadId = `/getTaskbyLeadId?searchId=`;
@@ -48,17 +52,45 @@ const LeadRelatedItems = ({ item }) => {
   const [permissionValuesTask,setPermissionValuesTask]=useState({})
   const [permissionValuesOpportunity,setPermissionValuesOpportunity]=useState({})
 
+  const userRoleDptTask= getLoginUserRoleDept(OBJECT_API_task)
+  const userRoleDptopportunity= getLoginUserRoleDept(OBJECT_API_opportunity)
+  console.log(userRoleDptTask,"userRoleDptTask")
+  console.log(userRoleDptopportunity,"userRoleDptopportunity")
+  
+
   useEffect(() => {
     console.log('inside useEffect', location.state.record.item);
     setLeadRecordId(location.state.record.item._id)
     getTasksbyLeadId(location.state.record.item._id)
     getOpportunitybyLeadId(location.state.record.item._id)
    
-    const getTaskPermission=getPermissions("Task")
-    setPermissionValuesTask(getTaskPermission)
+    if(userRoleDptTask){
+      apiCheckPermission(userRoleDptTask)
+      .then(res=>{
+        console.log(res,"res task apiCheckPermission")
+        setPermissionValuesTask(res);
+      })
+      .catch(err=>{
+        console.log(err,"res task apiCheckPermission")
+        setPermissionValuesTask(err)
+      })
+    }
+    else if(userRoleDptopportunity){
+      apiCheckPermission(userRoleDptopportunity)
+      .then(res=>{
+        console.log(res,"res contact apiCheckPermission")
+        setPermissionValuesOpportunity(res);
+      })
+      .catch(err=>{
+        console.log(err,"res contact apiCheckPermission")
+        setPermissionValuesOpportunity(err)
+      })
+    }
+    // const getTaskPermission=getPermissions("Task")
+    // setPermissionValuesTask(getTaskPermission)
 
-    const getOpportunityPermission=getPermissions("Opportunity")
-    setPermissionValuesOpportunity(getOpportunityPermission)  
+    // const getOpportunityPermission=getPermissions("Opportunity")
+    // setPermissionValuesOpportunity(getOpportunityPermission)  
 
   }, [])
 

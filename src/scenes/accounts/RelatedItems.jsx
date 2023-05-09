@@ -14,10 +14,14 @@ import '../recordDetailPage/Form.css'
 import { RequestServer } from "../api/HttpReq";
 import { getPermissions } from "../Auth/getPermission";
 import NoAccessCard from "../NoAccess/NoAccessCard";
+import {apiCheckPermission} from '../Auth/apiCheckPermission'
+import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
 
 const AccountRelatedItems = ({ item }) => {
 
+  const OBJECT_API_task="Task"
+  const OBJECT_API_contact="Contact"
   const taskDeleteURL = `/deleteTask?code=`;
   const urlgetTaskbyAccountId = `/getTaskbyAccountId?searchId=`;
   const urlgetContactbyAccountId = `/getContactsbyAccountId?searchId=`;
@@ -45,17 +49,46 @@ const AccountRelatedItems = ({ item }) => {
   const [permissionValuesTask, setPermissionValuesTask] = useState({})
   const [permissionValuesContact, setPermissionValuesContact] = useState({})
 
+  const userRoleDptTask= getLoginUserRoleDept(OBJECT_API_task)
+  const userRoleDptContact= getLoginUserRoleDept(OBJECT_API_contact)
+  console.log(userRoleDptTask,"userRoleDptTask")
+  console.log(userRoleDptContact,"userRoleDptContact")
+  
+
+
   useEffect(() => {
     console.log('inside  acc related useEffect', location.state.record.item);
     setAccountRecordId(location.state.record.item._id)
     getTasksbyAccountId(location.state.record.item._id)
     getContactsbyAccountId(location.state.record.item._id)
 
-    const getTaskPermission = getPermissions("Task")
-    setPermissionValuesTask(getTaskPermission)
+    if(userRoleDptTask){
+      apiCheckPermission(userRoleDptTask)
+      .then(res=>{
+        console.log(res,"res task apiCheckPermission")
+        setPermissionValuesTask(res);
+      })
+      .catch(err=>{
+        console.log(err,"res task apiCheckPermission")
+        setPermissionValuesTask(err)
+      })
+    }
+    else if(userRoleDptContact){
+      apiCheckPermission(userRoleDptContact)
+      .then(res=>{
+        console.log(res,"res contact apiCheckPermission")
+        setPermissionValuesContact(res);
+      })
+      .catch(err=>{
+        console.log(err,"res contact apiCheckPermission")
+        setPermissionValuesContact(err)
+      })
+    }
+    // const getTaskPermission = getPermissions("Task")
+    // setPermissionValuesTask(getTaskPermission)
 
-    const getContactPermission = getPermissions("Contact")
-    setPermissionValuesContact(getContactPermission)
+    // const getContactPermission = getPermissions("Contact")
+    // setPermissionValuesContact(getContactPermission)
 
   }, [])
 
