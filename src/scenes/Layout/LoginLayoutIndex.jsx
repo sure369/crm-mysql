@@ -27,12 +27,19 @@ import PermissionDetailPage from '../recordDetailPage/PermissionDetailPage';
 import PermissionSets from '../permissionSets';
 import {GetTableIndex} from '../getTables';
 
-function LoginLayoutIndex() {
+import { useLocation } from 'react-router-dom';
+import LayoutIndex from './LayoutIndex';
+
+function LoginLayoutIndex(props) {
+  const location =useLocation();
+
+  console.log(props,"props login index")
+  console.log(location,"router layout")
   return (
     <>
-      <AppNavbar />
+      <AppNavbar props={location} />
       <Routes>
-        <Route path="/" exact element={<ResponsiveInventories />} />
+        <Route path="/" exact element={<LayoutIndex />} />
         <Route path="/list/account" element={<ResponsiveAccounts />} />
         <Route path="/list/contact" element={<ResponsiveContacts />} />
         <Route path="/list/deals" element={<ResponsiveOpportunities />} />

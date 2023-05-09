@@ -1,8 +1,8 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  AppBar, Box, Toolbar, Typography, IconButton, Menu, 
-  Container, Avatar,  Tooltip, MenuItem, Button,Popover,Dialog,
-  DialogContentText,DialogTitle,DialogContent,DialogActions
+  AppBar, Box, Toolbar, Typography, IconButton, Menu,
+  Container, Avatar, Tooltip, MenuItem, Button, Popover, Dialog,
+  DialogContentText, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link, NavLink, useNavigate } from "react-router-dom"
@@ -22,7 +22,7 @@ const pages = [
   { title: 'Users', toNav: '/users' },
   { title: 'Roles', toNav: '/roles' },
   { title: 'File Upload', toNav: '/file' },
-  {title:'Permission',toNav:'/permissions'}
+  { title: 'Permission', toNav: '/permissions' }
 
   // {title:'Test',toNav:'/test'},
   // { title: 'Junction Object', toNav: '/oppInventory' },
@@ -32,18 +32,19 @@ const settings = ['Logout'];
 
 
 const getTableUrl = `/getObject`;
-function AppNavbar() {
+function AppNavbar(props) {
 
+  console.log(props,"props navbar")
 
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [selected, setSelected] = useState("Inventories");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const navigate = useNavigate();  
+  const navigate = useNavigate();
   const [tableNamearr, settableNameArr] = useState([]);
-  const loggedInUserData= JSON.parse(sessionStorage.getItem('loggedInUser'))
+  const loggedInUserData = JSON.parse(sessionStorage.getItem('loggedInUser'))
 
-  console.log(loggedInUserData,"loggedInUserData")
+  console.log(loggedInUserData, "loggedInUserData")
 
   useEffect(() => {
     fetchTables()
@@ -59,7 +60,7 @@ function AppNavbar() {
             return { title: CapLetter, toNav: `list/${i.Tables_in_crm}` };
           });
           settableNameArr(arr);
-          console.log(arr,"arr")
+          console.log(arr, "arr")
         } else {
           console.log("then error", res.error);
         }
@@ -110,25 +111,37 @@ function AppNavbar() {
     <AppBar position="sticky" sx={{ backgroundColor: '#5C5CFF' }} >
       <Container maxWidth="xl">
         <Toolbar disableGutters >
-          <Typography
-            variant="h1"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'Times New Roman',
-              letterSpacing: '.2rem',
-              color: 'inherit',
-              textDecoration: 'none',
-              textShadow:"3px 3px 3px silver"
-            }}
-          >
-            Clouddesk
-          </Typography>
+          <Box className="CRM-Title-Box">
+            <Typography
+              className="CRM-Title"
+              variant="h2"
+              noWrap
+              component="a"
+              href="/"
+              sx={{
+                mr: 2,
+                display: { xs: "none", md: "flex" },
+                letterSpacing: ".1rem",
 
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' ,} }}>
+                textDecoration: "none",
+              }}
+            >
+              CLOUDDESK
+            </Typography>
+            <Typography
+              className="CRM-Title"
+              sx={{
+                display: { xs: "none", md: "flex" },
+                fontFamily: "Cambria",
+                letterSpacing: ".1rem",
+                marginLeft: "75px",
+              }}
+            >
+              CRM
+            </Typography>
+          </Box>
+
+          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none', } }}>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -157,7 +170,7 @@ function AppNavbar() {
                 display: { xs: 'block', md: 'none' }
               }}
             >
-              { tableNamearr && tableNamearr.map((page, index) => (
+              {tableNamearr && tableNamearr.map((page, index) => (
                 <MenuItem key={page.title}
                   onClick={() => handleMenuItemClick(page.title)}
                   active={selected === page.title}
@@ -165,7 +178,9 @@ function AppNavbar() {
                     selected === page.title ? { bgcolor: "#243665" } : {}
                   }
                 >
-                  <Link to={page.toNav}
+                  <Link
+                    to={{pathname:page.toNav, state:{date:props.data}}}
+                    // state={{ data:  }}
                     style={{ textDecoration: 'none', color: 'unset' }}
                   >
                     <Typography >{page.title} </Typography>
@@ -184,29 +199,29 @@ function AppNavbar() {
               mr: 2,
               display: { xs: 'flex', md: 'none' },
               flexGrow: 1,
-              fontFamily: 'monospace',
               fontWeight: 700,
               letterSpacing: '.3rem',
               color: 'inherit',
               textDecoration: 'none',
-              textShadow:"3px 3px 3px silver"
+              fontFamily: 'sans-serif',
+              textshadow: "0 0 4px silver",
             }}
           >
             Clouddesk
           </Typography>
           <Box sx={{
             flexGrow: 1, display: { xs: 'none', md: 'flex' },
-            justifyContent:'space-evenly'
+            justifyContent: 'space-evenly'
             ,
           }}>
             {tableNamearr && tableNamearr.map((page, index) => (
               <MenuItem key={page.title}
                 onClick={() => handleMenuItemClick(page.title)}
                 active={selected === page.title}
-                sx={{borderRadius:"5px"}}
-                className={selected === page.title ? 'selected-app-menuItem' :'app-nav-css'
+                sx={{ borderRadius: "5px" }}
+                className={selected === page.title ? 'selected-app-menuItem' : 'app-nav-css'
                 }
-                
+
               >
                 <Link to={page.toNav}
                   style={{ textDecoration: 'none', color: 'unset' }}
@@ -224,29 +239,29 @@ function AppNavbar() {
               </IconButton>
             </Tooltip>
             <Popover
-          // id={id}
-          open={dialogOpen}
-          anchorEl={anchorElUser}
-          onClose={handleOpenUserMenu}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'center',
-          }}
-        >
-          <div style={{ padding: '16px' }}>
-            <Typography variant="subtitle1">Hi,{loggedInUserData.userFullName}</Typography>
-            <Typography variant="subtitle2">{loggedInUserData.userName}</Typography>
-            {/* <Typography variant="body2">{loggedInUserData.userName}</Typography> */}
-            <Button   variant="contained" size="small"
-              onClick={handleUserLogout}
-              endIcon={<PowerSettingsNewIcon/>}
-            >Logout</Button>
-          </div>
-        </Popover>
+              // id={id}
+              open={dialogOpen}
+              anchorEl={anchorElUser}
+              onClose={handleOpenUserMenu}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'center',
+              }}
+            >
+              <div style={{ padding: '16px' }}>
+                <Typography variant="subtitle1">Hi,{loggedInUserData.userFullName}</Typography>
+                <Typography variant="subtitle2">{loggedInUserData.userName}</Typography>
+                {/* <Typography variant="body2">{loggedInUserData.userName}</Typography> */}
+                <Button variant="contained" size="small"
+                  onClick={handleUserLogout}
+                  endIcon={<PowerSettingsNewIcon />}
+                >Logout</Button>
+              </div>
+            </Popover>
 
             {/* <Dialog open={dialogOpen} onClose={handleOpenUserMenu}>
           <DialogTitle>User Details</DialogTitle>
@@ -260,7 +275,7 @@ function AppNavbar() {
             <Button onClick={handleOpenUserMenu}>Close</Button>
           </DialogActions>
         </Dialog> */}
-        
+
             {/* <Menu
               sx={{ mt: '45px' }}
               id="menu-appbar"

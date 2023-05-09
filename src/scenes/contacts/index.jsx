@@ -20,12 +20,15 @@ import { RequestServer } from '../api/HttpReq';
 import { getPermissions } from '../Auth/getPermission';
 import NoAccess from '../NoAccess/NoAccess';
 import '../indexCSS/muiBoxStyles.css'
+import AppNavbar from '../global/AppNavbar';
+import { useLocation } from 'react-router-dom';
 
 const Contacts = () => {
 
   const urlContact = `/contacts`;
   const urlDelete = `/deleteContact?code=`;
 
+  const location =useLocation()
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const navigate = useNavigate();
@@ -43,7 +46,7 @@ const Contacts = () => {
   const [whatsAppModalOpen, setWhatsAppModalOpen] = useState(false)
   const [permissionValues, setPermissionValues] = useState({})
 
-
+console.log(location,"contact location")
   useEffect(() => {
     fetchRecords();
     const getPermission = getPermissions("Contact")
@@ -243,7 +246,7 @@ const Contacts = () => {
     <>
       <ToastNotification notify={notify} setNotify={setNotify} />
       <DeleteConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />
-
+{/* <AppNavbar data={{props:"cc"}}/> */}
       <Box m="20px">
         {
           permissionValues.read ?

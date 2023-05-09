@@ -20,7 +20,6 @@ export const RequestServer = (endpoint,payload)=>{
         //     url: endpoint,
         //     headers : headers,
         //     payload:payload
-
         // })
         console.log(payload,"payload")
         console.log(endpoint,"endpoint")

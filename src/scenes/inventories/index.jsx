@@ -9,7 +9,7 @@ import {
   useGridApiContext, useGridSelector
 } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import ToastNotification from '../toast/ToastNotification';
@@ -19,11 +19,14 @@ import { RequestServer } from '../api/HttpReq';
 import { getPermissions } from '../Auth/getPermission';
 import NoAccess from '../NoAccess/NoAccess';
 import '../indexCSS/muiBoxStyles.css'
+import AppNavbar from '../global/AppNavbar';
+
 
 const Inventories = () => {
 
   const urlDelete = `/deleteInventory?code=`;
   const urlInventory = `/inventories`;
+  const location = useLocation()
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -48,6 +51,7 @@ const Inventories = () => {
 
   }, []);
 
+  console.log(location,"inventory location")
   const fetchRecords = () => {
     RequestServer(urlInventory)
       .then((res) => {
@@ -222,7 +226,7 @@ const Inventories = () => {
     <>
       <ToastNotification notify={notify} setNotify={setNotify} />
       <DeleteConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />
-
+{/* <AppNavbar data={{props:"inve"}}/> */}
 
       <Box m="20px">
       {

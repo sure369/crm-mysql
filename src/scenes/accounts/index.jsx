@@ -9,7 +9,7 @@ import {
   useGridApiContext, useGridSelector
 } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import ToastNotification from '../toast/ToastNotification';
@@ -21,13 +21,25 @@ import { getPermissions } from '../Auth/getPermission';
 import NoAccess from '../NoAccess/NoAccess';
 import '../indexCSS/muiBoxStyles.css'
 import { GetTableIndex } from '../getTables';
+import AppNavbar from '../global/AppNavbar';
 
-const Accounts = () => {
+
+const Accounts = ({props}) => {
+  const location = useLocation();
+
+  console.log(props," account props")
+ console.log(location,"account location");
+ const OBJECT_API="Account"
 
   const userDetails = JSON.parse(sessionStorage.getItem("loggedInUser"))
-   const userRoleDpt ={loginUserRole:JSON.parse(userDetails.userRole).roleName,loginUserDepartmentName:userDetails.userDepartment}
+   const userRoleDpt ={
+                        loginUserRole:JSON.parse(userDetails.userRole).roleName,
+                        loginUserDepartmentName:userDetails.userDepartment,
+                        object:OBJECT_API
+                      }
   const urlDelete = `/deleteAccount?code=`;
   const urlAccount = `/accounts`;
+  const urlCheckPermission=`/checkAccess`
 
   
 
@@ -49,6 +61,7 @@ const Accounts = () => {
   useEffect(() => {
     console.log(userRoleDpt,"userRoleDptuserRoleDpt")
     fetchRecords();
+    fetchPermissions();
     const acc= GetTableIndex;
     console.log(acc,"GetTableIndex")
     const getPermission=getPermissions("Account")
@@ -78,6 +91,19 @@ const Accounts = () => {
     })
   }
 
+  const fetchPermissions=()=>{
+    RequestServer(urlCheckPermission,userRoleDpt)
+    .then(res=>{
+      if(res.success){
+        console.log(res.data,"urlCheckPermission res")
+      }else{
+        console.log(res.error,"urlCheckPermission error then")
+      }
+    })
+    .catch(error=>{
+      console.log(error,"urlCheckPermission error")
+    })
+  }
 
 
   const handleAddRecord = () => {
@@ -243,7 +269,7 @@ const Accounts = () => {
     <>
       <ToastNotification notify={notify} setNotify={setNotify} />
       <DeleteConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />
- 
+ {/* <AppNavbar data={{test:"aa"}}/> */}
 
      
 
