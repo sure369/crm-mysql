@@ -50,25 +50,13 @@ const Inventories = () => {
 
   useEffect(() => {
     fetchRecords();
-    if(userRoleDpt){
-      apiCheckPermission(userRoleDpt)
-      .then(res=>{
-        console.log(res,"api res apiCheckPermission")
-        setPermissionValues(res)
-      })
-      .catch(err=>{
-        setPermissionValues({})
-      })
-    }
-    // const getPermission=getPermissions("Inventory")
-    // setPermissionValues(getPermission)
-
+    fetchPermissions();  
   }, []);
   
   const fetchRecords = () => {
     RequestServer(urlInventory)
       .then((res) => {
-        console.log("index page", res)
+        console.log("inventories thenindex page", res)
         if (res.success) {
           setRecords(res.data);
           setFetchLoading(false)
@@ -86,6 +74,21 @@ const Inventories = () => {
       })
   }
 
+  const fetchPermissions=()=>{
+    if(userRoleDpt){
+      apiCheckPermission(userRoleDpt)
+      .then(res=>{
+        console.log(res,"api res apiCheckPermission")
+        setPermissionValues(res)
+      })
+      .catch(err=>{
+        console.log(err,"api res error apiCheckPermission")
+        setPermissionValues({})
+      })
+    }
+    // const getPermission=getPermissions("Inventory")
+    // setPermissionValues(getPermission)
+  }
   const handleAddRecord = () => {
     navigate("/new-inventories", { state: { record: {} } })
   };

@@ -10,7 +10,7 @@ import mainLogo from '../assets/user image.png';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import './AppNavbar.css'
 import { RequestServer } from '../api/HttpReq';
-
+import { GetTableNames } from '../getTables';
 
 const pages = [
   { title: 'Inventories', toNav: '/inventories' },
@@ -48,6 +48,8 @@ function AppNavbar(props) {
 
   useEffect(() => {
     fetchTables()
+    // const table =GetTableNames();
+    // console.log(table,"table name from appbar")
   }, []);
 
   const fetchTables = () => {

@@ -26,11 +26,11 @@ import { apiCheckPermission } from '../Auth/apiCheckPermission';
 import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
 const Contacts = () => {
-  const OBJECT_API="Contact"
+  const OBJECT_API = "Contact"
   const urlContact = `/contacts`;
   const urlDelete = `/deleteContact?code=`;
 
-  const location =useLocation()
+  const location = useLocation()
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const navigate = useNavigate();
@@ -49,21 +49,12 @@ const Contacts = () => {
   const [permissionValues, setPermissionValues] = useState({})
 
 
-  const userRoleDpt=getLoginUserRoleDept(OBJECT_API)
-  console.log(userRoleDpt,"userRoleDpt")
+  const userRoleDpt = getLoginUserRoleDept(OBJECT_API)
+  console.log(userRoleDpt, "userRoleDpt")
 
   useEffect(() => {
     fetchRecords();
-
-    if(userRoleDpt){
-      apiCheckPermission(userRoleDpt)
-      .then(res=>{
-        setPermissionValues(res)
-      })
-      .catch(err=>{
-        setPermissionValues({})
-      })
-    }
+    fetchPermission();
   }, []);
 
   const fetchRecords = () => {
@@ -85,6 +76,18 @@ const Contacts = () => {
         setFetchError(err.message)
         setFetchLoading(false)
       })
+  }
+
+  const fetchPermission = () => {
+    if (userRoleDpt) {
+      apiCheckPermission(userRoleDpt)
+        .then(res => {
+          setPermissionValues(res)
+        })
+        .catch(err => {
+          setPermissionValues({})
+        })
+    }
   }
 
   const handleAddRecord = () => {
@@ -259,7 +262,7 @@ const Contacts = () => {
     <>
       <ToastNotification notify={notify} setNotify={setNotify} />
       <DeleteConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />
-{/* <AppNavbar data={{props:"cc"}}/> */}
+      {/* <AppNavbar data={{props:"cc"}}/> */}
       <Box m="20px">
         {
           permissionValues.read ?

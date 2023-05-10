@@ -21,7 +21,7 @@ import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
 const Task = () => {
 
-  const OBJECT_API="Task" 
+  const OBJECT_API = "Task"
   const urlTask = `/Task`;
   const urlDelete = `/deleteTask?code=`;
 
@@ -41,26 +41,13 @@ const Task = () => {
   const [selectedRecordDatas, setSelectedRecordDatas] = useState()
   const [permissionValues, setPermissionValues] = useState({})
 
-  const userRoleDpt=getLoginUserRoleDept(OBJECT_API)
-  console.log(userRoleDpt,"userRoleDpt")
+  const userRoleDpt = getLoginUserRoleDept(OBJECT_API)
+  console.log(userRoleDpt, "userRoleDpt")
 
   useEffect(() => {
     fetchRecords();
-    if(userRoleDpt){
-      apiCheckPermission(userRoleDpt)
-      .then(res=>{
-        console.log(res,"res")
-        setPermissionValues(res)
-      })
-      .catch(error=>{
-        setPermissionValues({})
-      })
-    }
-    // const getPermission = getPermissions("Task")
-    // setPermissionValues(getPermission)
-
-  }, []
-  );
+    fetchPermissions()
+  }, []);
 
   const fetchRecords = () => {
     RequestServer(urlTask)
@@ -82,6 +69,22 @@ const Task = () => {
         setFetchLoading(false)
       })
   }
+
+  const fetchPermissions = () => {
+    if (userRoleDpt) {
+      apiCheckPermission(userRoleDpt)
+        .then(res => {
+          console.log(res, "res")
+          setPermissionValues(res)
+        })
+        .catch(error => {
+          setPermissionValues({})
+        })
+    }
+    // const getPermission = getPermissions("Task")
+    // setPermissionValues(getPermission)
+  }
+
   const handleAddRecord = () => {
     navigate("/new-task", { state: { record: {} } })
   };
@@ -238,100 +241,101 @@ const Task = () => {
 
       <Box m="20px">
         {
-          permissionValues.read ? 
-       <>
-        <Typography
-          variant="h2"
-          color={colors.grey[100]}
-          fontWeight="bold"
-          sx={{ m: "0 0 5px 0" }}
-        >
-          Event Log
-        </Typography>
-        <Box display="flex" justifyContent="space-between">
-          <Typography variant="h5" color={colors.greenAccent[400]}>
-            List Of Event Logs
-          </Typography>
-          <div
-            style={{
-              display: "flex",
-              width: "250px",
-              justifyContent: "space-evenly",
-              height: '30px',
-            }}
-          >
+          permissionValues.read ?
+            <>
+              <Typography
+                variant="h2"
+                color={colors.grey[100]}
+                fontWeight="bold"
+                sx={{ m: "0 0 5px 0" }}
+              >
+                Event Log
+              </Typography>
+              <Box display="flex" justifyContent="space-between">
+                <Typography variant="h5" color={colors.greenAccent[400]}>
+                  List Of Event Logs
+                </Typography>
+                <div
+                  style={{
+                    display: "flex",
+                    width: "250px",
+                    justifyContent: "space-evenly",
+                    height: '30px',
+                  }}
+                >
 
-            {showDelete ? (
-              <>
-                {
-                  permissionValues.delete &&
-                  <>
-                    <Tooltip title="Delete Selected">
-                      <IconButton>
-                        <DeleteIcon
-                          sx={{ color: "#FF3333" }}
-                          onClick={(e) => onHandleDelete(e, selectedRecordIds)}
-                        />
-                      </IconButton>
-                    </Tooltip>
-                  </>
-                }
-              </>
-            ) : (
-              <>
-                {
-                  permissionValues.create &&
-                  <>
-                    <Button variant="contained" color="info" onClick={handleAddRecord}>
-                      New
-                    </Button>
-                    <ExcelDownload data={records} filename={`EventLogRecords`} />
-                  </>
-                }
-              </>
-            )}
-          </div>
-        </Box>
+                  {showDelete ? (
+                    <>
+                      {
+                        permissionValues.delete &&
+                        <>
+                          <Tooltip title="Delete Selected">
+                            <IconButton>
+                              <DeleteIcon
+                                sx={{ color: "#FF3333" }}
+                                onClick={(e) => onHandleDelete(e, selectedRecordIds)}
+                              />
+                            </IconButton>
+                          </Tooltip>
+                        </>
+                      }
+                    </>
+                  ) : (
+                    <>
+                      {
+                        permissionValues.create &&
+                        <>
+                          <Button variant="contained" color="info" onClick={handleAddRecord}>
+                            New
+                          </Button>
+                          <ExcelDownload data={records} filename={`EventLogRecords`} />
+                        </>
+                      }
+                    </>
+                  )}
+                </div>
+              </Box>
 
-        <Box
-          m="15px 0 0 0"
-          height="380px"
-          className="my-mui-styles"
-        >
-          <DataGrid
-            sx={{
-              boxShadow:"rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px"}}
-            rows={records}
-            columns={columns}
-            getRowId={(row) => row._id}
-            pageSize={7}
-            rowsPerPageOptions={[7]}
-            components={{
-              // Toolbar: GridToolbar,
-              Pagination: CustomPagination,
-            }}
-            loading={fetchLoading}
-            getRowClassName={(params) =>
-              params.indexRelativeToCurrentPage % 2 === 0 ? 'C-MuiDataGrid-row-even' : 'C-MuiDataGrid-row-odd'
-            }
-            checkboxSelection
-            disableSelectionOnClick
-            onSelectionModelChange={(ids) => {
-              var size = Object.keys(ids).length;
-              size > 0 ? setShowDelete(true) : setShowDelete(false)
-              console.log('checkbox selection ids', ids);
-              setSelectedRecordIds(ids)
-              const selectedIDs = new Set(ids);
-              const selectedRowRecords = records.filter((row) =>
-                selectedIDs.has(row._id.toString())
-              );
-              setSelectedRecordDatas(selectedRowRecords)
-            }}
-            onRowClick={(e) => handleOnCellClick(e)}
-          />
-        </Box>
-        </> :<NoAccess/>
-}
+              <Box
+                m="15px 0 0 0"
+                height="380px"
+                className="my-mui-styles"
+              >
+                <DataGrid
+                  sx={{
+                    boxShadow: "rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px"
+                  }}
+                  rows={records}
+                  columns={columns}
+                  getRowId={(row) => row._id}
+                  pageSize={7}
+                  rowsPerPageOptions={[7]}
+                  components={{
+                    // Toolbar: GridToolbar,
+                    Pagination: CustomPagination,
+                  }}
+                  loading={fetchLoading}
+                  getRowClassName={(params) =>
+                    params.indexRelativeToCurrentPage % 2 === 0 ? 'C-MuiDataGrid-row-even' : 'C-MuiDataGrid-row-odd'
+                  }
+                  checkboxSelection
+                  disableSelectionOnClick
+                  onSelectionModelChange={(ids) => {
+                    var size = Object.keys(ids).length;
+                    size > 0 ? setShowDelete(true) : setShowDelete(false)
+                    console.log('checkbox selection ids', ids);
+                    setSelectedRecordIds(ids)
+                    const selectedIDs = new Set(ids);
+                    const selectedRowRecords = records.filter((row) =>
+                      selectedIDs.has(row._id.toString())
+                    );
+                    setSelectedRecordDatas(selectedRowRecords)
+                  }}
+                  onRowClick={(e) => handleOnCellClick(e)}
+                />
+              </Box>
+            </> : <NoAccess />
+        }
       </Box>
     </>
   )

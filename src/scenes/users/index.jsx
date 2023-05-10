@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, IconButton, useTheme, Typography,Pagination ,Tooltip} from "@mui/material";
+import { Box, Button, IconButton, useTheme, Typography, Pagination, Tooltip } from "@mui/material";
 import {
   DataGrid, GridToolbar,
   gridPageCountSelector, gridPageSelector,
@@ -14,10 +14,13 @@ import DeleteConfirmDialog from '../toast/DeleteConfirmDialog';
 import ExcelDownload from '../Excel';
 import { RequestServer } from '../api/HttpReq';
 import '../indexCSS/muiBoxStyles.css'
-
+import { apiCheckPermission } from '../Auth/apiCheckPermission';
+import { getLoginUserRoleDept } from '../Auth/userRoleDept';
+import NoAccess from '../NoAccess/NoAccess';
 
 const Users = () => {
 
+  const OBJECT_API = "User"
   const urlDelete = `/delete?code=`;
   const urlUsers = `/Users`;
 
@@ -25,7 +28,7 @@ const Users = () => {
   const colors = tokens(theme.palette.mode);
   const navigate = useNavigate();
   const [records, setRecords] = useState([]);
-  const[fetchError,setFetchError]=useState()
+  const [fetchError, setFetchError] = useState()
   const [fetchLoading, setFetchLoading] = useState(true);
   // notification
   const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
@@ -35,42 +38,57 @@ const Users = () => {
   const [showDelete, setShowDelete] = useState(false)
   const [selectedRecordIds, setSelectedRecordIds] = useState()
   const [selectedRecordDatas, setSelectedRecordDatas] = useState()
-
+  const [permissionValues, setPermissionValues] = useState({})
+  const userRoleDpt = getLoginUserRoleDept(OBJECT_API)
 
   useEffect(() => {
     fetchRecords();
+    fetchPermissions();
 
-  }, []
-  );
+  }, []);
 
   const fetchRecords = () => {
     RequestServer(urlUsers)
-    .then((res)=>{
-      console.log(res,"index page res")
-      if(res.success){
-        setRecords(res.data)
-        setFetchError(null)
+      .then((res) => {
+        console.log(res, "index page res")
+        if (res.success) {
+          setRecords(res.data)
+          setFetchError(null)
+          setFetchLoading(false)
+        }
+        else {
+          setRecords([])
+          setFetchError(res.error)
+          setFetchLoading(false)
+        }
+      })
+      .catch((err) => {
+        setFetchError(err)
         setFetchLoading(false)
-      }
-      else{
-        setRecords([])
-        setFetchError(res.error)
-        setFetchLoading(false)
-      }
-    })
-    .catch((err)=>{
-      setFetchError(err)
-      setFetchLoading(false)
-    })
+      })
+  }
+
+  const fetchPermissions = () => {
+    if (userRoleDpt) {
+      apiCheckPermission(userRoleDpt)
+        .then(res => {
+          console.log(res, "api res apiCheckPermission")
+          setPermissionValues(res)
+        })
+        .catch(err => {
+          console.log(err, "api res error apiCheckPermission")
+          setPermissionValues({})
+        })
+    }
   }
 
   const handleAddRecord = () => {
     navigate("/new-users", { state: { record: {} } })
   };
 
-  const handleAddRecordPer=()=>{
+  const handleAddRecordPer = () => {
     navigate("/new-permission", { state: { record: {} } })
- 
+
   }
 
   const handleOnCellClick = (e, row) => {
@@ -106,62 +124,39 @@ const Users = () => {
   const onebyoneDelete = (row) => {
     console.log('onebyoneDelete rec id', row)
 
-    RequestServer(urlDelete+row)
-    .then((res)=>{
-      if(res.success){
-        fetchRecords()
-        setNotify({
-          isOpen:true,
-          message:res.data,
-          type:'success'
-        })
-      }
-      else{
-        console.log(res,"error in then")
-        setNotify({
-          isOpen: true,
-          message: res.error.message,
-          type: 'error'
-        })
-      }
-    })
-    .catch((error)=>{
-      console.log('api delete error', error);
+    RequestServer(urlDelete + row)
+      .then((res) => {
+        if (res.success) {
+          fetchRecords()
           setNotify({
             isOpen: true,
-            message: error.message,
+            message: res.data,
+            type: 'success'
+          })
+        }
+        else {
+          console.log(res, "error in then")
+          setNotify({
+            isOpen: true,
+            message: res.error.message,
             type: 'error'
           })
-    })
-    .finally(()=>{
-      setConfirmDialog({
-        ...confirmDialog,
-        isOpen: false
+        }
       })
-    })
-
-    // axios.post(urlDelete + row)
-    //   .then((res) => {
-    //     console.log('api delete response', res);
-    //     fetchRecords();
-    //     setNotify({
-    //       isOpen: true,
-    //       message: res.data,
-    //       type: 'success'
-    //     })
-    //   })
-    //   .catch((error) => {
-    //     console.log('api delete error', error);
-    //     setNotify({
-    //       isOpen: true,
-    //       message: error.message,
-    //       type: 'error'
-    //     })
-    //   })
-    // setConfirmDialog({
-    //   ...confirmDialog,
-    //   isOpen: false
-    // })
+      .catch((error) => {
+        console.log('api delete error', error);
+        setNotify({
+          isOpen: true,
+          message: error.message,
+          type: 'error'
+        })
+      })
+      .finally(() => {
+        setConfirmDialog({
+          ...confirmDialog,
+          isOpen: false
+        })
+      })
   };
 
   function CustomPagination() {
@@ -195,20 +190,21 @@ const Users = () => {
     {
       field: "roleDetails", headerName: "Role",
       headerAlign: 'center', align: 'center', flex: 1,
-      renderCell:(params)=>{
-        let formatValue=JSON.parse(params.value)
-        if(formatValue){
-          return <>{formatValue.roleName }</>;
-        }else{
+      renderCell: (params) => {
+        let formatValue = JSON.parse(params.value)
+        if (formatValue) {
+          return <>{formatValue.roleName}</>;
+        } else {
           return null
         }
-        
+
       }
     },
     {
       field: "departmentName", headerName: "Department",
       headerAlign: 'center', align: 'center', flex: 1,
-    },
+    }]
+  columns.push(
     {
       field: 'actions', headerName: 'Actions', width: 400,
       headerAlign: 'center', align: 'center', flex: 1,
@@ -219,132 +215,128 @@ const Users = () => {
               !showDelete ?
                 <>
                   <IconButton onClick={(e) => handleOnCellClick(e, params.row)} style={{ padding: '20px', color: '#0080FF' }}>
-                    <EditIcon  />
+                    <EditIcon />
                   </IconButton>
                   <IconButton onClick={(e) => onHandleDelete(e, params.row)} style={{ padding: '20px', color: '#FF3333' }}>
-                    <DeleteIcon  />
+                    <DeleteIcon />
                   </IconButton>
                 </>
                 : ''
             }
           </>
-        );
+        )
       }
     }
-  ];
+  )
 
-  if (records.length >= 0) {
-    return (
-      <>
-        <ToastNotification notify={notify} setNotify={setNotify} />
-        <DeleteConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />
+  return (
+    <>
+      <ToastNotification notify={notify} setNotify={setNotify} />
+      <DeleteConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />
 
-        <Box m="20px">
-           <Typography
-          variant="h2"
-          color={colors.grey[100]}
-          fontWeight="bold"
-          sx={{ m: "0 0 5px 0" }}
-        >
-          Users
-        </Typography>
-        <Box display="flex" justifyContent="space-between">
-          <Typography variant="h5" color={colors.greenAccent[400]}>
-            List Of  Users
-          </Typography>
+      <Box m="20px">
+        {
+          permissionValues.read ? <>
 
 
-          <div
-            style={{
-              display: "flex",
-              width: "250px",
-              justifyContent: "space-evenly",
-              height:'30px',
-            }}
-          >
+            <Typography
+              variant="h2"
+              color={colors.grey[100]}
+              fontWeight="bold"
+              sx={{ m: "0 0 5px 0" }}
+            >
+              Users
+            </Typography>
+            <Box display="flex" justifyContent="space-between">
+              <Typography variant="h5" color={colors.greenAccent[400]}>
+                List Of  Users
+              </Typography>
 
-{showDelete ? (
-              <>
-                <Tooltip title="Delete Selected">
-                  <IconButton>
-                    <DeleteIcon
-                      sx={{ color: "#FF3333" }}
-                      onClick={(e) => onHandleDelete(e, selectedRecordIds)}
-                    />
-                  </IconButton>
-                </Tooltip>
-              </>
-            ) : (
-            <>
-            <Button variant="contained" color="info" onClick={handleAddRecord}>
-              New
-            </Button>
-            <Button variant="contained" color="info" onClick={handleAddRecordPer}>
+
+              <div
+                style={{
+                  display: "flex",
+                  width: "250px",
+                  justifyContent: "space-evenly",
+                  height: '30px',
+                }}
+              >
+
+                {showDelete ? (
+                  <>
+                    {
+                      permissionValues.delete && <>
+                        <Tooltip title="Delete Selected">
+                          <IconButton>
+                            <DeleteIcon
+                              sx={{ color: "#FF3333" }}
+                              onClick={(e) => onHandleDelete(e, selectedRecordIds)}
+                            />
+                          </IconButton>
+                        </Tooltip>
+                      </>
+                    }</>
+                ) : (
+                  <>
+                    {
+                      permissionValues.create &&
+                      <>
+
+                        <Button variant="contained" color="info" onClick={handleAddRecord}>
+                          New
+                        </Button>
+                        {/* <Button variant="contained" color="info" onClick={handleAddRecordPer}>
               New Permission
-            </Button>
-                      {/* <ExcelDownload data={records} filename={`OpportunityRecords`}/> */}
-                     
-                
-            </>
-            )}
-          </div>
-        </Box>
+            </Button> */}
+                        {/* <ExcelDownload data={records} filename={`OpportunityRecords`}/> */}
+                      </>
+                    }
+                  </>
+                )}
+              </div>
+            </Box>
 
 
-          <Box
-            m="15px 0 0 0"
-            height="380px"
-            className="my-mui-styles"
-          >
-             {/* <div className='btn-test'>
-          {
-              showDelete ? 
-              <>
-              <Tooltip title="Delete Selected">
-                  <IconButton> <DeleteIcon sx={{ color: '#FF3333' }} onClick={(e) => onHandleDelete(e,selectedRecordIds)} /> </IconButton>
-              </Tooltip>
-              </>
-              :
-              <Button variant="contained" color="info" onClick={handleAddRecord}>
-                New
-              </Button>
-            }
-          </div> */}
-
-            <DataGrid
-              rows={records}
-              columns={columns}
-              getRowId={(row) => row._id}
-              pageSize={7}
-              rowsPerPageOptions={[7]}
-              components={{
-                Pagination: CustomPagination,
-                // Toolbar: GridToolbar
-              }}
-              loading={fetchLoading}
-              getRowClassName={(params) =>
-                params.indexRelativeToCurrentPage % 2 === 0 ? 'C-MuiDataGrid-row-even' : 'C-MuiDataGrid-row-odd'
-              }
-              checkboxSelection
-              disableSelectionOnClick
-              onSelectionModelChange={(ids) => {
-                var size = Object.keys(ids).length;
-                size > 0 ? setShowDelete(true) : setShowDelete(false)
-                console.log('checkbox selection ids', ids);
-                setSelectedRecordIds(ids)
-                const selectedIDs = new Set(ids);
-                const selectedRowRecords = records.filter((row) =>
-                  selectedIDs.has(row._id.toString())
-                );
-                setSelectedRecordDatas(selectedRowRecords)
-              }}
-            />
-          </Box>
-        </Box>
-      </>
-    )
-  }
-};
+            <Box
+              m="15px 0 0 0"
+              height="380px"
+              className="my-mui-styles"
+            >
+              <DataGrid
+                rows={records}
+                columns={columns}
+                getRowId={(row) => row._id}
+                pageSize={7}
+                rowsPerPageOptions={[7]}
+                components={{
+                  Pagination: CustomPagination,
+                  // Toolbar: GridToolbar
+                }}
+                loading={fetchLoading}
+                getRowClassName={(params) =>
+                  params.indexRelativeToCurrentPage % 2 === 0 ? 'C-MuiDataGrid-row-even' : 'C-MuiDataGrid-row-odd'
+                }
+                checkboxSelection
+                disableSelectionOnClick
+                onSelectionModelChange={(ids) => {
+                  var size = Object.keys(ids).length;
+                  size > 0 ? setShowDelete(true) : setShowDelete(false)
+                  console.log('checkbox selection ids', ids);
+                  setSelectedRecordIds(ids)
+                  const selectedIDs = new Set(ids);
+                  const selectedRowRecords = records.filter((row) =>
+                    selectedIDs.has(row._id.toString())
+                  );
+                  setSelectedRecordDatas(selectedRowRecords)
+                }}
+              />
+            </Box>
+          </> : <NoAccess />
+        }
+      </Box>
+    </>
+  )
+}
 
 export default Users;
 
@@ -591,7 +583,7 @@ export default Users;
 //           >
 //              <div className='btn-test'>
 //           {
-//               showDelete ? 
+//               showDelete ?
 //               <>
 //               <Tooltip title="Delete Selected">
 //                   <IconButton> <DeleteIcon sx={{ color: '#FF3333' }} onClick={(e) => onHandleDelete(e,selectedRecordIds)} /> </IconButton>

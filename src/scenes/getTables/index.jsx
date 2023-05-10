@@ -3,7 +3,7 @@ import { RequestServer } from '../api/HttpReq';
 
 const getTableUrl = `/getObject`;
 
-export const GetTableIndex = () => {    
+export const GetTableNames = () => {    
   const [tableNamearr, settableNameArr] = useState([]);
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export const GetTableIndex = () => {
 // import { RequestServer } from '../api/HttpReq'
 // const getTableUrl=`/getObject`
 
-// export const GetTableIndex=()=> {    
+// export const GetTableNames=()=> {    
 
 //     const [tableNamearr,settableNameArr]=useState([])
 // const arr=[]

@@ -25,7 +25,7 @@ import RoleDetailPage from '../recordDetailPage/RoleDetailPage';
 import RoleIndex from '../Roles';
 import PermissionDetailPage from '../recordDetailPage/PermissionDetailPage';
 import PermissionSets from '../permissionSets';
-import {GetTableIndex} from '../getTables';
+import {GetTableNames} from '../getTables/index';
 
 import { useLocation } from 'react-router-dom';
 import LayoutIndex from './LayoutIndex';
@@ -72,7 +72,7 @@ function LoginLayoutIndex(props) {
         <Route path="/permissionDetailPage/:id" element={<PermissionDetailPage/>}/>
 
         <Route path="/file" element={<FileUploadUpdated />} />        
-        <Route path ='/test' element={<GetTableIndex/>} />
+        <Route path ='/test' element={<GetTableNames/>} />
 
         {/* <Route path="/leadDetailPage/:Id" element={<LeadDetailPage/>} /> */}
         {/* <Route path="/accountDetailPage/:id" element={<FlexAccounts/>} /> */}
