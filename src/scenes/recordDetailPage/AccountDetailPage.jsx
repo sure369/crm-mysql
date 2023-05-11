@@ -44,6 +44,14 @@ const AccountDetailPage = ({ item }) => {
         setshowNew(!location.state.record.item)
         FetchInventoriesbyName('');
         getCountriesPicklist();
+        fetchObjectPermissions();       
+        if (location.state.record.item) {
+            console.log('inside')
+            getCitiesPicklist(location.state.record.item.billingCountry)
+        }
+    }, [])
+
+    const fetchObjectPermissions=()=>{
         if(userRoleDpt){
             apiCheckPermission(userRoleDpt)
             .then(res=>{
@@ -58,13 +66,7 @@ const AccountDetailPage = ({ item }) => {
         // const getPermission = getPermissions("Account")
         // console.log(getPermission, "getPermission")
         // setPermissionValues(getPermission)
-
-        if (location.state.record.item) {
-            console.log('inside')
-            getCitiesPicklist(location.state.record.item.billingCountry)
-        }
-    }, [])
-
+    }
 
     const initialValues = AccountInitialValues
     const savedValues = AccountSavedValues(singleAccount)

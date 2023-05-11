@@ -339,7 +339,8 @@ const Inventories = () => {
         </Box>
         </>
   :
-  <NoAccess/>
+  null
+  // <NoAccess/>
           }
       </Box>
 

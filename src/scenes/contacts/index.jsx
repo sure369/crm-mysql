@@ -363,7 +363,8 @@ const Contacts = () => {
                 />
               </Box>
             </>
-            : <NoAccess />
+            : null
+            // <NoAccess />
         }
       </Box>
 

@@ -39,6 +39,17 @@ const InventoryDetailPage = ({ item }) => {
         setsingleInventory(location.state.record.item);
         setshowNew(!location.state.record.item)
         getCountriesPicklist();
+        fetchObjectPermissions();
+
+       
+
+        if(location.state.record.item){
+            console.log('inside')
+            getCitiesPicklist(location.state.record.item.country)            
+        }
+    }, [])
+
+    const fetchObjectPermissions =()=>{
         if(userRoleDpt){
             apiCheckPermission(userRoleDpt)
             .then(res=>{
@@ -52,13 +63,8 @@ const InventoryDetailPage = ({ item }) => {
         }
         // const getPermission=getPermissions("Inventory")
         // console.log(getPermission,"getPermission")
-        // setPermissionValues(getPermission)
-
-        if(location.state.record.item){
-            console.log('inside')
-            getCitiesPicklist(location.state.record.item.country)            
-        }
-    }, [])
+        // setPermissionValues(getPermission)  
+    }
 
     const initialValues = InventoryInitialValues
     const savedValues=InventorySavedValues(singleInventory)

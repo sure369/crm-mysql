@@ -47,10 +47,27 @@ function AppNavbar(props) {
   console.log(loggedInUserData, "loggedInUserData")
 
   useEffect(() => {
-    fetchTables()
+    fetchTableNames()
+    // fetchTables()
+    
     // const table =GetTableNames();
     // console.log(table,"table name from appbar")
   }, []);
+
+  const fetchTableNames=()=>{
+    GetTableNames()
+    .then(res=>{
+      console.log(res,"GetTableNames res in appbar")
+      const arr=res.map(i=>{
+        return {title:i,toNav:`list/${i}`}        
+      })
+      console.log(arr,"settableNameArr")
+      settableNameArr(arr)
+    })
+    .catch(err=>{
+      console.log(err,"GetTableNames error in appbar")
+    })
+  }
 
   const fetchTables = () => {
     RequestServer(getTableUrl)

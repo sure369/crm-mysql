@@ -21,7 +21,7 @@ import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
 const OpportunityDetailPage = ({ item }) => {
 
-    const OBJECT_API = "Opportunity"
+    const OBJECT_API = "Deals"
     const url = `/UpsertOpportunity`;
     const fetchLeadsbyName = `/LeadsbyName?searchKey=`;
     const fetchInventoriesbyName = `/InventoryName?searchKey=`;
@@ -46,6 +46,10 @@ const OpportunityDetailPage = ({ item }) => {
         setshowNew(!location.state.record.item)
         FetchInventoriesbyName('');
         FetchLeadsbyName('');
+        fetchObjectPermissions()      
+    }, [])
+
+    const fetchObjectPermissions=()=>{
         if(userRoleDpt){
             apiCheckPermission(userRoleDpt)
             .then(res=>{
@@ -59,9 +63,7 @@ const OpportunityDetailPage = ({ item }) => {
         // const getPermission = getPermissions("Opportunity")
         // console.log(getPermission, "getPermission")
         // setPermissionValues(getPermission)
-
-
-    }, [])
+    }
 
     const initialValues = OpportunityInitialValues
     const savedValues = OpportunitySavedValues(singleOpportunity)

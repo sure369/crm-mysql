@@ -15,24 +15,49 @@ import { RolesCategories, RolesDepartment, UserAccessPicklist, UserRolePicklist 
 import './Form.css'
 import { RoleInitialValues, RoleSavedValues } from '../formik/InitialValues/formValues';
 import { RequestServer } from '../api/HttpReq';
+import {apiCheckPermission} from '../Auth/apiCheckPermission'
+import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
-const url = `/upsertRole`;
-const urlSendEmailbulk = `/bulkemail`
+
 
 
 const RoleDetailPage = ({ item }) => {
+
+    const OBJECT_API="Role"
+    const url = `/upsertRole`;
+const urlSendEmailbulk = `/bulkemail`
+
 
     const [singleRole, setsingleRole] = useState();
     const location = useLocation();
     const navigate = useNavigate();
     const [showNew, setshowNew] = useState()
     const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
+    const [permissionValues, setPermissionValues] = useState({})
+   
+    const userRoleDpt= getLoginUserRoleDept(OBJECT_API)
+    console.log(userRoleDpt,"userRoleDpt")
 
     useEffect(() => {
         console.log('passed record', location.state.record.item);
         setsingleRole(location.state?.record?.item ?? {});
         setshowNew(!location.state.record.item)
+        fetchObjectPermissions()
+
     }, [])
+
+    const fetchObjectPermissions=()=>{
+        if(userRoleDpt){
+            apiCheckPermission(userRoleDpt)
+            .then(res=>{
+                setPermissionValues(res)
+            })
+            .catch(err=>{                
+                console.log(err,"res apiCheckPermission error")
+                setPermissionValues({})
+            })
+        }
+    }
 
     const initialValues = RoleInitialValues
     const savedValues = RoleSavedValues(singleRole)
@@ -134,7 +159,9 @@ const RoleDetailPage = ({ item }) => {
                                     <Grid container spacing={2}>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="roleName">Role Name <span className="text-danger">*</span> </label>
-                                            <Field name="roleName" component={CustomizedSelectForFormik}>
+                                            <Field name="roleName" component={CustomizedSelectForFormik}
+                                                disabled={showNew ? !permissionValues.create : !permissionValues.edit}
+                                            >
                                                 <MenuItem value=""><em>None</em></MenuItem>
                                                 {
                                                     RolesCategories.map((i) => {
@@ -148,7 +175,9 @@ const RoleDetailPage = ({ item }) => {
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="departmentName">Department Name <span className="text-danger">*</span> </label>
-                                            <Field name="departmentName" component={CustomizedSelectForFormik}>
+                                            <Field name="departmentName" component={CustomizedSelectForFormik}
+                                                disabled={showNew ? !permissionValues.create : !permissionValues.edit}
+                                            >
                                                 <MenuItem value=""><em>None</em></MenuItem>
                                                 {
                                                     RolesDepartment.map((i) => {

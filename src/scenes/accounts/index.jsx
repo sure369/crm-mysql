@@ -372,7 +372,8 @@ const Accounts = ({ props }) => {
               </Box>
             </>
             :
-            <NoAccess />
+            null
+            // <NoAccess />
         }
       </Box>
 

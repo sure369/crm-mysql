@@ -334,7 +334,8 @@ const Task = () => {
                   onRowClick={(e) => handleOnCellClick(e)}
                 />
               </Box>
-            </> : <NoAccess />
+            </> : null
+            // <NoAccess />
         }
       </Box>
     </>

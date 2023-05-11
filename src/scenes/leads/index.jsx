@@ -440,7 +440,8 @@ const Leads = () => {
               />
             </Box>
           </>
-            : <NoAccess />
+            : null
+            // <NoAccess />
         }
       </Box>
 

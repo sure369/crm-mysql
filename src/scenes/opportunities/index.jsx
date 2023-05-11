@@ -378,7 +378,8 @@ const Opportunities = () => {
               />
             </Box>
           </>
-            : <NoAccess />
+            : null
+            // <NoAccess />
         }
 
       </Box>

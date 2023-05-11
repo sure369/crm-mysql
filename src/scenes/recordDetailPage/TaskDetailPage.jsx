@@ -52,6 +52,16 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
         setSingleTask(location.state.record.item)
         console.log('true', !location.state.record.item);
         setshowNew(!location.state.record.item)
+        fetchObjectPermissions();        
+
+        if (location.state.record.item) {
+            console.log('inside condition')
+            callEvent(location.state.record.item.object)
+            setAutoCompleteReadOnly(true)
+        }
+    }, [])
+
+    const fetchObjectPermissions=()=>{
         if(userRoleDpt){
             apiCheckPermission(userRoleDpt)
             .then(res=>{
@@ -66,13 +76,7 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
         // const getPermission = getPermissions("Task")
         // console.log(getPermission, "getPermission")
         // setPermissionValues(getPermission)
-
-        if (location.state.record.item) {
-            console.log('inside condition')
-            callEvent(location.state.record.item.object)
-            setAutoCompleteReadOnly(true)
-        }
-    }, [])
+    }
 
     const initialValues = TaskInitialValues
     const savedValues = TaskSavedValues(singleTask)

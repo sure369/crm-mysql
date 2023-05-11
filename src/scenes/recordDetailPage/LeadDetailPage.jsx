@@ -20,7 +20,7 @@ import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
 
 const LeadDetailPage = ({ item }) => {
-    const OBJECT_API = "Lead"
+    const OBJECT_API = "Enquiry"
     const url = `/UpsertLead`;
     const fetchUsersbyName = `/usersbyName`;
 
@@ -41,22 +41,25 @@ const LeadDetailPage = ({ item }) => {
         setsingleLead(location.state.record.item);
         setshowNew(!location.state.record.item)
         // getTasks(location.state.record.item._id)
+        fetchObjectPermissions();      
+    }, [])
+
+    const fetchObjectPermissions=()=>{
         if(userRoleDpt){
             apiCheckPermission(userRoleDpt)
             .then(res=>{
-                console.log(res,"apiCheckPermission promise res")
+                console.log(res," deals apiCheckPermission promise res")
                 setPermissionValues(res)
             })
             .catch(err=>{
-                console.log(err,"res apiCheckPermission error")
+                console.log(err,"deals res apiCheckPermission error")
                 setPermissionValues({})
             })
         }
         // const getPermission=getPermissions("Lead")
         // console.log(getPermission,"getPermission")
         // setPermissionValues(getPermission)
-      
-    }, [])
+    }
 
     const initialValues =LeadInitialValues
     const savedValues =LeadSavedValues(singleLead)

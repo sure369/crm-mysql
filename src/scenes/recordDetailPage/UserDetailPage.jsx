@@ -17,13 +17,16 @@ import { RolesDepartment, UserAccessPicklist, UserRolePicklist } from '../../dat
 import './Form.css'
 import { UserInitialValues, UserSavedValues } from '../formik/InitialValues/formValues';
 import { RequestServer } from '../api/HttpReq';
-
-const url = `/UpsertUser`;
-const urlgetRolesByDept = `/roles`;
-const urlSendEmailbulk = `/bulkemail`
+import {apiCheckPermission} from '../Auth/apiCheckPermission'
+import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
 
 const UserDetailPage = ({ item }) => {
+
+    const OBJECT_API = "User"
+    const url = `/UpsertUser`;
+    const urlgetRolesByDept = `/roles`;
+    const urlSendEmailbulk = `/bulkemail`
 
     const [singleUser, setsingleUser] = useState();
     const location = useLocation();
@@ -33,13 +36,32 @@ const UserDetailPage = ({ item }) => {
 
     const [usersRecord, setUsersRecord] = useState([])
     const [roleRecords, setRoleRecords] = useState([])
+    const [permissionValues, setPermissionValues] = useState({})
+   
+    const userRoleDpt= getLoginUserRoleDept(OBJECT_API)
+    console.log(userRoleDpt,"userRoleDpt")
 
     useEffect(() => {
         console.log('passed record', location.state.record.item);
 
         setsingleUser(location.state?.record?.item ?? {});
         setshowNew(!location.state.record.item)
+        fetchObjectPermissions()
     }, [])
+
+
+    const fetchObjectPermissions =()=>{
+        if(userRoleDpt){
+            apiCheckPermission(userRoleDpt)
+            .then(res=>{
+                setPermissionValues(res)
+            })
+            .catch(err=>{
+                console.log(err,"res apiCheckPermission error")
+                setPermissionValues({})
+            })
+        }
+    }
 
     const initialValues = UserInitialValues
     const savedValues = UserSavedValues(singleUser)
@@ -232,11 +254,15 @@ const UserDetailPage = ({ item }) => {
                                         <Grid item xs={6} md={6}>
 
                                             <label htmlFor="firstName" >First Name</label>
-                                            <Field name='firstName' type="text" class="form-input" />
+                                            <Field name='firstName' type="text" class="form-input"
+                                             disabled={showNew ? !permissionValues.create : !permissionValues.edit}
+                                            />
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="lastName" >Last Name<span className="text-danger">*</span> </label>
-                                            <Field name='lastName' type="text" class="form-input" />
+                                            <Field name='lastName' type="text" class="form-input" 
+                                             disabled={showNew ? !permissionValues.create : !permissionValues.edit}
+                                            />
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="lastName" />
                                             </div>
@@ -252,7 +278,9 @@ const UserDetailPage = ({ item }) => {
                                         )}
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="email">Email <span className="text-danger">*</span> </label>
-                                            <Field name="email" type="text" class="form-input" />
+                                            <Field name="email" type="text" class="form-input" 
+                                             disabled={showNew ? !permissionValues.create : !permissionValues.edit}
+                                             />
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="email" />
                                             </div>
@@ -288,7 +316,9 @@ const UserDetailPage = ({ item }) => {
                                                     } else {
                                                         setRoleRecords([])
                                                     }
-                                                }}>
+                                                }}
+                                                disabled={showNew ? !permissionValues.create : !permissionValues.edit}
+                                                >
                                                 <MenuItem value=""><em>None</em></MenuItem>
                                                 {
                                                     RolesDepartment.map((i) => {
@@ -302,9 +332,9 @@ const UserDetailPage = ({ item }) => {
                                         </Grid>
 
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="role">Role Name </label>
+                                            <label htmlFor="roleId">Role Name </label>
                                             <Autocomplete
-                                                name="role"
+                                                name="roleId"
                                                 options={roleRecords}
                                                 value={values.roleDetails}
                                                 getOptionLabel={option => option.roleName || ''}
@@ -312,8 +342,8 @@ const UserDetailPage = ({ item }) => {
                                                     console.log('inside onchange values', value);
                                                     if (!value) {
                                                         console.log('!value', value);
-                                                        setFieldValue("roleDetails", '')
                                                         // setFieldValue("roleDetails", '')
+                                                        setFieldValue("roleDetails", '')
                                                     } else {
                                                         console.log('value', value);
                                                         setFieldValue("roleDetails", value)
@@ -322,13 +352,14 @@ const UserDetailPage = ({ item }) => {
                                                 }}
                                                 onInputChange={(event, newInputValue) => {
                                                     console.log('newInputValue', newInputValue);
-                                                    if (newInputValue.length >= 3) {
-                                                        FetchRolesbyName(newInputValue);
+                                                    if (newInputValue.length >= 1) {
+                                                        FetchRolesbyName(values.departmentName,newInputValue);
                                                     }
                                                     else if (newInputValue.length === 0) {
-                                                        FetchRolesbyName(newInputValue);
+                                                        FetchRolesbyName(values.departmentName,newInputValue);
                                                     }
                                                 }}
+                                                disabled={showNew ? !permissionValues.create : !permissionValues.edit}
                                                 renderInput={params => (
                                                     <Field component={TextField} {...params} name="role" />
                                                 )}
@@ -336,123 +367,14 @@ const UserDetailPage = ({ item }) => {
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="phone">Phone<span className="text-danger">*</span> </label>
-                                            <Field name="phone" type="text" class="form-input" />
+                                            <Field name="phone" type="text" class="form-input" 
+                                             disabled={showNew ? !permissionValues.create : !permissionValues.edit}
+                                             />
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="phone" />
                                             </div>
                                         </Grid>
-                                        {/* <Grid item xs={12} md={12}>
-                                            <Accordion>
-                                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                                    <Typography variant='h4' className="accordion-Header">Access Settings</Typography>
-                                                </AccordionSummary>
-                                                <AccordionDetails>
-
-                                                    <FieldArray name="access">
-                                                        {({ remove, push }) => (
-                                                            <>
-                                                                {values.access && values.access.length > 0 &&
-                                                                    values.access.map((obj, index) => (
-                                                                        <div key={index} style={{ margin: '5px' }}>
-                                                                            <Grid container spacing={2} alignItems="center">
-                                                                                <Grid item xs={4} md={4}>
-                                                                                    <h3>{obj.object}</h3>
-                                                                                </Grid>
-                                                                                <Grid item xs={8} md={8}>
-                                                                                    <Grid container spacing={2} alignItems="center">
-                                                                                        <Grid item xs={3} md={3}>
-                                                                                            <label htmlFor={`permissionSets.${index}.permissions.read`} className="checkbox-label">
-                                                                                                Read
-                                                                                            </label>
-                                                                                            <Field
-                                                                                                type="checkbox"
-                                                                                                id={`permissionSets.${index}.permissions.read`}
-                                                                                                name={`permissionSets.${index}.permissions.read`}
-                                                                                                onChange={(e) => {
-                                                                                                    if (e.target.checked) {
-                                                                                                        console.log(e.target.checked, "if")
-                                                                                                        setFieldValue(`permissionSets.${index}.permissions.read`, e.target.value)
-                                                                                                    } else {
-                                                                                                        console.log(e.target.checked, "else")
-                                                                                                        setFieldValue(`permissionSets.${index}.permissions.read`, !e.target.value)
-                                                                                                        setFieldValue(`permissionSets.${index}.permissions.create`, !e.target.value)
-                                                                                                        setFieldValue(`permissionSets.${index}.permissions.edit`, !e.target.value)
-                                                                                                        setFieldValue(`permissionSets.${index}.permissions.delete`, !e.target.value)
-                                                                                                    }
-                                                                                                }}
-                                                                                            />
-                                                                                        </Grid>
-                                                                                        <Grid item xs={3} md={3}>
-                                                                                            <label htmlFor={`permissionSets.${index}.permissions.create`} className="checkbox-label">
-                                                                                                Create
-                                                                                            </label>
-                                                                                            <Field
-                                                                                                type="checkbox"
-                                                                                                id={`permissionSets.${index}.permissions.create`}
-                                                                                                name={`permissionSets.${index}.permissions.create`}
-                                                                                                onChange={(e) => {
-                                                                                                    if (e.target.checked) {
-                                                                                                        setFieldValue(`permissionSets.${index}.permissions.create`, e.target.checked);
-                                                                                                        setFieldValue(`permissionSets.${index}.permissions.read`, e.target.checked);
-                                                                                                    } else {
-                                                                                                        setFieldValue(`permissionSets.${index}.permissions.create`, e.target.checked);
-                                                                                                    }
-                                                                                                }}
-                                                                                            />
-                                                                                        </Grid>
-
-                                                                                        <Grid item xs={3} md={3}>
-                                                                                            <label htmlFor={`permissionSets.${index}.permissions.edit`} className="checkbox-label">
-                                                                                                Edit
-                                                                                            </label>
-                                                                                            <Field
-                                                                                                type="checkbox"
-                                                                                                id={`permissionSets.${index}.permissions.edit`}
-                                                                                                name={`permissionSets.${index}.permissions.edit`}
-                                                                                                onChange={(e) => {
-                                                                                                    if (e.target.checked) {
-                                                                                                        setFieldValue(`permissionSets.${index}.permissions.read`, e.target.checked);
-                                                                                                        setFieldValue(`permissionSets.${index}.permissions.edit`, e.target.checked);
-                                                                                                    } else {
-                                                                                                        setFieldValue(`permissionSets.${index}.permissions.edit`, e.target.checked);
-                                                                                                        setFieldValue(`permissionSets.${index}.permissions.delete`, e.target.checked)
-                                                                                                    }
-                                                                                                }}
-                                                                                            />
-                                                                                        </Grid>
-                                                                                        <Grid item xs={3} md={3}>
-                                                                                            <label htmlFor={`permissionSets.${index}.permissions.delete`} className="checkbox-label">
-                                                                                                Delete
-                                                                                            </label>
-                                                                                            <Field
-                                                                                                type="checkbox"
-                                                                                                id={`permissionSets.${index}.permissions.delete`}
-                                                                                                name={`permissionSets.${index}.permissions.delete`}
-                                                                                                onChange={(e) => {
-                                                                                                    console.log(e.target.checked, "checkbox")
-                                                                                                    if (e.target.checked) {
-                                                                                                        setFieldValue(`permissionSets.${index}.permissions.read`, e.target.checked);
-                                                                                                        setFieldValue(`permissionSets.${index}.permissions.edit`, e.target.checked);
-                                                                                                        setFieldValue(`permissionSets.${index}.permissions.delete`, e.target.checked);
-                                                                                                    }
-                                                                                                    else {
-                                                                                                        setFieldValue(`permissionSets.${index}.permissions.delete`, e.target.checked);
-                                                                                                    }
-                                                                                                }}
-                                                                                            />
-                                                                                        </Grid>
-                                                                                    </Grid>
-                                                                                </Grid>
-                                                                            </Grid>
-                                                                        </div>
-                                                                    ))}
-                                                            </>
-                                                        )}
-                                                    </FieldArray>
-
-                                                </AccordionDetails>
-                                            </Accordion>
-                                        </Grid> */}
+                     
                                         {!showNew && (
                                             <>
                                                 <Grid item xs={6} md={6}>

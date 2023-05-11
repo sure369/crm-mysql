@@ -15,7 +15,10 @@ import './Form.css'
 import { PermissionSavedValues, PermissionSetInitialValues } from '../formik/InitialValues/formValues';
 import { RolesDepartment } from '../../data/pickLists';
 import { RequestServer } from '../api/HttpReq';
+import { apiCheckPermission } from '../Auth/apiCheckPermission';
+import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
+const OBJECT_API="Permissions"
 const upsertUrl = `/upsertPermission`;
 const urlgetUsersByName = `/getUsers`;
 const urlgetRolesByDept = `/roles`
@@ -32,12 +35,16 @@ const PermissiionSetForm = ({ item }) => {
     const [roleRecordsByDept, setRoleRecordsByDept] = useState([])
     const [objTableName,setObjTableName]=useState([])
 
+    const userRoleDpt= getLoginUserRoleDept(OBJECT_API)
+    const [permissionValues, setPermissionValues] = useState({})
+   
     useEffect(() => {
-        console.log('passed record', location.state.record.item);
+        console.log('passed record PermissiionSetForm', location.state.record.item);
 
         setsinglePermission(location.state?.record?.item ?? {});
         setshowNew(!location.state.record.item)
         fetchTableNames()
+        fetchPermissions()
     }, [])
 
 
@@ -59,6 +66,20 @@ const PermissiionSetForm = ({ item }) => {
             console.log(error,"urlgetTbaleNames catch")
         })
     }
+
+    const fetchPermissions=()=>{
+        if(userRoleDpt){
+            apiCheckPermission(userRoleDpt)
+            .then(res=>{
+                setPermissionValues(res)
+            })
+            .catch(err=>{
+                console.log(err,"res apiCheckPermission error")
+                setPermissionValues({})
+            })
+        }
+    }
+
 
     const initialValues = PermissionSetInitialValues
     initialValues.permissionSets=objTableName.map(i=>{
@@ -222,12 +243,15 @@ const PermissiionSetForm = ({ item }) => {
                                     <Grid container spacing={2}>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="permissionName">Permission Set Name</label>
-                                            <Field type="text" id="permissionName" name="permissionName" class="form-input" />
+                                            <Field type="text" id="permissionName" name="permissionName" class="form-input" 
+                                                disabled={showNew?!permissionValues.create :!permissionValues.edit}
+                                            />
                                         </Grid>
                                         <Grid item xs={6} md={6}>
                                             <label htmlFor="department">Department</label>
                                             <Field name="department"
                                                 component={CustomizedSelectForFormik}
+                                                disabled={showNew?!permissionValues.create :!permissionValues.edit}
                                                 className="form-customSelect"
                                                 onChange={(e) => {
                                                     console.log(e.target.value, "event")
@@ -272,6 +296,7 @@ const PermissiionSetForm = ({ item }) => {
                                                         console.log(values.department, "else ")
                                                     }
                                                 }}
+                                                disabled={showNew?!permissionValues.create :!permissionValues.edit}
                                                 renderInput={params => (
                                                     <Field component={TextField} {...params} name="roleDetails" />
                                                 )}
@@ -318,6 +343,7 @@ const PermissiionSetForm = ({ item }) => {
                                                                                                         setFieldValue(`permissionSets.${index}.permissions.delete`, !e.target.value)
                                                                                                     }
                                                                                                 }}
+                                                                                                disabled={showNew?!permissionValues.create :!permissionValues.edit}
                                                                                             />
                                                                                         </Grid>
                                                                                         <Grid item xs={3} md={3}>
@@ -336,6 +362,7 @@ const PermissiionSetForm = ({ item }) => {
                                                                                                         setFieldValue(`permissionSets.${index}.permissions.create`, e.target.checked);
                                                                                                     }
                                                                                                 }}
+                                                                                                disabled={showNew?!permissionValues.create :!permissionValues.edit}
                                                                                             />
                                                                                         </Grid>
 
@@ -356,6 +383,7 @@ const PermissiionSetForm = ({ item }) => {
                                                                                                         setFieldValue(`permissionSets.${index}.permissions.delete`, e.target.checked)
                                                                                                     }
                                                                                                 }}
+                                                                                                disabled={showNew?!permissionValues.create :!permissionValues.edit}
                                                                                             />
                                                                                         </Grid>
                                                                                         <Grid item xs={3} md={3}>
@@ -377,6 +405,7 @@ const PermissiionSetForm = ({ item }) => {
                                                                                                         setFieldValue(`permissionSets.${index}.permissions.delete`, e.target.checked);
                                                                                                     }
                                                                                                 }}
+                                                                                                disabled={showNew?!permissionValues.create :!permissionValues.edit}
                                                                                             />
                                                                                         </Grid>
                                                                                     </Grid>
@@ -409,7 +438,7 @@ const PermissiionSetForm = ({ item }) => {
                                         <DialogActions sx={{ justifyContent: "space-between" }}>
                                             {
                                                 showNew ?
-                                                    <Button type='success' variant="contained" color="secondary" disabled={isSubmitting}>Save</Button>
+                                                    <Button type='success' variant="contained" color="secondary" disabled={isSubmitting ||!dirty}>Save</Button>
                                                     :
                                                     <Button type='success' variant="contained" color="secondary" disabled={isSubmitting}>Update</Button>
                                             }

@@ -52,6 +52,12 @@ const ContactDetailPage = ({ item }) => {
         setsingleContact(location.state.record.item);
         setshowNew(!location.state.record.item)
         FetchAccountsbyName('');
+        fetchObjectPermissions()
+
+       
+    }, [])
+
+    const fetchObjectPermissions=()=>{
         if(userRoleDpt){
             apiCheckPermission(userRoleDpt)
             .then(res=>{
@@ -66,7 +72,7 @@ const ContactDetailPage = ({ item }) => {
         // const getPermission = getPermissions("Contact")
         // console.log(getPermission, "getPermission")
         // setPermissionValues(getPermission)
-    }, [])
+    }
 
     const initialValues = ContactInitialValues
     const savedValues = ContactSavedValues(singleContact)
@@ -185,16 +191,6 @@ const ContactDetailPage = ({ item }) => {
         .catch((error)=>{
             console.log("error fetchAccountsbyName",error)
         })
-        // axios.post(`${fetchAccountsbyName}?searchKey=${newInputValue}`)
-        //     .then((res) => {
-        //         console.log('res fetchAccountsbyName', res.data)
-        //         if (typeof (res.data) === "object") {
-        //             setAccNames(res.data)
-        //         }
-        //     })
-        //     .catch((error) => {
-        //         console.log('error fetchAccountsbyName', error);
-        //     })
     }
 
     const handleFormClose = () => {
