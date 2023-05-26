@@ -4,6 +4,7 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
 import LoginLayoutIndex from "./scenes/Layout/LoginLayoutIndex";
 import LogoutLayoutIndex from "./scenes/Layout/LogOutLayoutIndex";
+import AppNavbar from "./scenes/global/AppNavbar";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -23,6 +24,7 @@ function App() {
           <main className="content" style={{ height: "fit-content" }}>
             {sessionStorage.getItem("token") ? (
               <>
+              <AppNavbar/>
                 <LoginLayoutIndex />
               </>
             ) : (

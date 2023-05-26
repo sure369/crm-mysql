@@ -3,6 +3,8 @@ export const apiCheckPermission= (obj)=>{
 
     const urlCheck=`/checkAccess`
 
+  
+    
     return new Promise((resolve,reject)=>{
         RequestServer(urlCheck,obj)
         .then(res=>{

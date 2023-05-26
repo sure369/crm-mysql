@@ -73,7 +73,7 @@ const AccountRelatedItems = ({ item }) => {
         setPermissionValuesTask(err)
       })
     }
-    else if(userRoleDptContact){
+    if(userRoleDptContact){
       apiCheckPermission(userRoleDptContact)
       .then(res=>{
         console.log(res,"res contact apiCheckPermission")

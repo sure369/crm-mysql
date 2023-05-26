@@ -21,6 +21,7 @@ export const RequestServer = (endpoint,payload)=>{
         //     headers : headers,
         //     payload:payload
         // })
+    
         console.log(payload,"payload")
         console.log(endpoint,"endpoint")
         return  api.post(endpoint,payload)

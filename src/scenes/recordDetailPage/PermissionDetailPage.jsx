@@ -120,7 +120,7 @@ const PermissiionSetForm = ({ item }) => {
 
         values.permissionSets = convertValue;
 
-        // console.log(convertValue, "convertValue")
+        console.log(values.permissionSets, "values.permissionSets")
 
         let dateSeconds = new Date().getTime();
         let createDateSec = new Date(values.createdDate).getTime()
@@ -333,14 +333,14 @@ const PermissiionSetForm = ({ item }) => {
                                                                                                 name={`permissionSets.${index}.permissions.read`}
                                                                                                 onChange={(e) => {
                                                                                                     if (e.target.checked) {
-                                                                                                        console.log(e.target.checked, "if")
-                                                                                                        setFieldValue(`permissionSets.${index}.permissions.read`, e.target.value)
+                                                                                                        console.log(e.target.checked, "read checked ")
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.read`, e.target.checked)
                                                                                                     } else {
-                                                                                                        console.log(e.target.checked, "else")
-                                                                                                        setFieldValue(`permissionSets.${index}.permissions.read`, !e.target.value)
-                                                                                                        setFieldValue(`permissionSets.${index}.permissions.create`, !e.target.value)
-                                                                                                        setFieldValue(`permissionSets.${index}.permissions.edit`, !e.target.value)
-                                                                                                        setFieldValue(`permissionSets.${index}.permissions.delete`, !e.target.value)
+                                                                                                        console.log(e.target.checked, "read unchecked")
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.read`, e.target.checked)
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.create`,e.target.checked)
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.edit`, e.target.checked)
+                                                                                                        setFieldValue(`permissionSets.${index}.permissions.delete`, e.target.checked)
                                                                                                     }
                                                                                                 }}
                                                                                                 disabled={showNew?!permissionValues.create :!permissionValues.edit}

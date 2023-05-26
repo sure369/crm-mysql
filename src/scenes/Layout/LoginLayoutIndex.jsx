@@ -25,21 +25,15 @@ import RoleDetailPage from '../recordDetailPage/RoleDetailPage';
 import RoleIndex from '../Roles';
 import PermissionDetailPage from '../recordDetailPage/PermissionDetailPage';
 import PermissionSets from '../permissionSets';
-import {GetTableNames} from '../getTables/index';
-
-import { useLocation } from 'react-router-dom';
-import LayoutIndex from './LayoutIndex';
+import StaticDashboardIndex from '../home';
 
 function LoginLayoutIndex(props) {
-  const location =useLocation();
+  
 
-  console.log(props,"props login index")
-  console.log(location,"router layout")
   return (
     <>
-      <AppNavbar props={location} />
       <Routes>
-        <Route path="/" exact element={<ResponsiveInventories />} />
+        <Route path="/" exact element={<StaticDashboardIndex />} />
         <Route path="/list/account" element={<ResponsiveAccounts />} />
         <Route path="/list/contact" element={<ResponsiveContacts />} />
         <Route path="/list/deals" element={<ResponsiveOpportunities />} />
@@ -71,8 +65,7 @@ function LoginLayoutIndex(props) {
         <Route path="/roleDetailPage/:id" element={<RoleDetailPage/>}/>
         <Route path="/permissionDetailPage/:id" element={<PermissionDetailPage/>}/>
 
-        <Route path="/file" element={<FileUploadUpdated />} />        
-        <Route path ='/test' element={<GetTableNames/>} />
+        <Route path="/file" element={<FileUploadUpdated />} />    
 
         {/* <Route path="/leadDetailPage/:Id" element={<LeadDetailPage/>} /> */}
         {/* <Route path="/accountDetailPage/:id" element={<FlexAccounts/>} /> */}
