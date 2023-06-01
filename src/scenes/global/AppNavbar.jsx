@@ -10,28 +10,56 @@ import mainLogo from '../assets/user image.png';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import './AppNavbar.css'
 import { RequestServer } from '../api/HttpReq';
-import { GetTableNames } from '../getTables';
-
-const pages = [
-  { title: 'Inventories', toNav: '/inventories' },
-  { title: 'Enquiries', toNav: '/enquiries' },
-  { title: 'Accounts', toNav: '/accounts' },
-  { title: 'Contacts', toNav: '/contacts' },
-  { title: 'Deals', toNav: '/deals' },
-  { title: 'Event Log', toNav: '/task' },
-  { title: 'Users', toNav: '/users' },
-  { title: 'Roles', toNav: '/roles' },
-  { title: 'File Upload', toNav: '/file' },
-  { title: 'Permission', toNav: '/permissions' }
-
-  // {title:'Test',toNav:'/test'},
-  // { title: 'Junction Object', toNav: '/oppInventory' },
-];
-
-const settings = ['Logout'];
-
+import { GetTableNames } from './getTableNames';
+import { styled, alpha } from "@mui/material/styles";
 
 const getTableUrl = `/getObject`;
+
+const StyledMenu = styled((props) => (
+  <Menu
+    elevation={0}
+    anchorOrigin={{
+      vertical: "bottom",
+      horizontal: "right",
+    }}
+    transformOrigin={{
+      vertical: "top",
+      horizontal: "right",
+    }}
+    {...props}
+  />
+  ))
+  (({ theme }) => ({
+    "& .MuiPaper-root": {
+      borderRadius: 8,
+      marginTop: theme.spacing(1),
+      minWidth: 180,
+      color:
+        theme.palette.mode === "light"
+          ? "rgb(55, 65, 81)"
+          : theme.palette.grey[300],
+      boxShadow:
+        "rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px",
+      "& .MuiMenu-list": {
+        padding: "4px 0",
+      },
+      "& .MuiMenuItem-root": {
+        "& .MuiSvgIcon-root": {
+          fontSize: 18,
+          color: theme.palette.text.secondary,
+          marginRight: theme.spacing(1.5),
+        },
+        "&:active": {
+          backgroundColor: alpha(
+            theme.palette.primary.main,
+            theme.palette.action.selectedOpacity
+          ),
+        },
+      },
+    },
+  }));
+
+
 function AppNavbar(props) {
 
   console.log(props,"props navbar")
@@ -40,6 +68,9 @@ function AppNavbar(props) {
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [selected, setSelected] = useState("Inventories");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  
   const navigate = useNavigate();
   const [tableNamearr, settableNameArr] = useState([]);
   const loggedInUserData = JSON.parse(sessionStorage.getItem('loggedInUser'))
@@ -48,10 +79,6 @@ function AppNavbar(props) {
 
   useEffect(() => {
     fetchTableNames()
-    // fetchTables()
-    
-    // const table =GetTableNames();
-    // console.log(table,"table name from appbar")
   }, []);
 
   const fetchTableNames=()=>{
@@ -68,27 +95,6 @@ function AppNavbar(props) {
       console.log(err,"GetTableNames error in appbar")
     })
   }
-
-  const fetchTables = () => {
-    RequestServer(getTableUrl)
-      .then((res) => {
-        if (res.success) {
-          console.log(res, "res getTableUrl");
-          const arr = res.data.map(i => {
-            const CapLetter = i.Tables_in_crm.charAt(0).toUpperCase() + i.Tables_in_crm.slice(1);
-            return { title: CapLetter, toNav: `list/${i.Tables_in_crm}` };
-          });
-          settableNameArr(arr);
-          console.log(arr, "arr")
-        } else {
-          console.log("then error", res.error);
-        }
-      })
-      .catch((err) => {
-        console.log('api error', err);
-      });
-  };
-
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);

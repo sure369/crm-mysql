@@ -567,3 +567,50 @@ export const PermissionSavedValues = (singlePermission) => {
     })(),
   };
 };
+
+
+export const DashboardInitialValues= (singleDashboard) => {
+  return {
+  dashboardName:singleDashboard?.dashboardName?? "",
+  chartType:singleDashboard?.chartType?? "",
+  objectName:singleDashboard?.objectName?? "",
+  fields:singleDashboard?.fields??[],  
+  createdDate: singleDashboard?.createdDate?? "",
+  modifiedDate:singleDashboard?.modifiedDate?? "",
+  createdBy:singleDashboard?.createdBy?? "",
+  modifiedBy:singleDashboard?.modifiedBy?? "",
+}
+}
+
+export const DashboardSavedValues = (singleDashboard) => {
+  return {
+    dashboardName: singleDashboard?.dashboardName ?? "",
+    chartType: singleDashboard?.chartType ?? "",
+    objectName: singleDashboard?.objectName ?? "",
+    // fields: singleDashboard?.fields ?? [],
+    createdDate: singleDashboard?.createdDate ?? "",
+    modifiedDate: singleDashboard?.modifiedDate ?? "",
+    _id: singleDashboard?._id ?? "",
+    createdBy: (() => {
+      try {
+        return JSON.parse(singleDashboard?.createdBy);
+      } catch {
+        return "";
+      }
+    })(),
+    modifiedBy: (() => {
+      try {
+        return JSON.parse(singleDashboard?.modifiedBy);
+      } catch {
+        return "";
+      }
+    })(),
+    fields: (() => {
+      try {
+        return JSON.parse(singleDashboard?.fields) ||[];
+      } catch {
+        return [];
+      }
+    })(),
+  }
+}

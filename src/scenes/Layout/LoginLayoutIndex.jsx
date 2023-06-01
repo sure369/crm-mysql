@@ -26,6 +26,9 @@ import RoleIndex from '../Roles';
 import PermissionDetailPage from '../recordDetailPage/PermissionDetailPage';
 import PermissionSets from '../permissionSets';
 import StaticDashboardIndex from '../home';
+import PageNotFound from '../Errors/PageNotFound';
+import DynamicHomePage from '../dashboard/dynamicDashBoard'
+import Files from '../Files/index'
 
 function LoginLayoutIndex(props) {
   
@@ -39,11 +42,12 @@ function LoginLayoutIndex(props) {
         <Route path="/list/deals" element={<ResponsiveOpportunities />} />
         <Route path="/list/enquiry" element={<ResponsiveLeads />} />
         <Route path="/list/inventory" element={<ResponsiveInventories />} />
-        <Route path="/list/task" element={<ResponsiveTasks />} />
+        <Route path="/list/event" element={<ResponsiveTasks />} />
         <Route path="/list/user" element={<ResponsiveUsers />} />
         <Route path="/list/role" element={<RoleIndex/>}/>
         <Route path="/list/permissions" element={<PermissionSets/>}/>
-
+        <Route path="/list/file" element={<Files />} />
+      <Route path="/list/dashboard" element={<DynamicHomePage />} /> 
 
         <Route path="/new-contacts" element={<ContactDetailPage />} />
         <Route path="/new-users" element={<UserDetailPage />} />
@@ -66,7 +70,7 @@ function LoginLayoutIndex(props) {
         <Route path="/permissionDetailPage/:id" element={<PermissionDetailPage/>}/>
 
         <Route path="/file" element={<FileUploadUpdated />} />    
-
+        <Route path="*" element={<PageNotFound />} />
         {/* <Route path="/leadDetailPage/:Id" element={<LeadDetailPage/>} /> */}
         {/* <Route path="/accountDetailPage/:id" element={<FlexAccounts/>} /> */}
         {/* <Route path="/dataLoader" element={<DataLoadPage />} /> */}

@@ -21,7 +21,7 @@ import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
 const Task = () => {
 
-  const OBJECT_API = "Task"
+  const OBJECT_API = "Event"
   const urlTask = `/Task`;
   const urlDelete = `/deleteTask?code=`;
 
@@ -180,19 +180,19 @@ const Task = () => {
       field: "realatedTo", headerName: "Realated To",
       headerAlign: 'center', align: 'center', flex: 1,
       renderCell: (params) => {
-        if (params.row.object === 'Account') {
+        if (params.row?.object === 'Account') {
           return <div className="rowitem">
-            {params.row.accountDetails.accountName}
+            {params.row?.accountDetails?.accountName}
           </div>
         }
-        else if (params.row.object === 'Lead') {
+        else if (params.row?.object === 'Lead') {
 
           return <div className="rowitem">
-            {params.row.leadDetails.leadName}
+            {params.row?.leadDetails?.leadName}
           </div>
         } else if (params.row.object === 'Opportunity') {
           return <div className="rowitem">
-            {params.row.opportunityDetails.opportunityName}
+            {params.row?.opportunityDetails?.opportunityName}
           </div>
         } else {
           <div className="rowitem">

@@ -20,7 +20,6 @@ import { RequestServer } from '../api/HttpReq';
 import { getPermissions } from '../Auth/getPermission';
 import NoAccess from '../NoAccess/NoAccess';
 import '../indexCSS/muiBoxStyles.css'
-import { GetTableIndex } from '../getTables';
 import AppNavbar from '../global/AppNavbar';
 import { apiCheckPermission } from '../Auth/apiCheckPermission'
 import { getLoginUserRoleDept } from '../Auth/userRoleDept';

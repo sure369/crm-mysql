@@ -247,3 +247,19 @@ export const Objects=[
   { text: "Lead", value: "Lead" },
   { text: "Inventory", value: "Inventory" },
 ]
+
+export const TaskStatus=[
+  {text:'Open',value:'Open'},
+  {text:'Working',value:'Working'},
+  {text:'Closed',value:'Closed'},
+]
+
+export const DashboardChartTypePicklist=[  
+  {text:'Line',value:'line'},
+  {text:'Bar',value:'bar'},
+  {text:'Pie',value:'pie'},
+  {text:'Donut',value:'donut'},
+  {text:'Radar',value:'radar'},
+  {text:'RadialBar',value:'radialBar'},  
+  {text:'PolarArea',value:'polarArea'},  
+]
