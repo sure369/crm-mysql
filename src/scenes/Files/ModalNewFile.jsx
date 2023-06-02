@@ -11,7 +11,7 @@ import { RequestServerFiles } from "../api/HttpReqFiles";
 import { apiMethods } from "../api/methods";
 
 
-const URL_postRecords = `/files`
+const URL_postRecords = `/upsertfiles`
 
 const ModalFileUpload = ({ handleModal }) => {
 
@@ -51,7 +51,7 @@ const ModalFileUpload = ({ handleModal }) => {
         }
     };
 
-    const uploadSingleFile = (formData) => {  
+    const uploadSingleFile = (formData) => {
         RequestServerFiles(apiMethods.post, URL_postRecords, formData)
             .then(res => {
                 console.log("RequestServerFiles response", res)
@@ -64,16 +64,16 @@ const ModalFileUpload = ({ handleModal }) => {
                         message: "file Uploaded successfully",
                         type: "success",
                     });
-                }else{
-                    console.log("RequestServer file then error",res.error.message)
+                } else {
+                    console.log("RequestServer file then error", res.error.message)
                     setNotify({
                         isOpen: true,
                         message: res.error.message,
                         type: "error",
                     });
-                }                
+                }
             })
-            .catch((error)=>{
+            .catch((error) => {
                 console.log('RequestServer file form Submission  error', error);
                 setNotify({
                     isOpen: true,
@@ -81,10 +81,10 @@ const ModalFileUpload = ({ handleModal }) => {
                     type: "error",
                 });
             })
-            .finally(()=>{
-                setTimeout(()=>{
+            .finally(() => {
+                setTimeout(() => {
                     handleModal()
-                },3000)
+                }, 3000)
             })
     };
 
@@ -98,12 +98,14 @@ const ModalFileUpload = ({ handleModal }) => {
     return (
         <>
             <ToastNotification notify={notify} setNotify={setNotify} />
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Typography fontWeight={'bold'} variant="h3">Upload Files</Typography>
+            </Box>
+            <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", height: "100%", width: '100%', marginTop: '30px' }}>
 
-            <Box sx={{ height: "500px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "285px" }}>
-                <Typography variant="h4">Upload Files</Typography>
-                <label htmlFor="images" className="input-drop-container">
+                <label htmlFor="images" className="related-input-drop-container">
                     <input
-                        className="file-upload-input"
+                        className="related-file-upload-input"
                         accept=".jpeg, .pdf, .png, .csv, .xlsx, .doc"
                         sx={{ cursor: "pointer" }}
                         id="images"
@@ -122,6 +124,8 @@ const ModalFileUpload = ({ handleModal }) => {
                         gap: "5px"
                     }}
                 >
+                    {selectedFiles.length > 0 &&
+                    <>
                     <Button
                         sx={{ marginTop: "10px" }}
                         type="success"
@@ -145,6 +149,8 @@ const ModalFileUpload = ({ handleModal }) => {
                     >
                         Clear
                     </Button>
+                    </>
+                    }
                 </Box>
 
             </Box>
