@@ -15,12 +15,13 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ToastNotification from "../toast/ToastNotification";
 import DeleteConfirmDialog from "../toast/DeleteConfirmDialog";
 import '../recordDetailPage/Form.css'
+import queryString from 'query-string'
 
 const TaskRelatedItems = ({ item }) => {
 
   const OBJECT_API = OBJECT_API_EVENT
-  const URL_getRelatedFiles = GET_EVENT_RELATED_FILE
-  const URL_deleteRelatedFiles = DELETE_FILE
+  const URL_getRelatedFiles = '/related/file/'
+  const URL_deleteRelatedFiles = `/deletefiles`
 
 
   const navigate = useNavigate();
@@ -40,11 +41,15 @@ const TaskRelatedItems = ({ item }) => {
     if (location.state.record.item) {
       setTaskRecord({ taskId: location.state.record.item._id, OBJECT_API: OBJECT_API });
     }
-    fetchRelatedFiles(location.state.record.item._id)
+    fetchRelatedFiles(location.state.record.item._id,OBJECT_API)
   }, []);
 
-  const fetchRelatedFiles = (id) => {
-    RequestServer(apiMethods.get, URL_getRelatedFiles + id)
+  const fetchRelatedFiles = (id,OBJECT_API) => {
+    console.log("inside fetchRelatedFiles")
+    let obj={id:id,object:OBJECT_API}
+    let queryObj=queryString.stringify(obj)
+    console.log(queryObj,"queryObj")
+    RequestServer( URL_getRelatedFiles + queryObj)
       .then((res) => {
         console.log(res, "index page res URL_getRelatedFiles");
         if (res.success) {
@@ -69,7 +74,7 @@ const TaskRelatedItems = ({ item }) => {
 
   const handleFileModalClose = () => {
     setModalFileUpload(false)
-    fetchRelatedFiles()
+    fetchRelatedFiles(taskRecord._id,OBJECT_API)
   }
 
   const handleViewFileClick = (item) => {

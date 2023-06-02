@@ -35,8 +35,8 @@ const ModalTaskFileUpload = ({ record, handleModal }) => {
         commonFormData.append("relatedTo", JSON.stringify(relatedObj));
         commonFormData.append("createdDate", dateSeconds);
         commonFormData.append("modifiedDate", dateSeconds);
-        commonFormData.append("createdBy", JSON.stringify(userDetails));
-        commonFormData.append("modifiedBy", JSON.stringify(userDetails));
+        commonFormData.append("createdBy", (userDetails));
+        commonFormData.append("modifiedBy", (userDetails));
 
         selectedFiles.forEach((file) => {
             const formData = new FormData();
@@ -84,7 +84,7 @@ const ModalTaskFileUpload = ({ record, handleModal }) => {
             })
             .finally(() => {
                 setTimeout(() => {
-                    handleModal()
+                    // handleModal()
                 }, 2000)
 
             })

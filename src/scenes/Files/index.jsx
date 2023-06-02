@@ -186,7 +186,7 @@ const Files = () => {
 
   const columns = [
     {
-      field: "filename",
+      field: "fileName",
       headerName: "File Name",
       headerAlign: "center",
       align: "center",
