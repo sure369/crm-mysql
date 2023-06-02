@@ -9,7 +9,7 @@ import ClearAllIcon from "@mui/icons-material/ClearAll";
 import { POST_FILE } from "../api/endUrls";
 import { RequestServerFiles } from "../api/HttpReqFiles";
 import { apiMethods } from "../api/methods";
-import './FileModal.css'
+
 
 const URL_postRecords = `/files`
 
@@ -26,20 +26,32 @@ const ModalFileUpload = ({ handleModal }) => {
     };
 
     const handleUploadButtonClick = () => {
-        const formData = new FormData();
         let dateSeconds = new Date().getTime();
         let userDetails = (sessionStorage.getItem("loggedInUser"))
+        let relatedObj = {}
+
+        const commonFormData = new FormData();
+        commonFormData.append("relatedTo", JSON.stringify(relatedObj));
+        commonFormData.append("createdDate", dateSeconds);
+        commonFormData.append("modifiedDate", dateSeconds);
+        commonFormData.append("createdBy", JSON.stringify(userDetails));
+        commonFormData.append("modifiedBy", JSON.stringify(userDetails));
 
         selectedFiles.forEach((file) => {
+            const formData = new FormData();
             formData.append("file", file);
-            formData.append("createdDate", dateSeconds)
-            formData.append("modifiedDate", dateSeconds)
-            formData.append("relatedTo",JSON.stringify({}));
-            formData.append("createdBy", JSON.stringify(userDetails))
-            formData.append("modifiedBy", JSON.stringify(userDetails))
+            appendCommonFields(formData, commonFormData);
+            uploadSingleFile(formData);
         });
-        console.log("selected files :", selectedFiles);
+    }
 
+    const appendCommonFields = (formData, commonFormData) => {
+        for (const [key, value] of commonFormData.entries()) {
+            formData.append(key, value);
+        }
+    };
+
+    const uploadSingleFile = (formData) => {  
         RequestServerFiles(apiMethods.post, URL_postRecords, formData)
             .then(res => {
                 console.log("RequestServerFiles response", res)

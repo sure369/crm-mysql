@@ -21,6 +21,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { OBJECT_API_FILE,GET_FILE,DELETE_FILE } from "../api/endUrls";
 import ModalFileUpload from "./ModalNewFile";
 import '../Files/FileModal.css'
+import '../recordDetailPage/Form.css'
 
 const Files = () => {
 
@@ -358,7 +359,7 @@ const Files = () => {
         aria-describedby="modal-modal-description"
         sx={{ backdropFilter: "blur(1px)" }}
       >
-        <div className="modalFile">
+        <div className="related-modal-box">
           <ModalFileUpload handleModal={handleFileModalClose} />
         </div>
       </Modal>

@@ -2,14 +2,14 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    height: 120px;
+    height: fit-content;
     padding: 20px;
     width: fit-content;
     background-color: #f0f6fb;
     border-radius: 10px;
-    border: 2px dashed #555;
+    border: 2px solid #555;
     color: #444;
     transition: background .2s ease-in-out, border .2s ease-in-out;
     

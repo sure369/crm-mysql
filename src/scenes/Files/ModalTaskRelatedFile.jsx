@@ -27,21 +27,32 @@ const ModalTaskFileUpload = ({record, handleModal }) => {
     };
 
     const handleUploadButtonClick = () => {
-        const formData = new FormData();
         let dateSeconds = new Date().getTime();
-        let userDetails = (sessionStorage.getItem("loggedInUser"))
+        let userDetails = (sessionStorage.getItem("loggedInUser"))        
         let relatedObj ={id:record.taskId,object:record.OBJECT_API}
-        console.log(relatedObj,"relatedObj")
-        selectedFiles.forEach((file) => {
-            formData.append("file", file);
-            formData.append("relatedTo",JSON.stringify(relatedObj));
-            formData.append("createdDate", dateSeconds)
-            formData.append("modifiedDate", dateSeconds)
-            formData.append("createdBy", JSON.stringify(userDetails))
-            formData.append("modifiedBy", JSON.stringify(userDetails))
-        });
-        console.log("selected files :", selectedFiles);
 
+        const commonFormData = new FormData();
+        commonFormData.append("relatedTo", JSON.stringify(relatedObj));
+        commonFormData.append("createdDate", dateSeconds);
+        commonFormData.append("modifiedDate", dateSeconds);
+        commonFormData.append("createdBy", JSON.stringify(userDetails));
+        commonFormData.append("modifiedBy", JSON.stringify(userDetails));
+
+        selectedFiles.forEach((file) => {
+            const formData = new FormData();
+            formData.append("file", file);
+            appendCommonFields(formData, commonFormData);
+            uploadSingleFile(formData);
+        });
+    }
+
+    const appendCommonFields = (formData, commonFormData) => {
+        for (const [key, value] of commonFormData.entries()) {
+            formData.append(key, value);
+        }
+    };
+
+    const uploadSingleFile = (formData) => {  
         RequestServerFiles(apiMethods.post, URL_postRecords, formData)
             .then(res => {
                 console.log("RequestServerFiles response", res)
@@ -82,21 +93,16 @@ const ModalTaskFileUpload = ({record, handleModal }) => {
     const handleClearInput = () => {
         setSelectedFiles([]);
         document.getElementById("images").value = "";
-    };
-
-
-
-    
-      
+    };      
 
     return (
         <>
             <ToastNotification notify={notify} setNotify={setNotify} />
-            <Box sx={{ height: "500px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "285px" }}>
+            <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", height: "100%", width: '100%', marginTop: '30px' }}>
                 <Typography variant="h4">Upload Files</Typography>
-                <label htmlFor="images" className="input-drop-container">
+                <label htmlFor="images" className="related-input-drop-container">
                     <input
-                        className="file-upload-input"
+                        className="related-file-upload-input"
                         accept=".jpeg, .pdf, .png, .csv, .xlsx, .doc"
                         sx={{ cursor: "pointer" }}
                         id="images"
