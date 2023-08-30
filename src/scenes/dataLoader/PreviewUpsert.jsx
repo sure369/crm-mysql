@@ -1,7 +1,8 @@
 import React,{useState} from 'react'
 import axios from 'axios';
 import {
-    Paper,Table,TableBody,TableCell,TableHead,TableRow,Typography,DialogActions,Button
+    Paper,Table,TableBody,TableCell,TableHead,TableRow,Typography,DialogActions,Button,
+    CircularProgress,
 } from "@mui/material";
 import ToastNotification from '../toast/ToastNotification';
 import { useEffect } from 'react';
@@ -14,7 +15,7 @@ const UpsertOppUrl=`${process.env.REACT_APP_SERVER_URL}/dataloaderOpportunity`;
 function PreviewUpsert({  data ,file,ModalClose}) {
 
   const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
-
+  const [isLoading,setIsLoading]= useState(false)
   const[upsertUrl,setUpsertUrl]=useState()
 
     const headers = Object.keys(data[0]);
@@ -35,8 +36,11 @@ function PreviewUpsert({  data ,file,ModalClose}) {
     }
     const hanldeSave=()=>{
         console.log(data)
+        setIsLoading(true)
         let formData = new FormData();
         formData.append('file',file)
+        formData.append('createdBy',(sessionStorage.getItem("loggedInUser")))
+        formData.append('modifiedBy',(sessionStorage.getItem("loggedInUser")))
 
           axios.post(upsertUrl, formData)
     
@@ -47,9 +51,6 @@ function PreviewUpsert({  data ,file,ModalClose}) {
                   message: 'Records Inserted Successfully',
                   type: 'success'
                 })
-             setTimeout(()=>{
-              //  window.location.reload();      
-             },2000)
                     
             })
             .catch((error) => {
@@ -59,29 +60,36 @@ function PreviewUpsert({  data ,file,ModalClose}) {
                   message: 'Records not Inserted ',
                   type: 'error'
                 })
-                 setTimeout(()=>{
-              //  window.location.reload();      
-             },2000)
+            })
+            .finally(()=>{
+              ModalClose()
             })
     }
 
   return (
     <>
      <ToastNotification notify={notify} setNotify={setNotify} />
-    <Paper>
+    
+    {
+      isLoading && <div style={{display:"flex",justifyContent:'center',alignItems:'center'}}><CircularProgress /></div> 
+      
+    }
+    
+    
+    <Paper style={{ maxWidth: '80vw', maxHeight: '80vh', overflow: 'auto', filter: isLoading ? 'blur(5px)' : 'none' }}>
       <Table>
         <TableHead>
           <TableRow>
             {headers.map(header => (
-              <TableCell align="right">{header.toUpperCase()}</TableCell>
+              <TableCell align="left">{header.toUpperCase()}</TableCell>
             ))}
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.slice(0,5).map((emp, index) => (
+          {data.map((emp, index) => (
             <TableRow key={index}>
               {headers.map(header => (
-                <TableCell align="right">{emp[header]}</TableCell>
+                <TableCell align="left">{emp[header]}</TableCell>
               ))}
             </TableRow>
           ))}
@@ -89,10 +97,13 @@ function PreviewUpsert({  data ,file,ModalClose}) {
       </Table>
     </Paper>
      <div className='action-buttons'>
-     <DialogActions sx={{ justifyContent: "space-between" }}>
+     <DialogActions sx={{ display:"flex", justifyContent: "space-between" }}>
                  <Button type='success' variant="contained" color="secondary" onClick={hanldeSave}>Upload</Button>
                  <Button type="reset" variant="contained" onClick={ModalClose}>Cancel</Button>                         
      </DialogActions>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginLeft: '16px' }}>
+           Record Count :{data.length}
+        </div>
  </div>
  </>
   );

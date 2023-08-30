@@ -20,41 +20,23 @@ import { TaskInitialValues } from "../formik/InitialValues/formValues";
 
 
 const UpsertUrl = `/UpsertTask`;
+const fetchUsersbyName = `/usersByName?searchKey=`;
 
 const ModalTask = ({ item, handleModal }) => {
 
     const [taskParentRecord, setTaskParentRecord] = useState();
     const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
-
+    const [usersRecord, setUsersRecord] = useState([]);
     const navigate = useNavigate();
     const location = useLocation();
 
     useEffect(() => {
         console.log('Task parent record', location.state.record.item);
         setTaskParentRecord(location.state.record.item)
-
+        FetchUsersbyName('');
     }, [])
 
     const initialValues=TaskInitialValues;
-
-    // const initialValues = {
-    //     subject: '',
-    //     realatedTo: '',
-    //     assignedTo: '',
-    //     StartDate: '',
-    //     EndDate: '',
-    //     description: '',
-    //     // attachments: null,
-    //     object: '',
-    //     leadId: '',
-    //     leadName:'',
-    //     createdbyId: '',        
-    //     createdBy:"",
-    //     modifiedBy:"",
-    //     createdDate: '',
-    //     modifiedDate: '',
-    // }
-
     const validationSchema = Yup.object({
         subject: Yup
             .string()
@@ -68,6 +50,21 @@ const ModalTask = ({ item, handleModal }) => {
         
 
     })
+
+    const FetchUsersbyName = (newInputValue) => {
+        RequestServer(fetchUsersbyName+newInputValue)
+            .then((res) => {
+                console.log('res fetchUsersbyName', res.data)
+                if (res.success) {
+                    setUsersRecord(res.data)
+                }else{
+                    console.log("fetchUsersbyName status error",res.error.message)
+                }
+            })
+            .catch((error) => {
+                console.log('error fetchInventoriesbyName', error);
+            })
+    }
 
     const formSubmission = async (values, { resetForm }) => {
         console.log('inside form Submission', values);
@@ -83,7 +80,8 @@ const ModalTask = ({ item, handleModal }) => {
         values.createdDate = dateSeconds;
         values.leadId = taskParentRecord._id;
         values.leadName =taskParentRecord.fullName;
-        values.object = 'Lead'
+        values.object = 'Enquiry'
+        values.assignedTo = JSON.stringify(values.assignedTo)
         
         if (values.StartDate && values.EndDate) {
             values.StartDate = StartDateSec
@@ -94,6 +92,7 @@ const ModalTask = ({ item, handleModal }) => {
             values.EndDate = EndDateSec
         }
         console.log('valuse after chg', values);
+      
 
         await RequestServer(UpsertUrl, values)
 
@@ -164,11 +163,37 @@ const ModalTask = ({ item, handleModal }) => {
                                     </Grid>
                                     <Grid item xs={6} md={6}>
                                         <label htmlFor="assignedTo">AssignedTo  </label>
-                                        <Field name="assignedTo" type="text" class="form-input" />
+                                        <Autocomplete
+                                                name="assignedTo"
+                                                options={usersRecord}
+                                                value={values.userDetails}
+                                                getOptionLabel={option => option.userName || ''}
+                                                onChange={(e, value) => {
+                                                    if (!value) {
+                                                        console.log('!value', value);
+                                                        setFieldValue("assignedTo", '')
+                                                    } else {
+                                                        console.log('value', value);
+                                                        setFieldValue("assignedTo", value)
+                                                    }
+                                                }}
+                                                onInputChange={(event, newInputValue) => {
+                                                    console.log('newInputValue', newInputValue);
+                                                    if (newInputValue.length >= 3) {
+                                                        FetchUsersbyName(newInputValue);
+                                                    }
+                                                    else if (newInputValue.length === 0) {
+                                                        FetchUsersbyName(newInputValue);
+                                                    }
+                                                }}
+                                                renderInput={params => (
+                                                    <Field component={TextField} {...params} name="userId" />
+                                                )}
+                                            />
                                     </Grid>
                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="StartDate">Start Date </label> <br />
+                                            <label htmlFor="StartDate">Start Date <span className="text-danger">*</span> </label> <br />
                                             <DateTimePicker
                                                 name="StartDate"
                                                 value={values.StartDate}
@@ -179,7 +204,7 @@ const ModalTask = ({ item, handleModal }) => {
                                             />
                                         </Grid>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="EndDate">EndDate   </label> <br />
+                                            <label htmlFor="EndDate">EndDate  <span className="text-danger">*</span>  </label> <br />
                                             <DateTimePicker
                                                 renderInput={(params) => <TextField {...params} style={{width:"100%"}} error={false} />}
                                                 value={values.EndDate}

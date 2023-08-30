@@ -34,29 +34,6 @@ const ModalInventoryAccount = ({ item,handleModal }) => {
     }, [])
 
     const initialValues=AccountInitialValues;
-
-    // const initialValues = {
-    //     accountName: '',
-    //     accountNumber: '',
-    //     InventoryId: '',
-    //     annualRevenue: '',
-    //     rating: '',
-    //     type: '',
-    //     phone: '',
-    //     industry: '',
-    //     billingAddress: '',
-    //     billingCountry: '',
-    //     billingCity: '',
-    //     createdbyId: '',	
-    //     createdBy: "",
-    //     modifiedBy: "",
-    //     // modifiedBy: '',
-    //     createdDate:'',
-    //     modifiedDate: '',
-    //     // inventoryDetails:'',
-    // }
-
-
    
     const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
@@ -188,18 +165,18 @@ const ModalInventoryAccount = ({ item,handleModal }) => {
                                             </div>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="accountNumber">Account Number </label>
+                                            <label htmlFor="accountNumber">Account Number <span className="text-danger">*</span></label>
                                             <Field name="accountNumber" type="number" class="form-input" />
                                         </Grid>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="annualRevenue">Annual Revenue</label>
+                                            <label htmlFor="annualRevenue">Annual Revenue <span className="text-danger">*</span></label>
                                             <Field class="form-input" type="text" name="annualRevenue" />
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="annualRevenue" />
                                             </div>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="phone">Phone</label>
+                                            <label htmlFor="phone">Phone<span className="text-danger">*</span></label>
                                             <Field name="phone" type="phone" class="form-input" />
                                             <div style={{ color: 'red' }}>
                                                 <ErrorMessage name="phone" />

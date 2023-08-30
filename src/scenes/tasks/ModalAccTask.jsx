@@ -19,39 +19,23 @@ import { RequestServer } from '../api/HttpReq';
 import { TaskInitialValues } from "../formik/InitialValues/formValues";
 
 const UpsertUrl = `/UpsertTask`;
+const fetchUsersbyName = `/usersByName?searchKey=`;
 
 const ModalAccTask = ({ item, handleModal }) => {
 
     const [taskParentRecord, setTaskParentRecord] = useState();
     const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
-
+    const [usersRecord, setUsersRecord] = useState([]);
     const navigate = useNavigate();
     const location = useLocation();
 
     useEffect(() => {
         console.log('passed record', location.state.record.item);
         setTaskParentRecord(location.state.record.item)
-
+        FetchUsersbyName('');
     }, [])
 
     const initialValues= TaskInitialValues
-    // const initialValues = {
-    //     subject: '',
-    //     realatedTo: '',
-    //     assignedTo: '',
-    //     StartDate: '',
-    //     EndDate: '',
-    //     description: '',
-    //     // attachments: null,
-    //     object: '',
-    //     accountId: '',
-    //     accountName:'',        
-    //     createdBy:"",
-    //     modifiedBy:"",
-    //     createdbyId: '',
-    //     createdDate: '',
-    //     modifiedDate: '',
-    // }
 
     const validationSchema = Yup.object({
         subject: Yup
@@ -67,6 +51,23 @@ const ModalAccTask = ({ item, handleModal }) => {
 
     })
 
+
+    const FetchUsersbyName = (newInputValue) => {
+        RequestServer(fetchUsersbyName+newInputValue)
+            .then((res) => {
+                console.log('res fetchUsersbyName', res.data)
+                if (res.success) {
+                    setUsersRecord(res.data)
+                }else{
+                    console.log("fetchUsersbyName status error",res.error.message)
+                }
+            })
+            .catch((error) => {
+                console.log('error fetchInventoriesbyName', error);
+            })
+    }
+
+
     const formSubmission = async (values, { resetForm }) => {
         console.log('inside form Submission', values);
         let dateSeconds = new Date().getTime();
@@ -81,7 +82,8 @@ const ModalAccTask = ({ item, handleModal }) => {
         values.accountId = taskParentRecord._id;
         values.accountName = taskParentRecord.accountName;
         values.object = 'Account'
-      
+       values.assignedTo = JSON.stringify(values.assignedTo)
+        
         if (values.StartDate && values.EndDate) {
             values.StartDate = StartDateSec
             values.EndDate = EndDateSec
@@ -152,11 +154,38 @@ const ModalAccTask = ({ item, handleModal }) => {
                                     </Grid>
                                     <Grid item xs={6} md={6}>
                                         <label htmlFor="assignedTo">Assigned To  </label>
-                                        <Field name="assignedTo" type="text" class="form-input" />
+                                        <Autocomplete
+                                                name="assignedTo"
+                                                options={usersRecord}
+                                                value={values.userDetails}
+                                                getOptionLabel={option => option.userName || ''}
+                                                onChange={(e, value) => {
+                                                    if (!value) {
+                                                        console.log('!value', value);
+                                                        setFieldValue("assignedTo", '')
+                                                    } else {
+                                                        console.log('value', value);
+                                                        setFieldValue("assignedTo", value)
+                                                    }
+                                                }}
+                                                onInputChange={(event, newInputValue) => {
+                                                    console.log('newInputValue', newInputValue);
+                                                    if (newInputValue.length >= 3) {
+                                                        FetchUsersbyName(newInputValue);
+                                                    }
+                                                    else if (newInputValue.length === 0) {
+                                                        FetchUsersbyName(newInputValue);
+                                                    }
+                                                }}
+                                                renderInput={params => (
+                                                    <Field component={TextField} {...params} name="userId" />
+                                                )}
+                                            />
+
                                     </Grid>
                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="StartDate">Start Date </label> <br />
+                                            <label htmlFor="StartDate">Start Date <span className="text-danger">*</span> </label> <br />
                                             <DateTimePicker
                                                 name="StartDate"
                                                 value={values.StartDate}
@@ -167,7 +196,7 @@ const ModalAccTask = ({ item, handleModal }) => {
                                             />
                                         </Grid>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="EndDate">End Date   </label> <br />
+                                            <label htmlFor="EndDate">End Date  <span className="text-danger">*</span> </label> <br />
                                             <DateTimePicker
                                                 renderInput={(params) => <TextField {...params} style={{width:'100%'}} error={false} />}
                                                 value={values.EndDate}
@@ -178,7 +207,7 @@ const ModalAccTask = ({ item, handleModal }) => {
 
                                         </Grid>
                                     </LocalizationProvider>
-                                    <Grid item xs={12} md={12}>
+                                    {/* <Grid item xs={12} md={12}>
                                         <label htmlFor="attachments">Attachments</label>
                                         <Field name="attacgments" type="file"
                                             className="form-input"
@@ -189,7 +218,7 @@ const ModalAccTask = ({ item, handleModal }) => {
                                         <div style={{ color: 'red' }}>
                                             <ErrorMessage name="attachments" />
                                         </div>
-                                    </Grid>
+                                    </Grid> */}
                                     <Grid item xs={12} md={12}>
                                         <label htmlFor="description">Description</label>
                                         <Field as="textarea" name="description" class="form-input-textarea" style={{width:'100%'}}/>

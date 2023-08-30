@@ -37,24 +37,6 @@ const ModalInventoryOpportunity = ({ item, handleModal }) => {
 
     const initialValues=OpportunityInitialValues;
 
-    // const initialValues = {
-    //     LeadId: '',
-    //     InventoryId: '',
-    //     opportunityName: '',
-    //     type: '',
-    //     leadSource: '',
-    //     amount: '',
-    //     closeDate: '',
-    //     stage: '',
-    //     description: '',
-    //     createdbyId: '',        
-    //     createdBy:"",
-    //     modifiedBy:"",
-    //     createdDate: '',
-    //     modifiedDate: '',
-    //     leadDetails: '',
-    // }
-
     const validationSchema = Yup.object({
         opportunityName: Yup
             .string()
@@ -72,18 +54,12 @@ const ModalInventoryOpportunity = ({ item, handleModal }) => {
         let dateSeconds = new Date().getTime();
         let createDateSec = new Date(values.createdDate).getTime()
         let closeDateSec = new Date(values.closeDate).getTime()
-
-
        
         values.modifiedDate = dateSeconds;
         values.createdDate = dateSeconds;
         values.createdBy = (sessionStorage.getItem("loggedInUser"));
         values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
       
-        // values.inventoryDetails = {
-        //     propertyName: inventoryParentRecord.propertyName,
-        //     id: inventoryParentRecord._id
-        // }
         values.InventoryId = inventoryParentRecord._id;
         values.InventoryName =inventoryParentRecord.propertyName;
      
@@ -220,7 +196,7 @@ const ModalInventoryOpportunity = ({ item, handleModal }) => {
                                             />
                                         </Grid>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="stage">Opportunity Stage</label>
+                                            <label htmlFor="stage">Deal Stage</label>
                                             <Field name="stage" component={CustomizedSelectForFormik} className="form-customSelect">
                                                 <MenuItem value=""><em>None</em></MenuItem>
                                                 {
@@ -242,7 +218,7 @@ const ModalInventoryOpportunity = ({ item, handleModal }) => {
                                             </Field>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="leadSource"> Lead Source</label>
+                                            <label htmlFor="leadSource"> Enquiry Source</label>
                                             <Field name="leadSource" component={CustomizedSelectForFormik} className="form-customSelect">
                                                 <MenuItem value=""><em>None</em></MenuItem>
                                                 {
@@ -253,7 +229,7 @@ const ModalInventoryOpportunity = ({ item, handleModal }) => {
                                             </Field>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="closeDate">Close Date</label>
+                                            <label htmlFor="closeDate">Close Date<span className="text-danger">*</span></label>
                                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                 <DatePicker
                                                     name="closeDate"

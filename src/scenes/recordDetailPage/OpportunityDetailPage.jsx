@@ -237,7 +237,7 @@ const OpportunityDetailPage = ({ item }) => {
                                 <Form className='my-form'>
                                     <Grid container spacing={2}>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="opportunityName" >Opportunity Name<span className="text-danger">*</span> </label>
+                                            <label htmlFor="opportunityName" >Deal Name<span className="text-danger">*</span> </label>
                                             <Field name='opportunityName' type="text" class="form-input"
                                                 disabled={showNew ? !permissionValues.create : !permissionValues.edit}
                                             />
@@ -281,7 +281,7 @@ const OpportunityDetailPage = ({ item }) => {
                                             />
                                         </Grid>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="LeadId">Lead Name </label>
+                                            <label htmlFor="LeadId">Enquiry Name </label>
                                             <Autocomplete
                                                 name="LeadId"
                                                 options={leadsRecords}
@@ -318,7 +318,7 @@ const OpportunityDetailPage = ({ item }) => {
                                             />
                                         </Grid>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="stage">Opportunity Stage</label>
+                                            <label htmlFor="stage">Deal Stage</label>
                                             <Field name="stage" component={CustomizedSelectForFormik}
                                                 disabled={showNew ? !permissionValues.create : !permissionValues.edit}
                                             >
@@ -344,7 +344,7 @@ const OpportunityDetailPage = ({ item }) => {
                                             </Field>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="leadSource"> Lead Source</label>
+                                            <label htmlFor="leadSource"> Enquiry Source</label>
                                             <Field name="leadSource" component={CustomizedSelectForFormik}
                                                 disabled={showNew ? !permissionValues.create : !permissionValues.edit}
                                             >

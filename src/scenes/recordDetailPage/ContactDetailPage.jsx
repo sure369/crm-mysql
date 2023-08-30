@@ -225,9 +225,9 @@ const ContactDetailPage = ({ item }) => {
                                     <Tooltip title="Send Email">
                                         <IconButton> <EmailIcon sx={{ color: '#DB4437' }} onClick={handlesendEmail} /> </IconButton>
                                     </Tooltip>
-                                    {/* <Tooltip title="Whatsapp">
+                                    <Tooltip title="Whatsapp">
                                         <IconButton> <WhatsAppIcon sx={{ color: '#34A853' }} onClick={handlesendWhatsapp} /> </IconButton>
-                                    </Tooltip> */}
+                                    </Tooltip>
                                 </>
                                 : ''
                         }
@@ -334,7 +334,7 @@ const ContactDetailPage = ({ item }) => {
                                                 </div>
                                             </Grid>
                                             <Grid item xs={6} md={6}>
-                                                <label htmlFor="dob">Date of Birth</label><br />
+                                                <label htmlFor="dob">Date of Birth <span className="text-danger">*</span></label><br />
                                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                     <DatePicker
                                                         name="dob"

@@ -21,7 +21,7 @@ import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 const InventoryRelatedItems = ({ item }) => {
 
   const OBJECT_API_account="Account"
-  const OBJECT_API_opportunity="Opportunity"
+  const OBJECT_API_opportunity="Deals"
   const opportunityDeleteURL = `/deleteOpportunity?code=`;
   const accountDeleteURL = `/deleteAccount?code=`;
   const urlgetOpportunitiesbyInvid = `/getOpportunitiesbyInvid?searchId=`;
@@ -75,7 +75,7 @@ const InventoryRelatedItems = ({ item }) => {
         setPermissionValuesAccount(err)
       })
     }
-    else if(userRoleDptOpportunity){
+    if(userRoleDptOpportunity){
       apiCheckPermission(userRoleDptOpportunity)
       .then(res=>{
         console.log(res,"res contact apiCheckPermission")

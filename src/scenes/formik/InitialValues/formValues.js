@@ -18,6 +18,14 @@ export const AccountInitialValues = {
 };
 
 export const AccountSavedValues = (singleAccount) => {
+  const inventoryDetails =
+    typeof singleAccount?.InventoryDetails === "object"
+      ? singleAccount.InventoryDetails
+      : {
+          id: singleAccount?.InventoryId ?? "",
+          propertyName: singleAccount?.InventoryName ?? "",
+        };
+
   return {
     accountName: singleAccount?.accountName ?? "",
     accountNumber: singleAccount?.accountNumber ?? "",
@@ -33,7 +41,7 @@ export const AccountSavedValues = (singleAccount) => {
     createdDate: new Date(singleAccount?.createdDate).toLocaleString(),
     modifiedDate: new Date(singleAccount?.modifiedDate).toLocaleString(),
     _id: singleAccount?._id ?? "",
-    inventoryDetails: singleAccount?.InventoryDetails ?? "",
+    inventoryDetails: inventoryDetails,
     InventoryId: singleAccount?.InventoryId ?? "",
     InventoryName: singleAccount?.InventoryName ?? "",
     createdBy: (() => {
@@ -74,6 +82,14 @@ export const ContactInitialValues = {
 };
 
 export const ContactSavedValues = (singleContact) => {
+  const accountDetails =
+  typeof singleContact?.accountDetails === "object"
+    ? singleContact.accountDetails
+    : {
+        id: singleContact?.AccountId ?? "",
+        accountName: singleContact?.AccountName ?? "",
+      };
+
   return {
     AccountId: singleContact?.AccountId ?? "",
     salutation: singleContact?.salutation ?? "",
@@ -97,7 +113,7 @@ export const ContactSavedValues = (singleContact) => {
     createdDate: new Date(singleContact?.createdDate).toLocaleString(),
     modifiedDate: new Date(singleContact?.modifiedDate).toLocaleString(),
     _id: singleContact?._id ?? "",
-    accountDetails: singleContact?.accountDetails ?? "",
+    accountDetails: accountDetails,
     createdBy: (() => {
       try {
         return JSON.parse(singleContact?.createdBy);
@@ -184,12 +200,12 @@ export const LeadInitialValues = {
   email: "",
   linkedinProfile: "",
   location: "",
-  appointmentDate: "",
+  appointmentDate:"",
   demo: "",
   month: "",
   remarks: "",
-  primaryPhone: "",
-  secondaryPhone: "",
+  primaryPhone: '',
+  secondaryPhone:"",
   createdDate: "",
   modifiedDate: "",
   createdBy: "",
@@ -249,7 +265,7 @@ export const OpportunityInitialValues = {
   type: "",
   leadSource: "",
   amount: "",
-  closeDate: "",
+  closeDate: undefined,
   stage: "",
   description: "",
   createdbyId: "",
@@ -326,7 +342,7 @@ export const TaskSavedValues = (singleTask) => {
   return {
     subject: singleTask?.subject ?? "",
     relatedto: singleTask?.relatedto ?? "",
-    assignedTo: singleTask?.assignedTo ?? "",
+    // assignedTo: singleTask?.assignedTo ?? "",
     description: singleTask?.description ?? "",
     // attachments: singleTask?.attachments ?? "",
     object: singleTask?.object ?? "",
@@ -349,6 +365,13 @@ export const TaskSavedValues = (singleTask) => {
     accountDetails: singleTask?.accountDetails ?? "",
     leadDetails: singleTask?.leadDetails ?? "",
     opportunityDetails: singleTask?.opportunityDetails ?? "",
+    assignedTo: (() => {
+      try {
+        return JSON.parse(singleTask?.assignedTo );
+      } catch {
+        return "";
+      }
+    })(),
     createdBy: (() => {
       try {
         return JSON.parse(singleTask?.createdBy);

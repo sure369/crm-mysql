@@ -72,13 +72,25 @@ function AppNavbar(props) {
   const open = Boolean(anchorEl);
   
   const navigate = useNavigate();
-  const [tableNamearr, settableNameArr] = useState([]);
+  const [tableNamearr, settableNameArr] = useState( [
+    {title: 'Enquiry', toNav: 'list/Enquiry'},
+    {title: 'Deal', toNav: 'list/Deals'},
+    {title: 'Account', toNav: 'list/Account'}, 
+    {title: 'Contact', toNav: 'list/Contact'}, 
+    {title: 'Inventory', toNav: 'list/Inventory'},
+    {title: 'Event', toNav: 'list/Event'},
+    {title: 'Dashboard', toNav: 'list/Dashboard'}, 
+    {title: 'User', toNav: 'list/User'},
+    {title: 'Files', toNav: 'list/File'},
+    {title: 'Permissions', toNav: 'list/Permissions'}, 
+    {title: 'Role', toNav: 'list/Role'}
+    ]);
   const loggedInUserData = JSON.parse(sessionStorage.getItem('loggedInUser'))
 
   console.log(loggedInUserData, "loggedInUserData")
 
   useEffect(() => {
-    fetchTableNames()
+    // fetchTableNames()
   }, []);
 
   const fetchTableNames=()=>{

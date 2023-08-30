@@ -71,6 +71,7 @@ const AccountDetailPage = ({ item }) => {
     const initialValues = AccountInitialValues
     const savedValues = AccountSavedValues(singleAccount)
 
+    console.log(savedValues,"savedVALUE");
     const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
     const validationSchema = Yup.object({
@@ -83,12 +84,18 @@ const AccountDetailPage = ({ item }) => {
             .string()
             .required('Required'),
         phone: Yup
-            .string()
+            .string()            
+            .required('required')
             .matches(phoneRegExp, 'Phone number is not valid')
             .min(10, "Phone number must be 10 characters, its short")
             .max(10, "Phone number must be 10 characters,its long"),
         annualRevenue: Yup
             .string()
+            .required('required')
+            .matches(/^[0-9]+$/, "Must be only digits"),
+        accountNumber: Yup
+            .string()
+            .required('required')
             .matches(/^[0-9]+$/, "Must be only digits")
     })
 
@@ -245,7 +252,7 @@ const AccountDetailPage = ({ item }) => {
                                             </div>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="accountNumber">Account Number </label>
+                                            <label htmlFor="accountNumber">Account Number  <span className="text-danger">*</span></label>
                                             <Field name="accountNumber" type="number" class="form-input"
                                                 disabled={showNew ? !permissionValues.create : !permissionValues.edit} />
                                         </Grid>
@@ -290,7 +297,7 @@ const AccountDetailPage = ({ item }) => {
                                             />
                                         </Grid>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="annualRevenue">Annual Revenue</label>
+                                            <label htmlFor="annualRevenue">Annual Revenue  <span className="text-danger">*</span></label>
                                             <Field class="form-input" type="text" name="annualRevenue"
                                                 disabled={showNew ? !permissionValues.create : !permissionValues.edit} />
                                             <div style={{ color: 'red' }}>
@@ -298,7 +305,7 @@ const AccountDetailPage = ({ item }) => {
                                             </div>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="phone">Phone</label>
+                                            <label htmlFor="phone">Phone  <span className="text-danger">*</span></label>
                                             <Field name="phone" type="phone" class="form-input"
                                                 disabled={showNew ? !permissionValues.create : !permissionValues.edit} />
                                             <div style={{ color: 'red' }}>

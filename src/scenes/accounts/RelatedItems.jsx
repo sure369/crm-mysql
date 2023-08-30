@@ -20,7 +20,7 @@ import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
 const AccountRelatedItems = ({ item }) => {
 
-  const OBJECT_API_task="Task"
+  const OBJECT_API_task="Enquiry"
   const OBJECT_API_contact="Contact"
   const taskDeleteURL = `/deleteTask?code=`;
   const urlgetTaskbyAccountId = `/getTaskbyAccountId?searchId=`;
@@ -100,6 +100,7 @@ const AccountRelatedItems = ({ item }) => {
     RequestServer(urlgetTaskbyAccountId + accId )
       .then((res) => {
         if (res.success) {
+          console.log(res,"res data in get task by acc id");
           setRelatedTask(res.data);
           setTaskNoOfPages(Math.ceil(res.data.length / taskItemsPerPage));
           setTaskPerPage(1)

@@ -34,23 +34,6 @@ const ModalConAccount = ({ item, handleModal }) => {
 
     const initialValues=ContactInitialValues;
 
-    // const initialValues = {
-    //     AccountId: "",
-    //     salutation: '',
-    //     firstName: '',
-    //     lastName: '',
-    //     fullName: '',
-    //     dob: '',
-    //     phone: '',
-    //     department: '',
-    //     leadSource: '',
-    //     email: '',
-    //     fullAddress: '',
-    //     description: '',
-    //     createdbyId: '',
-    //     createdDate: '',
-    //     modifiedDate: '',
-    // }
     const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
     const validationSchema = Yup.object({
@@ -66,6 +49,7 @@ const ModalConAccount = ({ item, handleModal }) => {
             .max(30, 'lastName must be less than 15 characters'),
         phone: Yup
             .string()
+            .required('Required')
             .matches(phoneRegExp, 'Phone number is not valid')
             .min(10, "Phone number must be 10 characters, its short")
             .max(10, "Phone number must be 10 characters,its long"),
@@ -88,10 +72,6 @@ const ModalConAccount = ({ item, handleModal }) => {
         values.createdBy = (sessionStorage.getItem("loggedInUser"));
         values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
        
-        // values.accountDetails={
-        //     accountName:accountParentRecord.accountName,
-        //     id:accountParentRecord._id
-        // }
         values.fullName = values.firstName + ' ' + values.lastName;
         if (values.dob) {
             values.dob = dobSec;
@@ -180,7 +160,7 @@ const ModalConAccount = ({ item, handleModal }) => {
                                             </Grid>
 
                                             <Grid item xs={6} md={6}>
-                                                <label htmlFor="phone">Phone</label>
+                                                <label htmlFor="phone">Phone<span className="text-danger">*</span></label>
                                                 <Field name="phone" type="phone" class="form-input" />
                                                 <div style={{ color: 'red' }}>
                                                     <ErrorMessage name="phone" />
@@ -189,7 +169,7 @@ const ModalConAccount = ({ item, handleModal }) => {
                                             <Grid item xs={6} md={6}>
                                                 {/* <label htmlFor="dob">Date of Birth</label>
                                                 <Field name="dob" type="date" class="form-input" /> */}
-                                                <label htmlFor="dob">Date of Birth</label><br />
+                                                <label htmlFor="dob">Date of Birth <span className="text-danger">*</span></label><br />
                                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                     <DatePicker
                                                         name="dob"
@@ -210,7 +190,7 @@ const ModalConAccount = ({ item, handleModal }) => {
                                                 </div>
                                             </Grid>
                                             <Grid item xs={6} md={6}>
-                                                <label htmlFor="leadSource"> lead Source</label>
+                                                <label htmlFor="leadSource"> Enquiry Source</label>
                                                 <Field name="leadSource" component={CustomizedSelectForFormik} className="form-customSelect">
                                                 <MenuItem value=""><em>None</em></MenuItem>
                                                     {

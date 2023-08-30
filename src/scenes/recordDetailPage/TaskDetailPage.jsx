@@ -28,6 +28,8 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
     const fetchAccountUrl = `/accountsname?searchKey=`;
     const fetchLeadUrl = `/LeadsbyName?searchKey=`;
     const fetchOpportunityUrl = `/opportunitiesbyName?searchKey=`;
+    const fetchUsersbyName = `/usersByName?searchKey=`;
+
 
     const [singleTask, setSingleTask] = useState();
     const [showNew, setshowNew] = useState()
@@ -42,7 +44,7 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
     const [showModal1, setShowModal1] = useState(showModel)
     const [permissionValues, setPermissionValues] = useState({})
     const [autocompleteReadOnly, setAutoCompleteReadOnly] = useState(false)
-
+    const [usersRecord, setUsersRecord] = useState([]);
     const userRoleDpt = getLoginUserRoleDept(OBJECT_API)
     console.log(userRoleDpt, "userRoleDpt")
 
@@ -53,7 +55,7 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
         console.log('true', !location.state.record.item);
         setshowNew(!location.state.record.item)
         fetchObjectPermissions();        
-
+        FetchUsersbyName('');
         if (location.state.record.item) {
             console.log('inside condition')
             callEvent(location.state.record.item.object)
@@ -81,6 +83,7 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
     const initialValues = TaskInitialValues
     const savedValues = TaskSavedValues(singleTask)
 
+    console.log(savedValues,"savedValues");
     const validationSchema = Yup.object({
         subject: Yup
             .string()
@@ -240,6 +243,22 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
         }
     }
 
+    const FetchUsersbyName = (newInputValue) => {
+        RequestServer(fetchUsersbyName+newInputValue)
+            .then((res) => {
+                console.log('res fetchUsersbyName', res.data)
+                if (res.success) {
+                    setUsersRecord(res.data)
+                }else{
+                    console.log("fetchUsersbyName status error",res.error.message)
+                }
+            })
+            .catch((error) => {
+                console.log('error fetchInventoriesbyName', error);
+            })
+    }
+
+
     const FetchObjectsbyName = (newInputValue, url) => {
 
         console.log('passed url', url)
@@ -381,9 +400,34 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
                                     </Grid>
                                     <Grid item xs={6} md={6}>
                                         <label htmlFor="assignedTo">Assigned To  </label>
-                                        <Field name="assignedTo" type="text" class="form-input"
-                                            disabled={showNew ? !permissionValues.create : !permissionValues.edit}
-                                        />
+                                        <Autocomplete
+                                                name="assignedTo"
+                                                options={usersRecord}
+                                                readOnly={autocompleteReadOnly}
+                                                value={values.assignedTo}
+                                                getOptionLabel={option => option.userName || ''}
+                                                onChange={(e, value) => {
+                                                    if (!value) {
+                                                        console.log('!value', value);
+                                                        setFieldValue("assignedTo", '')
+                                                    } else {
+                                                        console.log('value', value);
+                                                        setFieldValue("assignedTo", value)
+                                                    }
+                                                }}
+                                                onInputChange={(event, newInputValue) => {
+                                                    console.log('newInputValue', newInputValue);
+                                                    if (newInputValue.length >= 3) {
+                                                        FetchUsersbyName(newInputValue);
+                                                    }
+                                                    else if (newInputValue.length === 0) {
+                                                        FetchUsersbyName(newInputValue);
+                                                    }
+                                                }}
+                                                renderInput={params => (
+                                                    <Field component={TextField} {...params} name="assignedTo" />
+                                                )}
+                                            />
                                     </Grid>
                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                         <Grid item xs={6} md={6}>

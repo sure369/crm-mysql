@@ -24,7 +24,7 @@ import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
 const OpportunityRelatedItems = ({ item }) => {
 
-  const OBJECT_API_task="Task"
+  const OBJECT_API_task="Enquiry"
   const taskDeleteURL = `/deleteTask?code=`;
   const urlTaskbyOppId = `/getTaskbyOpportunityId?searchId=`;
   

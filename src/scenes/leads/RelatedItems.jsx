@@ -23,8 +23,8 @@ import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
 const LeadRelatedItems = ({ item }) => {
 
-  const OBJECT_API_task="Task"
-  const OBJECT_API_opportunity="Opportunity"
+  const OBJECT_API_task="Enquiry"
+  const OBJECT_API_opportunity="Deals"
   const taskDeleteURL = `/deleteTask?code=`;
   const opportunityDeleteURL = `/deleteOpportunity?code=`;
   const urlTaskbyLeadId = `/getTaskbyLeadId?searchId=`;
@@ -65,9 +65,10 @@ const LeadRelatedItems = ({ item }) => {
     getOpportunitybyLeadId(location.state.record.item._id)
    
     if(userRoleDptTask){
+      console.log("inside userRoleDpt Task if");
       apiCheckPermission(userRoleDptTask)
       .then(res=>{
-        console.log(res,"res task apiCheckPermission")
+        console.log(res,"res task apiCheckPermission apk")
         setPermissionValuesTask(res);
       })
       .catch(err=>{
@@ -75,14 +76,16 @@ const LeadRelatedItems = ({ item }) => {
         setPermissionValuesTask(err)
       })
     }
-    else if(userRoleDptopportunity){
+    if(userRoleDptopportunity){
+      
+      console.log("inside userRoleDpt opportunity if");
       apiCheckPermission(userRoleDptopportunity)
       .then(res=>{
-        console.log(res,"res contact apiCheckPermission")
+        console.log(res,"res deal apiCheckPermission apk")
         setPermissionValuesOpportunity(res);
       })
       .catch(err=>{
-        console.log(err,"res contact apiCheckPermission")
+        console.log(err,"res deal apiCheckPermission")
         setPermissionValuesOpportunity(err)
       })
     }
@@ -96,10 +99,11 @@ const LeadRelatedItems = ({ item }) => {
 
   const getTasksbyLeadId = (leadsId) => {
 
-    console.log('lead id', leadsId);
+    console.log('lead id get TasksbyLeadId', leadsId);
     RequestServer( urlTaskbyLeadId + leadsId)
       .then((res) => {
         if (res.success) {
+          console.log(res.data,"res get getTasksbyLeadId");
           setRelatedTask(res.data);
           setTaskNoOfPages(Math.ceil(res.data.length / taskItemsPerPage));
           setTaskPerPage(1)
@@ -116,6 +120,7 @@ const LeadRelatedItems = ({ item }) => {
     RequestServer( urlOppbyLeadId + leadsId)
     .then((res) => {
       if (res.success) {
+        console.log(res.data,"res  get getOpportunitybyLeadId");
         setRelatedOpportunity(res.data);
               setOpportunityNoOfPages(Math.ceil(res.data.length / opportunityItemsPerPage));
               setOpportunityPerPage(1)

@@ -81,6 +81,7 @@ const LeadDetailPage = ({ item }) => {
             .max(25, 'lastName must be less than 15 characters'),
         phone: Yup
             .string()
+            .required('Required')
             .matches(phoneRegex, 'Phone number is not valid')
             .min(10, "Phone number must be 10 characters, its short")
             .max(10, "Phone number must be 10 characters,its long"),
@@ -175,7 +176,7 @@ const LeadDetailPage = ({ item }) => {
         <Grid item xs={12} style={{ margin: "20px" }}>
             <div style={{ textAlign: "center", marginBottom: "10px" }}>
                 {
-                    showNew ? <h3>New Lead</h3> : <h3>Lead Detail Page </h3>
+                    showNew ? <h3>New Enquiry</h3> : <h3>Enquiry Detail Page </h3>
                 }
             </div>
             <div>
@@ -222,8 +223,8 @@ const LeadDetailPage = ({ item }) => {
 
                                         
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="phone">Phone</label>
-                                            <Field name="phone" type="phone" class="form-input" 
+                                            <label htmlFor="phone">Phone<span className="text-danger">*</span></label>
+                                            <Field name="phone" type="text" class="form-input" 
                                              disabled={showNew?!permissionValues.create :!permissionValues.edit}
                                              />
                                             <div style={{ color: 'red' }}>
@@ -241,7 +242,7 @@ const LeadDetailPage = ({ item }) => {
                                             </div>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="leadSource"> Lead Source</label>
+                                            <label htmlFor="leadSource"> Enquiry Source</label>
                                             <Field name="leadSource" component={CustomizedSelectForFormik} 
                                              disabled={showNew?!permissionValues.create :!permissionValues.edit}
                                              >
@@ -267,7 +268,7 @@ const LeadDetailPage = ({ item }) => {
                                             </Field>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="leadStatus"> Lead Status <span className="text-danger">*</span> </label>
+                                            <label htmlFor="leadStatus"> Enquiry Status <span className="text-danger">*</span> </label>
                                             <Field name="leadStatus" component={CustomizedSelectForFormik} 
                                              disabled={showNew?!permissionValues.create :!permissionValues.edit}
                                              >
@@ -304,7 +305,7 @@ const LeadDetailPage = ({ item }) => {
                                              />
                                         </Grid>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="appointmentDate">Appointment Date</label>
+                                            <label htmlFor="appointmentDate">Appointment Date<span className="text-danger">*</span></label>
                                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                     <DatePicker
                                                         name="appointmentDate"
@@ -346,7 +347,7 @@ const LeadDetailPage = ({ item }) => {
                                             </Field>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="primaryPhone">Primary Phone</label>
+                                            <label htmlFor="primaryPhone">Primary Phone<span className="text-danger">*</span></label>
                                             <Field name="primaryPhone" type="text" class="form-input"
                                              disabled={showNew?!permissionValues.create :!permissionValues.edit}
                                              />
@@ -355,7 +356,7 @@ const LeadDetailPage = ({ item }) => {
                                             </div>
                                         </Grid>
                                         <Grid item xs={6} md={6}>
-                                            <label htmlFor="secondaryPhone">Secondary Phone</label>
+                                            <label htmlFor="secondaryPhone">Secondary Phone<span className="text-danger">*</span></label>
                                             <Field name="secondaryPhone" type="text" class="form-input" 
                                              disabled={showNew?!permissionValues.create :!permissionValues.edit}
                                              />

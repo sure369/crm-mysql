@@ -330,9 +330,9 @@ const Leads = () => {
                             />{" "}
                           </IconButton>
                         </Tooltip>
-                        {/* <Tooltip title="Whatsapp">
+                        <Tooltip title="Whatsapp">
                     <IconButton> <WhatsAppIcon sx={{ color: '#34A853' }} onClick={handlesendWhatsapp} /> </IconButton>
-                  </Tooltip> */}
+                  </Tooltip>
                         <Tooltip title="Delete Selected">
                           <IconButton>
                             <DeleteIcon
