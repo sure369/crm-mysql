@@ -20,8 +20,8 @@ import queryString from 'query-string'
 const TaskRelatedItems = ({ item }) => {
 
   const OBJECT_API = OBJECT_API_EVENT
-  const URL_getRelatedFiles = '/related/file/'
-  const URL_deleteRelatedFiles = `/deletefiles`
+  const URL_getRelatedFiles = '/related/file?'
+  const URL_deleteRelatedFiles = `/deletefiles/`
 
 
   const navigate = useNavigate();
@@ -36,6 +36,7 @@ const TaskRelatedItems = ({ item }) => {
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, title: "", subTitle: "", });
   const [notify, setNotify] = useState({ isOpen: false, message: "", type: "", });
 
+  console.log(taskRecord,"taskRecord");
   useEffect(() => {
     console.log(" Task Related Item", location.state.record.item);
     if (location.state.record.item) {
@@ -52,7 +53,7 @@ const TaskRelatedItems = ({ item }) => {
     console.log(queryObj,"queryObj")
     RequestServer( URL_getRelatedFiles + queryObj)
       .then((res) => {
-        console.log(res, "index page res URL_getRelatedFiles");
+        console.log(res, "index page res fetchRelatedFiles");
         if (res.success) {
           setRecords(res.data);
           setFetchError(null);
@@ -62,6 +63,7 @@ const TaskRelatedItems = ({ item }) => {
         }
       })
       .catch((err) => {
+        console.log("fetchRelatedFiles");
         setFetchError(err.message);
       })
       .finally(() => {
@@ -75,7 +77,7 @@ const TaskRelatedItems = ({ item }) => {
 
   const handleFileModalClose = () => {
     setModalFileUpload(false)
-    fetchRelatedFiles(taskRecord._id,OBJECT_API)
+    fetchRelatedFiles(taskRecord.taskId,OBJECT_API)
   }
 
   const handleViewFileClick = (item) => {
@@ -97,7 +99,7 @@ const TaskRelatedItems = ({ item }) => {
   const onConfirmContactCardDelete = (recId) => {
     console.log('req delete rec recId', recId);
 
-    RequestServer(apiMethods.delete, URL_deleteRelatedFiles + recId)
+    RequestServer(URL_deleteRelatedFiles + recId)
       .then((res) => {
         if (res.success) {
           setNotify({
@@ -128,10 +130,14 @@ const TaskRelatedItems = ({ item }) => {
           ...confirmDialog,
           isOpen: false
         })
-        fetchRelatedFiles()
+        fetchRelatedFiles(taskRecord.taskId,OBJECT_API)
       })
   };
 
+  function bytesToKB(bytes) {
+    return (bytes / 1024).toFixed(2) + 'KB';
+  }
+  
 
   return (
     <>
@@ -148,7 +154,7 @@ const TaskRelatedItems = ({ item }) => {
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <Typography variant="h4">Notes and Attachments </Typography>
+          <Typography variant="h4">Notes and Attachments ({records.length}) </Typography>
         </AccordionSummary>
         <AccordionDetails>
           <div style={{ textAlign: "end", marginBottom: "5px" }}>
@@ -168,13 +174,17 @@ const TaskRelatedItems = ({ item }) => {
             maxHeight: 300,
             '& ul': { padding: 0 },
           }}>
-            {records && records.map((item, index) => (
+            {records && records.map((item, index) =>{
+
+              const bytes = bytesToKB(item.size)
+            return(
+
               <ListItem sx={{ maxHeight: "200px", marginTop: "-10px" }}>
                 {index + 1}
 
                 <ListItemButton
                   onClick={() => handleViewFileClick(item)}
-                  title={`${item.filename}`}
+                  title={`${item.fileName}`}
                 >
                   <ListItemIcon>
                     <FilePresentIcon />
@@ -182,8 +192,8 @@ const TaskRelatedItems = ({ item }) => {
 
                   <ListItemText
                     sx={{ wordBreak: "break-all" }}
-                    primary={`${item.filename}`}
-                    secondary={`${item.originalname}`}
+                    primary={`${item.fileName}`}
+                    secondary={`${bytes}`}
                   ></ListItemText>
 
                 </ListItemButton>
@@ -193,7 +203,7 @@ const TaskRelatedItems = ({ item }) => {
                   onClick={(e) => handleChartFileDelete(e, item._id)}
                 />
               </ListItem>
-            ))}
+            )})}
           </List>
         </AccordionDetails>
       </Accordion>

@@ -33,6 +33,7 @@ function DashBoardRecords({ handleRowClick, formSubmitted }) {
             .then(res => {
                 console.log('fetched Dashboard data is ', res.data);
                 setRecords(res.data)
+                handleRowClick(res.data[0])
             })
             .catch(err => {
                 console.log('Error Fetching Dashboard data ', err);

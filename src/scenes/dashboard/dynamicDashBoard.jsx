@@ -58,7 +58,7 @@ function DynamicHomePage() {
                                 </AccordionDetails>
                             </Accordion>
 
-                            <Accordion sx={{ borderRadius: "5px", margin: "10px" }}>
+                            <Accordion sx={{ borderRadius: "5px", margin: "10px" }} defaultExpanded={true} >
                                 <AccordionSummary expandIcon={<ExpandMore />}
                                     aria-label="Expand" aria-controls="-content" id="-header"
                                 >
