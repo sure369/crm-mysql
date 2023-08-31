@@ -47,6 +47,7 @@ const TaskRelatedItems = ({ item }) => {
   const fetchRelatedFiles = (id,OBJECT_API) => {
     console.log("inside fetchRelatedFiles")
     let obj={id:id,object:OBJECT_API}
+    console.log(obj,"obj queryObj");
     let queryObj=queryString.stringify(obj)
     console.log(queryObj,"queryObj")
     RequestServer( URL_getRelatedFiles + queryObj)

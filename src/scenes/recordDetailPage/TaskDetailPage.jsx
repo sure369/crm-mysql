@@ -23,7 +23,7 @@ import { getLoginUserRoleDept } from '../Auth/userRoleDept';
 
 const TaskDetailPage = ({ item, handleModal, showModel }) => {
 
-    const OBJECT_API = "Task"
+    const OBJECT_API = "Event"
     const UpsertUrl = `/UpsertTask`;
     const fetchAccountUrl = `/accountsname?searchKey=`;
     const fetchLeadUrl = `/LeadsbyName?searchKey=`;
@@ -106,7 +106,7 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
             values.createdDate = dateSeconds;
             values.createdBy = (sessionStorage.getItem("loggedInUser"));
             values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
-
+            values.assignedTo = JSON.stringify(values.assignedTo)
             if (values.StartDate && values.EndDate) {
                 values.StartDate = StartDateSec
                 values.EndDate = EndDateSec
@@ -120,12 +120,12 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
                 delete values.LeadId;
                 values.accountId = values.accountDetails.id;
                 values.accountName = values.accountDetails.accountName;
-            } else if (values.object === 'Opportunity') {
+            } else if (values.object === 'Deals') {
                 delete values.AccountId;
                 delete values.LeadId;
                 values.opportunityId = values.opportunityDetails.id;
                 values.opportunityName = values.opportunityDetails.opportunityName
-            } else if (values.object === 'Lead') {
+            } else if (values.object === 'Enquiry') {
                 console.log('else')
                 delete values.OpportunityId;
                 delete values.AccountId;
@@ -145,7 +145,7 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
             values.createdDate = createDateSec
             values.createdBy = singleTask.createdBy;
             values.modifiedBy = (sessionStorage.getItem("loggedInUser"));
-
+            values.assignedTo = JSON.stringify(values.assignedTo)
             if (values.StartDate && values.EndDate) {
                 values.StartDate = StartDateSec
                 values.EndDate = EndDateSec
@@ -164,14 +164,14 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
                 values.accountId = values.accountDetails.id;
                 values.accountName = values.accountDetails.accountName;
 
-            } else if (values.object === 'Opportunity') {
+            } else if (values.object === 'Deals') {
                 delete values.AccountId;
                 delete values.LeadId;
                 delete values.leadDetails
                 delete values.accountDetails
                 values.opportunityId = values.opportunityDetails.id;
                 values.opportunityName = values.opportunityDetails.opportunityName
-            } else if (values.object === 'Lead') {
+            } else if (values.object === 'Enquiry') {
                 console.log('inside')
                 delete values.OpportunityId;
                 delete values.AccountId;
@@ -234,7 +234,7 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
 
         console.log('inside call event', initialValues.object)
         console.log("call event", e)
-        let url1 = e === 'Account' ? fetchAccountUrl : e === 'Lead' ? fetchLeadUrl : e === 'Opportunity' ? fetchOpportunityUrl : null
+        let url1 = e === 'Account' ? fetchAccountUrl : e === 'Enquiry' ? fetchLeadUrl : e === 'Deals' ? fetchOpportunityUrl : null
         setUrl(url1)
         FetchObjectsbyName('', url1);
         if (url == null) {
@@ -287,7 +287,7 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
         <Grid item xs={12} style={{ margin: "20px" }}>
             <div style={{ textAlign: "center", marginBottom: "10px" }}>
                 {
-                    showNew ? <h3>New Task</h3> : <h3>Task Detail Page </h3>
+                    showNew ? <h3>New Event</h3> : <h3>Event Detail Page </h3>
                 }
             </div>
 
@@ -350,10 +350,6 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
                                             options={relatedRecNames}
                                             value={values.accountDetails || values.opportunityDetails || values.leadDetails}
                                             getOptionLabel={option => option.leadName || option.accountName || option.opportunityName || ''}
-
-                                            // isOptionEqualToValue={(option, value) =>
-                                            //     option.id === value
-                                            // }
                                             onChange={(e, value) => {
                                                 console.log('inside onchange values', value);
                                                 if (!value) {
@@ -361,10 +357,10 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
                                                     if (values.object === 'Account') {
                                                         // setFieldValue('AccountId', '')
                                                         setFieldValue('accountDetails', '')
-                                                    } else if (values.object === 'Opportunity') {
+                                                    } else if (values.object === 'Deals') {
                                                         // setFieldValue('OpportunityId', '')
                                                         setFieldValue('opportunityDetails', '')
-                                                    } else if (values.object === 'Lead') {
+                                                    } else if (values.object === 'Enquiry') {
                                                         // setFieldValue('LeadId', '')
                                                         setFieldValue('leadDetails', '')
                                                     }
@@ -374,11 +370,11 @@ const TaskDetailPage = ({ item, handleModal, showModel }) => {
                                                     if (values.object === 'Account') {
                                                         // setFieldValue('AccountId', value.id)
                                                         setFieldValue('accountDetails', value)
-                                                    } else if (values.object === 'Opportunity') {
+                                                    } else if (values.object === 'Deals') {
                                                         setFieldValue('opportunityId', value.id)
                                                         setFieldValue('opportunityName', value.opportunityName)
                                                         setFieldValue('opportunityDetails', value)
-                                                    } else if (values.object === 'Lead') {
+                                                    } else if (values.object === 'Enquiry') {
                                                         // setFieldValue('LeadId', value.id)
                                                         setFieldValue('leadDetails', value)
                                                     }

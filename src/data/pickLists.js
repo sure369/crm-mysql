@@ -168,8 +168,8 @@ export const TaskSubjectPicklist = [
 
 export const TaskObjectPicklist = [
   // {text:'None',value:''},
-  { text: "Lead", value: "Lead" },
-  { text: "Opportunity", value: "Opportunity" },
+  { text: "Enquiry", value: "Enquiry" },
+  { text: "Deals", value: "Deals" },
   { text: "Account", value: "Account" },
 ];
 

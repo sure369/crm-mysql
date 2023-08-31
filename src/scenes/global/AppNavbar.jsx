@@ -135,8 +135,9 @@ function AppNavbar(props) {
     navigate('/')
   }
 
-  const handleMenuItemClick = (title) => {
-    setSelected(title);
+  const handleMenuItemClick = (page) => {
+    navigate( page.toNav)
+    setSelected(page.title);
     handleCloseNavMenu();
   }
 
@@ -209,19 +210,15 @@ function AppNavbar(props) {
             >
               {tableNamearr && tableNamearr.map((page, index) => (
                 <MenuItem key={page.title}
-                  onClick={() => handleMenuItemClick(page.title)}
+                  onClick={() => handleMenuItemClick(page)}
                   active={selected === page.title}
                   sx={
                     selected === page.title ? { bgcolor: "#243665" } : {}
                   }
                 >
-                  <Link
-                    to={{pathname:page.toNav, state:{date:props.data}}}
-                    // state={{ data:  }}
-                    style={{ textDecoration: 'none', color: 'unset' }}
-                  >
+                 
                     <Typography >{page.title} </Typography>
-                  </Link>
+               
                 </MenuItem>
               ))}
             </Menu>
@@ -253,18 +250,16 @@ function AppNavbar(props) {
           }}>
             {tableNamearr && tableNamearr.map((page, index) => (
               <MenuItem key={page.title}
-                onClick={() => handleMenuItemClick(page.title)}
+                onClick={() => handleMenuItemClick(page)}
                 active={selected === page.title}
                 sx={{ borderRadius: "5px" }}
                 className={selected === page.title ? 'selected-app-menuItem' : 'app-nav-css'
                 }
 
               >
-                <Link to={page.toNav}
-                  style={{ textDecoration: 'none', color: 'unset' }}
-                >
+                
                   <Typography>{page.title} </Typography>
-                </Link>
+              
               </MenuItem>
             ))}
           </Box>

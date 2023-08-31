@@ -185,12 +185,12 @@ const Task = () => {
             {params.row?.accountDetails?.accountName}
           </div>
         }
-        else if (params.row?.object === 'Lead') {
+        else if (params.row?.object === 'Enquiry') {
 
           return <div className="rowitem">
             {params.row?.leadDetails?.leadName}
           </div>
-        } else if (params.row.object === 'Opportunity') {
+        } else if (params.row.object === 'Deals') {
           return <div className="rowitem">
             {params.row?.opportunityDetails?.opportunityName}
           </div>
